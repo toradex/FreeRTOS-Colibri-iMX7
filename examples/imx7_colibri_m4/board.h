@@ -38,7 +38,7 @@
 #include "clock_freq.h"
 
 /* The board name */
-#define BOARD_NAME                            "IMX7D_SDB_M4"
+#define BOARD_NAME                            "IMX7_COLIBRI_M4"
 #define BOARD_DOMAIN_ID                       (1)
 
 /* ADC information for this board */
