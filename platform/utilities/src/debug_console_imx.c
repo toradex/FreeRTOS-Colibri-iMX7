@@ -74,7 +74,8 @@ static debug_console_state_t s_debugConsole;
 /* See fsl_debug_console_imx.h for documentation of this function.*/
 debug_console_status_t DbgConsole_Init(UART_Type* base,
                                        uint32_t clockRate,
-                                       uint32_t baudRate)
+                                       uint32_t baudRate,
+                                       uint32_t mode)
 {
     if (s_debugConsole.inited)
     {
@@ -92,6 +93,7 @@ debug_console_status_t DbgConsole_Init(UART_Type* base,
     /* UART Init operation */
     UART_Init(s_debugConsole.base, &uart_init_str);
     UART_Enable(s_debugConsole.base);
+    UART_SetModemMode(s_debugConsole.base, mode);
     /* Set the function pointer for send and receive for this kind of device. */
     s_debugConsole.ops.Send = UART_SendDataPolling;
     s_debugConsole.ops.Receive = UART_ReceiveDataPolling;

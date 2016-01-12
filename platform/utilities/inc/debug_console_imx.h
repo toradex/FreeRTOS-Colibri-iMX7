@@ -86,11 +86,13 @@ extern "C" {
  * @param base Which UART_IMX instance is used to send debug messages.
  * @param clockRate The input clock of UART_IMX module.
  * @param baudRate The desired baud rate in bits per second.
+ * @param mode The Modem mode (DTE/DCE), (see _uart_modem_mode enumeration).
  * @return Whether initialization was successful or not.
  */
 debug_console_status_t DbgConsole_Init(UART_Type* base,
                                        uint32_t clockRate,
-                                       uint32_t baudRate);
+                                       uint32_t baudRate,
+                                       uint32_t mode);
 
 /*!
  * @brief Deinit the UART/LPUART used for debug messages.
