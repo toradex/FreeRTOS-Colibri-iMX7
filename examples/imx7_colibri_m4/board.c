@@ -35,6 +35,7 @@
 #include "rdc.h"
 #include "wdog_imx.h"
 #include "pin_mux.h"
+#include "uart_imx.h"
 
 /* Initialize clock. */
 void BOARD_ClockInit(void)
@@ -79,7 +80,7 @@ void dbg_uart_init(void)
     /* Config debug uart pins */
     configure_uart_pins(BOARD_DEBUG_UART_BASEADDR);
 
-    DbgConsole_Init(BOARD_DEBUG_UART_BASEADDR, get_uart_clock_freq(BOARD_DEBUG_UART_BASEADDR), 115200);
+    DbgConsole_Init(BOARD_DEBUG_UART_BASEADDR, get_uart_clock_freq(BOARD_DEBUG_UART_BASEADDR), 115200, uartModemModeDte);
 }
 
 void BOARD_RdcInit(void)

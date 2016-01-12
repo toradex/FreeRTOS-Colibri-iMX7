@@ -185,7 +185,7 @@ void configure_uart_pins(UART_Type* base)
                                                   IOMUXC_SW_PAD_CTL_PAD_UART2_TX_DATA_PS(3)    |
                                                   IOMUXC_SW_PAD_CTL_PAD_UART2_RX_DATA_HYS_MASK |
                                                   IOMUXC_SW_PAD_CTL_PAD_UART2_TX_DATA_DSE(0);
-            IOMUXC_UART2_RX_DATA_SELECT_INPUT = IOMUXC_UART2_RX_DATA_SELECT_INPUT_DAISY(2);
+            IOMUXC_UART2_RX_DATA_SELECT_INPUT = IOMUXC_UART2_RX_DATA_SELECT_INPUT_DAISY(3); /* Select TX_PAD for RX data (DTE mode...) */
             break;
         default:
             break;
