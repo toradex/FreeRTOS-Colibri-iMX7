@@ -389,7 +389,7 @@ void UART_SetCtsPinLevel(UART_Type* base, bool active)
  *END**************************************************************************/
 void UART_SetModemMode(UART_Type* base, uint32_t mode)
 {
-    assert((uartModemModeDce & uartModemModeDce) || (uartModemModeDce & uartModemModeDte));
+    assert((mode == uartModemModeDce) || (mode == uartModemModeDte));
     if (uartModemModeDce == mode)
         UART_UFCR_REG(base) &= ~UART_UFCR_DCEDTE_MASK;
     else
