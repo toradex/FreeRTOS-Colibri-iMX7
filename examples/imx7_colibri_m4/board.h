@@ -80,11 +80,13 @@
 #define BOARD_GPTB_HANDLER                    GPT4_Handler
 
 /* GPIO information for this board */
-#define BOARD_GPIO_CCM_CCGR                   ccmCcgrGateGpio5
-#define BOARD_GPIO_KEY_RDC_PDAP               rdcPdapGpio5
+#define BOARD_GPIO_CCM_CCGR                   ccmCcgrGateGpio2
+#define BOARD_GPIO_LED_RDC_PDAP               rdcPdapGpio1
+#define BOARD_GPIO_LED_CONFIG                 (&gpioLed)
+#define BOARD_GPIO_KEY_RDC_PDAP               rdcPdapGpio2
 #define BOARD_GPIO_KEY_CONFIG                 (&gpioKeyFunc1)
-#define BOARD_GPIO_KEY_IRQ_NUM                GPIO5_INT15_0_IRQn
-#define BOARD_GPIO_KEY_HANDLER                GPIO5_INT15_0_Handler
+#define BOARD_GPIO_KEY_IRQ_NUM                GPIO2_INT31_16_IRQn
+#define BOARD_GPIO_KEY_HANDLER                GPIO2_INT31_16_Handler
 
 /* Debug UART information for this board */
 #define BOARD_DEBUG_UART_RDC_PDAP             rdcPdapUart2

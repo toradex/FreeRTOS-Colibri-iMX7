@@ -119,7 +119,7 @@ int main( void )
         keyState = GPIO_ReadPinInput(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin);
         if(keyState != keyLastState)
         {
-            PRINTF("Button %s\n\r", keyState ? "released" : "pressed");
+            PRINTF("Button %s\n\r", keyState ? "pressed" : "released");
             keyLastState = keyState;
 #ifdef BOARD_GPIO_LED_CONFIG
             GPIO_WritePinOutput(BOARD_GPIO_LED_CONFIG->base, BOARD_GPIO_LED_CONFIG->pin, keyState ? gpioPinSet : gpioPinClear);

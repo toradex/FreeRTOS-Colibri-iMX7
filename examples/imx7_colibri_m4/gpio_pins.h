@@ -50,6 +50,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 /*! @brief GPIO pin configuration */
+extern gpio_config_t gpioLed;
 extern gpio_config_t gpioKeyFunc1;
 extern gpio_config_t gpioKeyFunc2;
 
