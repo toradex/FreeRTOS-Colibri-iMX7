@@ -146,23 +146,23 @@ void configure_i2c_pins(I2C_Type* base)
             break;
         case I2C4_BASE:
             // I2C4 iomux configuration
-            IOMUXC_SW_MUX_CTL_PAD_SAI1_RX_SYNC = IOMUXC_SW_MUX_CTL_PAD_SAI1_RX_SYNC_MUX_MODE(3) |
-                                                 IOMUXC_SW_MUX_CTL_PAD_SAI1_RX_SYNC_SION_MASK;
-            IOMUXC_SW_MUX_CTL_PAD_SAI1_RX_BCLK = IOMUXC_SW_MUX_CTL_PAD_SAI1_RX_BCLK_MUX_MODE(3) |
-                                                 IOMUXC_SW_MUX_CTL_PAD_SAI1_RX_BCLK_SION_MASK;
+            IOMUXC_SW_MUX_CTL_PAD_ENET1_RGMII_TD2 = IOMUXC_SW_MUX_CTL_PAD_ENET1_RGMII_TD2_MUX_MODE(3) | // SCL
+                                                    IOMUXC_SW_MUX_CTL_PAD_ENET1_RGMII_TD2_SION_MASK;
+            IOMUXC_SW_MUX_CTL_PAD_ENET1_RGMII_TD3 = IOMUXC_SW_MUX_CTL_PAD_ENET1_RGMII_TD3_MUX_MODE(3) | // SDA
+                                                    IOMUXC_SW_MUX_CTL_PAD_ENET1_RGMII_TD3_SION_MASK;
 
-            IOMUXC_I2C4_SCL_SELECT_INPUT = IOMUXC_I2C4_SCL_SELECT_INPUT_DAISY(3);
-            IOMUXC_I2C4_SDA_SELECT_INPUT = IOMUXC_I2C4_SDA_SELECT_INPUT_DAISY(3);
+            IOMUXC_I2C4_SCL_SELECT_INPUT = IOMUXC_I2C4_SCL_SELECT_INPUT_DAISY(4);
+            IOMUXC_I2C4_SDA_SELECT_INPUT = IOMUXC_I2C4_SDA_SELECT_INPUT_DAISY(4);
 
-            IOMUXC_SW_PAD_CTL_PAD_SAI1_RX_SYNC = IOMUXC_SW_PAD_CTL_PAD_SAI1_RX_SYNC_PE_MASK  |
-                                                 IOMUXC_SW_PAD_CTL_PAD_SAI1_RX_SYNC_PS(3)    |
-                                                 IOMUXC_SW_PAD_CTL_PAD_SAI1_RX_SYNC_DSE(0)   |
-                                                 IOMUXC_SW_PAD_CTL_PAD_SAI1_RX_SYNC_HYS_MASK;
+            IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_TD2 = IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_TD2_PE_MASK  |
+                                                    IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_TD2_PS(1)    |
+                                                    IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_TD2_DSE(0)   |
+                                                    IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_TD2_HYS_MASK;
 
-            IOMUXC_SW_MUX_CTL_PAD_SAI1_RX_BCLK = IOMUXC_SW_PAD_CTL_PAD_SAI1_RX_BCLK_PE_MASK  |
-                                                 IOMUXC_SW_PAD_CTL_PAD_SAI1_RX_BCLK_PS(3)    |
-                                                 IOMUXC_SW_PAD_CTL_PAD_SAI1_RX_BCLK_DSE(0)   |
-                                                 IOMUXC_SW_PAD_CTL_PAD_SAI1_RX_BCLK_HYS_MASK;
+            IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_TD3 = IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_TD3_PE_MASK  |
+                                                    IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_TD3_PS(1)    |
+                                                    IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_TD3_DSE(0)   |
+                                                    IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_TD3_HYS_MASK;
             break;
         default:
             break;
