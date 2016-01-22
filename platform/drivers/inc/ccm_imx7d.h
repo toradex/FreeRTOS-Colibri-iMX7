@@ -334,7 +334,11 @@ enum _ccm_ccgr_gate {
     ccmCcgrGateGpio6     = (uint32_t)(&CCM_CCGR165),
     ccmCcgrGateGpio7     = (uint32_t)(&CCM_CCGR166),
     ccmCcgrGateIomux     = (uint32_t)(&CCM_CCGR168),
-    ccmCcgrGateIomuxLpsr = (uint32_t)(&CCM_CCGR169)
+    ccmCcgrGateIomuxLpsr = (uint32_t)(&CCM_CCGR169),
+    ccmCcgrGatePwm1      = (uint32_t)(&CCM_CCGR132),
+    ccmCcgrGatePwm2      = (uint32_t)(&CCM_CCGR133),
+    ccmCcgrGatePwm3      = (uint32_t)(&CCM_CCGR134),
+    ccmCcgrGatePwm4      = (uint32_t)(&CCM_CCGR135)
 };
 
 /*!
