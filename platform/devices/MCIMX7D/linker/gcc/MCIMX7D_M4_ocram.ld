@@ -6,9 +6,9 @@ HEAP_SIZE = 0x200;
 /* Specify the memory areas */
 MEMORY
 {
-  m_text          (RX)  : ORIGIN = 0x00920000, LENGTH = 0x00020000  //OCRAM_EPDC
+  m_text          (RX)  : ORIGIN = 0x00920000, LENGTH = 0x00020000
 
-  m_data          (RW)  : ORIGIN = 0x20000000, LENGTH = 0x00007FFF  //TCML_U
+  m_data          (RW)  : ORIGIN = 0x20000000, LENGTH = 0x00007FFF
 }
 
 SECTIONS
