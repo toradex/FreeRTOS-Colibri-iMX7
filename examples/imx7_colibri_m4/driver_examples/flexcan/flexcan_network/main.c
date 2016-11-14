@@ -76,7 +76,7 @@ void init_flexcan(void)
 {
     flexcan_init_config_t initConfig = {
         .timing = timing_table[0],
-        .operatingMode = flexCanNormalMode,
+        .operatingMode = flexcanNormalMode,
         .maxMsgBufNum  = 16
     };
 
