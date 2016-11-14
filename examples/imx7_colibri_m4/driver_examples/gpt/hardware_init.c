@@ -51,7 +51,7 @@ void hardware_init(void)
     CCM_ControlGate(CCM, ccmPllGatePfd0, ccmClockNeededRunWait);
 
     /* Select GPTA clock derived from OSC 24M */
-    CCM_UpdateRoot(CCM, BOARD_GPTB_CCM_ROOT, ccmRootmuxGptOsc24m, 0, 0);
+    CCM_UpdateRoot(CCM, BOARD_GPTA_CCM_ROOT, ccmRootmuxGptOsc24m, 0, 0);
     /* Select GPTB clock derived from PLL PFD0 clock divide 4 (pre=2 post=2) */
     CCM_UpdateRoot(CCM, BOARD_GPTB_CCM_ROOT, ccmRootmuxGptSysPllPfd0, 1, 1);
 
