@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Freescale Semiconductor, Inc.
+ * Copyright (c) 2015-2016, Freescale Semiconductor, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -46,8 +46,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  Macros
 ///////////////////////////////////////////////////////////////////////////////
-#define PERIOD_MIN                      5
-#define PERIOD_MAX                      10
+#define PERIOD_MIN                      15
+#define PERIOD_MAX                      20
 
 ////////////////////////////////////////////////////////////////////////////////
 // Code

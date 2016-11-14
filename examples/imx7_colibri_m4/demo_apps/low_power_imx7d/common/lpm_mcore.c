@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Freescale Semiconductor, Inc.
+ * Copyright (c) 2015-2016, Freescale Semiconductor, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -412,11 +412,15 @@ const char* LPM_MCORE_GetPowerStatusString(void)
 }
 
 /*
- * Check if A7 LPM Driver is ready
+ * Check if A7 LPM Driver is ready, an "Once Ready, Always Ready" logic is used
  */
 uint32_t LPM_MCORE_CheckPeerReady(void) 
 {
-    return (MU_GetFlags(MUB) & MU_SR_Fn(1));
+    static uint32_t a7_ready = 0;
+    if (!a7_ready) {
+        a7_ready = MU_GetFlags(MUB) & MU_SR_Fn(1);
+    }
+    return a7_ready;
 }
 
 /*
