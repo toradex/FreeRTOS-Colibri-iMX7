@@ -47,6 +47,11 @@
 extern struct hil_platform_ops proc_ops;
 
 /*
+ * Number of buffers per VirtIO queue
+ */
+#define RPMSG_NUM_BUFS                    256
+
+/*
  * Linux requires the ALIGN to 0x1000(4KB) instead of 0x80
  */
 #define VRING_ALIGN                       0x1000
@@ -125,7 +130,7 @@ struct hil_proc proc_table []=
             {
                 /*[0]*/
                 { /* TX */
-                    NULL, (void*)VRING0_BASE/*phy_addr*/, 256/*num_descs*/, VRING_ALIGN/*align*/,
+                    NULL, (void*)VRING0_BASE/*phy_addr*/, RPMSG_NUM_BUFS/*num_descs*/, VRING_ALIGN/*align*/,
                     /*struct virtqueue, phys_addr, num_descs, align*/
                     {
                         /*struct proc_intr*/
@@ -134,7 +139,7 @@ struct hil_proc proc_table []=
                 },
                 /*[1]*/
                 { /* RX */
-                    NULL, (void*)VRING1_BASE, 256, VRING_ALIGN,
+                    NULL, (void*)VRING1_BASE, RPMSG_NUM_BUFS, VRING_ALIGN,
                     {
                         VRING1_IPI_VECT,0,0,NULL
                     }
@@ -174,13 +179,13 @@ struct hil_proc proc_table []=
             2, (1<<VIRTIO_RPMSG_F_NS), 0,
             {
                 {/* RX */
-                    NULL, (void*)VRING0_BASE, 256, VRING_ALIGN,
+                    NULL, (void*)VRING0_BASE, RPMSG_NUM_BUFS, VRING_ALIGN,
                     {
                         VRING0_IPI_VECT,0,0,NULL
                     }
                 },
                 {/* TX */
-                    NULL, (void*)VRING1_BASE, 256, VRING_ALIGN,
+                    NULL, (void*)VRING1_BASE, RPMSG_NUM_BUFS, VRING_ALIGN,
                     {
                         VRING1_IPI_VECT,0,0,NULL
                     }
