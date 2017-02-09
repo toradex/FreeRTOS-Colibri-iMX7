@@ -89,6 +89,15 @@
 #define BOARD_GPIO_KEY_IRQ_NUM                GPIO2_INT31_16_IRQn
 #define BOARD_GPIO_KEY_HANDLER                GPIO2_INT31_16_Handler
 
+/* Colibri SPI is ECSPI3 */
+#define BOARD_ECSPI_RDC_PDAP                  rdcPdapEcspi3
+#define BOARD_ECSPI_CCM_ROOT                  ccmRootEcspi3
+#define BOARD_ECSPI_CCM_CCGR                  ccmCcgrGateEcspi3
+#define BOARD_ECSPI_BASEADDR                  ECSPI3
+#define BOARD_ECSPI_CHANNEL                   ecspiSelectChannel0
+#define BOARD_ECSPI_IRQ_NUM                   eCSPI3_IRQn
+#define BOARD_ECSPI_HANDLER                   eCSPI3_Handler
+
 /* Debug UART information for this board */
 #define BOARD_DEBUG_UART_RDC_PDAP             rdcPdapUart2
 #define BOARD_DEBUG_UART_CCM_ROOT             ccmRootUart2
