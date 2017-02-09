@@ -192,6 +192,36 @@ void configure_uart_pins(UART_Type* base)
     }
 }
 
+void configure_ecspi_pins(ECSPI_Type* base)
+{
+	// ECSPI1 iomux configuration
+	/* daisy chain selection */
+	IOMUXC_ECSPI3_MISO_SELECT_INPUT = 0;  //(I2C1_SCL  SODIM 90)
+	IOMUXC_ECSPI3_MOSI_SELECT_INPUT = 0;  //(I2C1_SCL  SODIM 90)
+
+	/* iomux */
+	IOMUXC_SW_MUX_CTL_PAD_I2C2_SCL = IOMUXC_SW_MUX_CTL_PAD_I2C2_SCL_MUX_MODE(3);    /* ECSPI SLK  */
+	IOMUXC_SW_MUX_CTL_PAD_I2C1_SDA = IOMUXC_SW_MUX_CTL_PAD_I2C1_SDA_MUX_MODE(3);    /* ECSPI MOSI */
+	IOMUXC_SW_MUX_CTL_PAD_I2C1_SCL = IOMUXC_SW_MUX_CTL_PAD_I2C1_SCL_MUX_MODE(3);    /* ECSPI MISO  */
+	IOMUXC_SW_MUX_CTL_PAD_I2C2_SDA  = IOMUXC_SW_MUX_CTL_PAD_I2C2_SDA_MUX_MODE(3);     /* ECSPI SS0 */
+
+	/* pad control */
+	IOMUXC_SW_PAD_CTL_PAD_I2C2_SCL =    IOMUXC_SW_PAD_CTL_PAD_I2C2_SCL_PE_MASK  |
+			IOMUXC_SW_PAD_CTL_PAD_I2C2_SCL_PS(0)    |      /* pull down */
+			IOMUXC_SW_PAD_CTL_PAD_I2C2_SCL_DSE(0)   |
+			IOMUXC_SW_PAD_CTL_PAD_I2C2_SCL_HYS_MASK;
+
+	IOMUXC_SW_PAD_CTL_PAD_I2C1_SDA = IOMUXC_SW_PAD_CTL_PAD_I2C1_SDA_DSE(0)   |
+			IOMUXC_SW_PAD_CTL_PAD_I2C1_SDA_HYS_MASK;
+
+	IOMUXC_SW_PAD_CTL_PAD_I2C1_SCL = IOMUXC_SW_PAD_CTL_PAD_I2C1_SCL_HYS_MASK;
+
+	IOMUXC_SW_PAD_CTL_PAD_I2C2_SDA  =  IOMUXC_SW_PAD_CTL_PAD_I2C2_SDA_PE_MASK   |
+			IOMUXC_SW_PAD_CTL_PAD_I2C2_SDA_PS(3)     |      /* pull up */
+			IOMUXC_SW_PAD_CTL_PAD_I2C2_SDA_DSE(0)    |
+			IOMUXC_SW_PAD_CTL_PAD_I2C2_SDA_HYS_MASK;
+}
+
 /*******************************************************************************
  * EOF
  ******************************************************************************/

@@ -95,6 +95,10 @@ uint32_t get_ecspi_clock_freq(ECSPI_Type* base)
             root = CCM_GetRootMux(CCM, ccmRootEcspi2);
             CCM_GetRootDivider(CCM, ccmRootEcspi2, &pre, &post);
             break;
+        case ECSPI3_BASE:
+            root = CCM_GetRootMux(CCM, ccmRootEcspi3);
+            CCM_GetRootDivider(CCM, ccmRootEcspi3, &pre, &post);
+            break;
         default:
             return 0;
     }
