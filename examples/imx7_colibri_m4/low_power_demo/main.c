@@ -28,6 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <limits.h>
 #include <stdio.h>
 #include "FreeRTOS.h"
 #include "task.h"
@@ -37,9 +38,7 @@
 #include "gpio_pins.h"
 #include "gpio_imx.h"
 
-#define GPIO_INTERRUPT         (1)
-#define GPIO_POLLING           (0)
-#define GPIO_DEBOUNCE_DELAY    (100000)
+TaskHandle_t xLcdTaskHandle;
 
 #define BURST_LENGTH_IN_BYTES(x)        ((8 * x) - 1)
 
@@ -110,6 +109,13 @@ static void LCD_Init(void)
 
 	ECSPI_Init(BOARD_ECSPI_BASEADDR, &ecspiMasterInitConfig);
 	ECSPI_SetSCLKInactiveState(BOARD_ECSPI_BASEADDR, 0, ecspiSclkStayHigh);
+	ECSPI_ClearStatusFlag(BOARD_ECSPI_BASEADDR, ~0);
+
+	/*
+	 * IRQ priority must be lower than configMAX_SYSCALL_INTERRUPT_PRIORITY
+	 * (8) to allow FreeRTOS syscalls.
+	 */
+	NVIC_SetPriority(BOARD_ECSPI_IRQ_NUM, 3);
 	NVIC_EnableIRQ(BOARD_ECSPI_IRQ_NUM);
 }
 
@@ -118,6 +124,18 @@ static void LCD_SendBytes(const uint8_t *buf, int count, enum lcd_cmd_type cmd)
 	int bytes;
 	uint32_t data;
 	gpio_pin_action_t a0;
+	uint32_t ulNotifiedValue = 0;
+
+	// For simplicity, we only allow up to 256 bytes in one transfer. This
+	// fits into the FIFO and is below the maximum burst size of 512 bytes.
+	// It simplifies the code here and is good enouth for the ST7565R
+	// controller, where we have to send a "Page Address Set Command" to
+	// select the next page after 128 * 8 bit => 128 bytes of data
+	// anyway.
+	if (count > 64 * 4) {
+		PRINTF("%s: Maximum 256 bytes!\n\r", __func__);
+		return;
+	}
 
 	if (cmd == LCD_COMMAND)
 		a0 = gpioPinClear;
@@ -127,7 +145,7 @@ static void LCD_SendBytes(const uint8_t *buf, int count, enum lcd_cmd_type cmd)
 
 	ECSPI_SetBurstLength(BOARD_ECSPI_BASEADDR, BURST_LENGTH_IN_BYTES(count));
 
-	while (count > 0 && !ECSPI_GetStatusFlag(BOARD_ECSPI_BASEADDR, ecspiFlagTxfifoFull)) {
+	while (count > 0) {
 		int i;
 		bytes = count & 0x3;
 		bytes = bytes ? bytes : 4;
@@ -138,17 +156,21 @@ static void LCD_SendBytes(const uint8_t *buf, int count, enum lcd_cmd_type cmd)
 
 		ECSPI_SendData(BOARD_ECSPI_BASEADDR, data);
 		count -= bytes;
+		if (ECSPI_GetStatusFlag(BOARD_ECSPI_BASEADDR, ecspiFlagTxfifoFull)) {
+			PRINTF("%s: FIFO Full!?\n\r", __func__);
+			break;
+		}
 	}
 
-//	PRINTF("LCD_SendBytes, end count %d\n\r", count);
-
-	//ECSPI_SetIntCmd(BOARD_ECSPI_BASEADDR, ecspiFlagTxfifoEmpty, true);
-	//ECSPI_SetIntCmd(BOARD_ECSPI_BASEADDR, ecspiFlagTxfifoTc, true);
+	ECSPI_SetIntCmd(BOARD_ECSPI_BASEADDR, ecspiFlagTxfifoTc, true);
 
 	ECSPI_StartBurst(BOARD_ECSPI_BASEADDR);
-//PRINTF("Status %x\n\r", ECSPI_GetStatusFlag(BOARD_ECSPI_BASEADDR, ecspiFlagTxfifoTc));
-	while (!ECSPI_GetStatusFlag(BOARD_ECSPI_BASEADDR, ecspiFlagTxfifoTc));
-	ECSPI_ClearStatusFlag(BOARD_ECSPI_BASEADDR, ecspiFlagTxfifoTc);
+
+	ulNotifiedValue = ulTaskNotifyTake(pdFALSE, 10);
+
+	if (ulNotifiedValue < 1) {
+		PRINTF("%s: Transfer timeout\n\r", __func__);
+	}
 }
 
 #define CLAMP(x, low, high) { if ( (x) < (low) ) x = (low); if ( (x) > (high) ) x = (high); }
@@ -170,7 +192,7 @@ static void LCD_SetXY(int x, int y)
 	LCD_SendBytes(cmd, 3, LCD_COMMAND);
 }
 
-void UITask(void *pvParameters)
+void LCD_Task(void *pvParameters)
 {
 	const uint8_t LCD_init_seq[] = {
 		0x40, // Display start line 0
@@ -188,7 +210,6 @@ void UITask(void *pvParameters)
 		0x00,
 		0xaf, // Display on
 	};
-
 
 	/* GPIO module initialize, configure "LED" as output and button as interrupt mode. */
 	LCD_Init();
@@ -211,6 +232,18 @@ void UITask(void *pvParameters)
 		}
 	}
 /*
+	uint8_t page[128];
+	while (true) {
+		data = ~data;
+		for (int x = 0; x < 128; x++)
+			page[x] = data;
+		for (int y = 0; y < 8; y++) {
+			LCD_SetXY(0,y);
+			LCD_SendBytes(page, 128, LCD_DATA);
+			vTaskDelay(100);
+		}
+	}
+
 	while (true) {
 		LCD_SetXY(x,y);
 		LCD_SendBytes(&data, 1, LCD_DATA);
@@ -235,8 +268,8 @@ int main(void)
 	hardware_init();
 	PRINTF("\n\r=> Low Power Demo\n\r");
 
-	xTaskCreate(UITask, "UI Task", configMINIMAL_STACK_SIZE,
-                NULL, tskIDLE_PRIORITY+1, NULL);
+	xTaskCreate(LCD_Task, "LCD Task", configMINIMAL_STACK_SIZE,
+                NULL, tskIDLE_PRIORITY+1, &xLcdTaskHandle);
 
 	/* Start FreeRTOS scheduler. */
 	vTaskStartScheduler();
@@ -246,6 +279,7 @@ int main(void)
 
 void eCSPI3_Handler(void)
 {
+	BaseType_t xHigherPriorityTaskWoken;
 	uint32_t flags;
 
 	flags = ECSPI_GetStatusFlag(BOARD_ECSPI_BASEADDR, ~0);
@@ -253,7 +287,8 @@ void eCSPI3_Handler(void)
 	//PRINTF("IRQ, flags %08x\n\r", flags);
 
 	if (flags & ecspiFlagTxfifoTc) {
-		PRINTF("Transfer Complete\n\r");
-		//ECSPI_ClearStatusFlag(BOARD_ECSPI_BASEADDR, ecspiFlagTxfifoTc);
+		ECSPI_ClearStatusFlag(BOARD_ECSPI_BASEADDR, ecspiFlagTxfifoTc);
+		vTaskNotifyGiveFromISR(xLcdTaskHandle, &xHigherPriorityTaskWoken);
+		portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 	}
 }
