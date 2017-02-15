@@ -37,6 +37,7 @@
 #include "ecspi.h"
 #include "gpio_pins.h"
 #include "gpio_imx.h"
+#include "ugui/ugui.h"
 
 TaskHandle_t xLcdTaskHandle;
 
@@ -192,6 +193,29 @@ static void LCD_SetXY(int x, int y)
 	LCD_SendBytes(cmd, 3, LCD_COMMAND);
 }
 
+uint8_t fb[LCDWIDTH * LCDPAGES];
+static void LCD_SendFB(uint8_t *fb)
+{
+	for (int y = 0; y < LCDPAGES; y++) {
+		LCD_SetXY(0,y);
+		LCD_SendBytes(fb + y * LCDWIDTH, LCDWIDTH, LCD_DATA);
+	}
+}
+
+void LCD_SetPixel(UG_S16 x, UG_S16 y, UG_COLOR c)
+{
+	int page = y >> 3;
+	uint8_t bit = 1 << (y & 0x7);
+//PRINTF("LCD_SetPixel, x %d, y %d, page %d, bit %x\n\r", x, y, page, bit);
+
+	if (c == C_WHITE)
+		fb[128 * page + x] &= ~bit;
+	else
+		fb[128 * page + x] |= bit;
+}
+
+UG_GUI gui;
+
 void LCD_Task(void *pvParameters)
 {
 	const uint8_t LCD_init_seq[] = {
@@ -220,16 +244,51 @@ void LCD_Task(void *pvParameters)
 	uint8_t cmd = 0xA4 | 1;
 	LCD_SendBytes(&cmd, 1, LCD_COMMAND);
 */
-	uint8_t data = 0xff;
+	UG_Init(&gui, LCD_SetPixel, LCDWIDTH, LCDHEIGHT);
+	UG_SetBackcolor(C_WHITE);
+	UG_SetForecolor(C_BLACK);
+
+	UG_FontSetHSpace(0);
+	UG_FontSelect(&FONT_8X8);
+	UG_DrawLine(0, 0, 0, 8, C_BLACK);
+	UG_DrawLine(0, 8, 8, 8, C_BLACK);
+	UG_DrawLine(8, 0, 0, 8, C_BLACK);
+	UG_PutString(10, 0, "Inertial");
+	UG_FontSelect(&FONT_6X8);
+	UG_PutString(0, 14, "Accel.");
+	UG_PutString(0, 24, "X: 0.0g");
+	UG_PutString(0, 34, "Y: 0.0g");
+	UG_PutString(0, 44, "Z: 0.0g");
+
+	UG_PutString(64, 14, "Gyroscope");
+	UG_PutString(64, 24, "X: 4.5\xb0/s");
+	UG_PutString(64, 34, "Y: 7.0\xb0/s");
+	UG_PutString(64, 44, "Z: 2.4\xb0/s");
+
+	UG_FontSelect(&FONT_4X6);
+	UG_PutString(0, 54, "0123456789 Hello World");
+	UG_DrawCircle(60, 30, 20, C_BLACK);
+/*
+	//UG_FontSelect(&FONT_5X8);
+	UG_FontSelect(&FONT_4X6);
+	UG_PutString(0, 16, "0123456789");
+
+*/
+
+	LCD_SendFB(fb);
+
+	int x = 0;
 	while (true) {
-		data = ~data;
-		for (int y = 0; y < 8; y++) {
-			LCD_SetXY(0,y);
-			for (int x = 0; x < 128; x++) {
-				LCD_SendBytes(&data, 1, LCD_DATA);
-				vTaskDelay(5);
-			}
-		}
+	//	data = ~data;
+/*
+		LCD_SetPixel(x, 7, C_BLACK);
+		LCD_SetPixel(x, 8, C_BLACK);
+*/
+		x++;
+		LCD_SendFB(fb);
+		vTaskDelay(100);
+		if (x >= LCDWIDTH)
+			x = 0;
 	}
 /*
 	uint8_t page[128];

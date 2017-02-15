@@ -57,6 +57,7 @@ SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}  -Xlinker -Map=${ProjectNa
 # === Add Include directories here ===
 INCLUDE_DIRECTORIES(${ProjDirPath}/..)
 INCLUDE_DIRECTORIES(${ProjDirPath}/../..)
+INCLUDE_DIRECTORIES(${ProjDirPath}/../ugui)
 INCLUDE_DIRECTORIES(${BspRootDirPath}/platform/CMSIS/Include)
 INCLUDE_DIRECTORIES(${BspRootDirPath}/platform/devices)
 INCLUDE_DIRECTORIES(${BspRootDirPath}/platform/devices/MCIMX7D/include)
@@ -95,6 +96,7 @@ ADD_EXECUTABLE(${ProjectName}
     "${ProjDirPath}/../gpio_pins.c"
     "${ProjDirPath}/../hardware_init.c"
     "${ProjDirPath}/../main.c"
+    "${ProjDirPath}/../ugui/ugui.c"
 )
 
 # additional system libraries
