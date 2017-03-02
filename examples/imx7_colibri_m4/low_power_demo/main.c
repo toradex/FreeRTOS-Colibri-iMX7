@@ -319,6 +319,15 @@ void LCD_Task(void *pvParameters)
 }
 
 /*!
+ * @brief Custom function to be run in idletask
+ */
+void vApplicationIdleHook(void)
+{
+	/* Waiting for Wake up event. */
+	__WFI();
+}
+
+/*!
  * @brief Main entry point
  */
 int main(void)
