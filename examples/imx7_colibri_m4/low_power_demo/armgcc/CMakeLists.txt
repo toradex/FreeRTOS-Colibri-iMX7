@@ -95,6 +95,7 @@ ADD_EXECUTABLE(${ProjectName}
     "${ProjDirPath}/../../pin_mux.c"
     "${ProjDirPath}/../gpio_pins.c"
     "${ProjDirPath}/../hardware_init.c"
+    "${ProjDirPath}/../lpm_mcore.c"
     "${ProjDirPath}/../main.c"
     "${ProjDirPath}/../ugui/ugui.c"
 )

@@ -84,10 +84,12 @@
     #include <stdint.h>
 #endif
 
+extern unsigned long configCPU_CLOCK_HZ;
+
 #define configUSE_PREEMPTION              1
 #define configUSE_IDLE_HOOK               1
 #define configUSE_TICK_HOOK               0
-#define configCPU_CLOCK_HZ                (240000000ul)
+#define configCPU_CLOCK_HZ_DEFAULT        (240000000ul)
 #define configTICK_RATE_HZ                ((TickType_t)1000)
 #define configMAX_PRIORITIES              (5)
 #define configMINIMAL_STACK_SIZE          ((unsigned short)130)
@@ -125,6 +127,7 @@ to exclude the API function. */
 #define INCLUDE_vTaskSuspend              1
 #define INCLUDE_vTaskDelayUntil           0
 #define INCLUDE_vTaskDelay                1
+#define INCLUDE_xTaskGetSchedulerState    1
 
 /* Cortex-M specific definitions. */
 #ifdef __NVIC_PRIO_BITS

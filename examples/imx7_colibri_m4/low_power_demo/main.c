@@ -38,6 +38,7 @@
 #include "gpio_pins.h"
 #include "gpio_imx.h"
 #include "ugui/ugui.h"
+#include "lpm_mcore.h"
 
 TaskHandle_t xLcdTaskHandle;
 
@@ -183,7 +184,7 @@ static void LCD_SetXY(int x, int y)
 {
 	unsigned char cmd[3];
 
-	PRINTF("LCD_SetXY(%d,%d)\n\r", x, y);
+	//PRINTF("LCD_SetXY(%d,%d)\n\r", x, y);
 	CLAMP(x, 0, LCDWIDTH-1);
 	CLAMP(y, 0, LCDPAGES-1);
 
@@ -236,6 +237,7 @@ void LCD_Task(void *pvParameters)
 	};
 
 	/* GPIO module initialize, configure "LED" as output and button as interrupt mode. */
+	PRINTF("Before init\n\r");
 	LCD_Init();
 
 	LCD_SendBytes(LCD_init_seq, sizeof(LCD_init_seq), LCD_COMMAND);
@@ -278,17 +280,27 @@ void LCD_Task(void *pvParameters)
 	LCD_SendFB(fb);
 
 	int x = 0;
+	char control_char;
 	while (true) {
-	//	data = ~data;
-/*
 		LCD_SetPixel(x, 7, C_BLACK);
 		LCD_SetPixel(x, 8, C_BLACK);
-*/
+
 		x++;
 		LCD_SendFB(fb);
-		vTaskDelay(100);
+		//vTaskDelay(100);
 		if (x >= LCDWIDTH)
 			x = 0;
+
+		PRINTF("\r\nCPU delaying for 5s: ");
+		vTaskDelay(5000);
+		PRINTF("done");
+
+		PRINTF("\r\nCPU spinning, press any character: ");
+		control_char = GETCHAR();
+		PRINTF("%c", control_char);/*
+		if ((control_char == 's') || (control_char == 'S')) {
+			break;
+		}*/
 	}
 /*
 	uint8_t page[128];
@@ -324,7 +336,7 @@ void LCD_Task(void *pvParameters)
 void vApplicationIdleHook(void)
 {
 	/* Waiting for Wake up event. */
-	__WFI();
+	LPM_MCORE_WaitForInt();
 }
 
 /*!
@@ -334,6 +346,7 @@ int main(void)
 {
 	/* hardware initialiize, include RDC, IOMUX and UART debug */
 	hardware_init();
+	LPM_MCORE_ChangeM4Clock(LPM_M4_LOW_FREQ);
 	PRINTF("\n\r=> Low Power Demo\n\r");
 
 	xTaskCreate(LCD_Task, "LCD Task", configMINIMAL_STACK_SIZE,
