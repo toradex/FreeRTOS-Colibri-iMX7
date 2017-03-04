@@ -49,10 +49,12 @@
 #define MSG_LPM_M4_WAIT                 0x5A5A0002
 #define MSG_LPM_M4_STOP                 0x5A5A0003
 
-#define MSG_LPM_M4_REQUEST_HIGHBUS      0x2222CCCC
-#define MSG_LPM_M4_RELEASE_HIGHBUS      0x2222BBBB
-
-#define MSG_LPM_A7_HIGHBUS_READY        0xFFFF6666
+#define MU_LPM_M4_LPM_READY		0xFFFF4444
+#define MU_LPM_M4_LPM_SLEEP		0xFFFF5555
+#define MU_LPM_BUS_HIGH_READY_FOR_M4	0xFFFF6666
+#define MU_LPM_M4_FREQ_CHANGE_READY	0xFFFF7777
+#define MU_LPM_M4_REQUEST_HIGH_BUS	0x2222CCCC
+#define MU_LPM_M4_RELEASE_HIGH_BUS	0x2222BBBB
 
 #define GPC_SYNC_DELAY_CNT              65536
 
@@ -98,6 +100,8 @@ LPM_POWER_STATUS_M4 LPM_MCORE_GetPowerStatus(GPC_Type * base);
  * next time WFI is executed
  */
 void LPM_MCORE_SetPowerStatus(GPC_Type * base, LPM_POWER_STATUS_M4 m4_next_lpm);
+
+void LPM_MCORE_SendMessage(uint32_t msg);
 
 /*
  * provide readable information of current m4 core lpm state

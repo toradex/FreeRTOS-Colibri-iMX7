@@ -49,7 +49,7 @@ static P_WAKEUP_INT_ELE g_wakeup_int_list;
 /*
  * Send Message to A7
  */
-static void LPM_MCORE_SendMessage(uint32_t msg)
+void LPM_MCORE_SendMessage(uint32_t msg)
 {
     while (0 == (MUB_SR & MU_SR_TEn(0x8 >> LPM_MCORE_MU_CHANNEL)));
     MUB->TR[LPM_MCORE_MU_CHANNEL] = msg;
@@ -226,9 +226,13 @@ void LPM_MCORE_ChangeM4Clock(LPM_M4_CLOCK_SPEED target)
             #endif
                 CCM_SetRootMux(CCM, ccmRootM4, ccmRootmuxM4Osc24m);
             }
+            CCM_ControlGate(CCM, ccmPllGateSys, ccmClockNotNeeded);
+            CCM_ControlGate(CCM, ccmPllGateSysDiv2, ccmClockNotNeeded);
             configCPU_CLOCK_HZ = 24000000ul;
             break;
         case LPM_M4_HIGH_FREQ:
+            CCM_ControlGate(CCM, ccmPllGateSys, ccmClockNeededRun);
+            CCM_ControlGate(CCM, ccmPllGateSysDiv2, ccmClockNeededRun);
             if (CCM_GetRootMux(CCM, ccmRootM4) != ccmRootmuxM4SysPllDiv2) {
             #if (defined(LPM_MCORE_PRINT_DEBUG_INFO) && (LPM_MCORE_PRINT_DEBUG_INFO))
                 PRINTF("Change M4 clock freq to SysPLL Div2 (240M)\r\n");

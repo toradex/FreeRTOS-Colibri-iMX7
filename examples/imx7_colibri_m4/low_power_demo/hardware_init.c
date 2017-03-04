@@ -44,7 +44,7 @@ void hardware_init(void)
 
     /*
      * In order to wakeup M4 from LPM, some PLLCTRLs need to be set to "NeededRun"
-     */
+     *//*
     CCM_BASE_PTR->PLL_CTRL[0].PLL_CTRL = ccmClockNeededRun;
     CCM_BASE_PTR->PLL_CTRL[6].PLL_CTRL = ccmClockNeededRun;
     CCM_BASE_PTR->PLL_CTRL[7].PLL_CTRL = ccmClockNeededRun;
@@ -56,6 +56,7 @@ void hardware_init(void)
     CCM_BASE_PTR->PLL_CTRL[13].PLL_CTRL = ccmClockNeededRun;
     CCM_BASE_PTR->PLL_CTRL[14].PLL_CTRL = ccmClockNeededRun;
     CCM_BASE_PTR->PLL_CTRL[15].PLL_CTRL = ccmClockNeededRun;
+*/
 
     /* Enable clock gate for wakeup mix*/
     CCM_ControlGate(CCM, BOARD_SIM_WAKEUP_CCGR, ccmClockNeededAll);
@@ -78,6 +79,8 @@ void hardware_init(void)
     /* Configure ecspi pin IOMUX */
     configure_ecspi_pins(BOARD_ECSPI_BASEADDR);
 
+    /* RDC MU*/
+    RDC_SetPdapAccess(RDC, BOARD_MU_RDC_PDAP, 3 << (BOARD_DOMAIN_ID * 2), false, false);
     /* Enable MU clock*/
     CCM_ControlGate(CCM, BOARD_MU_CCM_CCGR, ccmClockNeededAll);
 }

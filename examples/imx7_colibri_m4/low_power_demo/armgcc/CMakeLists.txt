@@ -77,6 +77,7 @@ ADD_EXECUTABLE(${ProjectName}
     "${BspRootDirPath}/platform/drivers/src/ecspi.c"
     "${BspRootDirPath}/platform/drivers/src/gpio_imx.c"
     "${BspRootDirPath}/platform/drivers/src/lmem.c"
+    "${BspRootDirPath}/platform/drivers/src/mu_imx.c"
     "${BspRootDirPath}/platform/drivers/src/rdc.c"
     "${BspRootDirPath}/platform/drivers/src/uart_imx.c"
     "${BspRootDirPath}/platform/drivers/src/wdog_imx.c"

@@ -39,6 +39,7 @@
 #include "gpio_imx.h"
 #include "ugui/ugui.h"
 #include "lpm_mcore.h"
+#include "mu_imx.h"
 
 TaskHandle_t xLcdTaskHandle;
 
@@ -215,6 +216,37 @@ void LCD_SetPixel(UG_S16 x, UG_S16 y, UG_COLOR c)
 		fb[128 * page + x] |= bit;
 }
 
+void mu_handle_message(uint32_t msg)
+{
+	static bool firstready = true;
+	switch(msg) {
+	case MU_LPM_M4_LPM_READY:
+		if (firstready)
+			LPM_MCORE_SendMessage(MU_LPM_M4_RELEASE_HIGH_BUS);
+		firstready = false;
+
+		PRINTF("\n\rA7 ready\n\r");
+		break;
+	case MU_LPM_M4_LPM_SLEEP:
+		PRINTF("\n\rA7 asleep\n\r");
+		break;
+	default:
+		PRINTF("MSG %08x, \n\r", msg);
+		break;
+	}
+}
+
+void MU_M4_Handler(void)
+{
+	uint32_t msg;
+
+	if (MU_TryReceiveMsg(MUB, 0, &msg) == kStatus_MU_Success)
+		mu_handle_message(msg);
+
+
+	return;
+}
+
 UG_GUI gui;
 
 void LCD_Task(void *pvParameters)
@@ -295,12 +327,13 @@ void LCD_Task(void *pvParameters)
 		vTaskDelay(5000);
 		PRINTF("done");
 
-		PRINTF("\r\nCPU spinning, press any character: ");
+		PRINTF("\r\nCPU spinning, press any character (s sends msg): ");
 		control_char = GETCHAR();
-		PRINTF("%c", control_char);/*
+		PRINTF("%c", control_char);
 		if ((control_char == 's') || (control_char == 'S')) {
-			break;
-		}*/
+			PRINTF("\r\nSending msg to A7...");
+			LPM_MCORE_SendMessage(MSG_LPM_M4_WAIT);
+		}
 	}
 /*
 	uint8_t page[128];
@@ -348,6 +381,10 @@ int main(void)
 	hardware_init();
 	LPM_MCORE_ChangeM4Clock(LPM_M4_LOW_FREQ);
 	PRINTF("\n\r=> Low Power Demo\n\r");
+
+	NVIC_SetPriority(MU_M4_IRQn, 3);
+	NVIC_EnableIRQ(MU_M4_IRQn);
+	MU_EnableRxFullInt(MUB, 0);
 
 	xTaskCreate(LCD_Task, "LCD Task", configMINIMAL_STACK_SIZE,
                 NULL, tskIDLE_PRIORITY+1, &xLcdTaskHandle);
