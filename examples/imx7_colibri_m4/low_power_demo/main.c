@@ -218,13 +218,8 @@ void LCD_SetPixel(UG_S16 x, UG_S16 y, UG_COLOR c)
 
 void mu_handle_message(uint32_t msg)
 {
-	static bool firstready = true;
 	switch(msg) {
 	case MU_LPM_M4_LPM_READY:
-		if (firstready)
-			LPM_MCORE_SendMessage(MU_LPM_M4_RELEASE_HIGH_BUS);
-		firstready = false;
-
 		PRINTF("\n\rA7 ready\n\r");
 		break;
 	case MU_LPM_M4_LPM_SLEEP:
@@ -323,8 +318,8 @@ void LCD_Task(void *pvParameters)
 		if (x >= LCDWIDTH)
 			x = 0;
 
-		PRINTF("\r\nCPU delaying for 5s: ");
-		vTaskDelay(5000);
+		PRINTF("\r\nCPU delaying for 2s: ");
+		vTaskDelay(2000);
 		PRINTF("done");
 
 		PRINTF("\r\nCPU spinning, press any character (s sends msg): ");

@@ -33,30 +33,12 @@
 
 void hardware_init(void)
 {
-    int i;
-
     /* Board specific RDC settings */
     BOARD_RdcInit();
     /* Board specific clock settings */
     BOARD_ClockInit();
     /* initialize debug uart */
     dbg_uart_init();
-
-    /*
-     * In order to wakeup M4 from LPM, some PLLCTRLs need to be set to "NeededRun"
-     *//*
-    CCM_BASE_PTR->PLL_CTRL[0].PLL_CTRL = ccmClockNeededRun;
-    CCM_BASE_PTR->PLL_CTRL[6].PLL_CTRL = ccmClockNeededRun;
-    CCM_BASE_PTR->PLL_CTRL[7].PLL_CTRL = ccmClockNeededRun;
-    CCM_BASE_PTR->PLL_CTRL[8].PLL_CTRL = ccmClockNeededRun;
-    CCM_BASE_PTR->PLL_CTRL[9].PLL_CTRL = ccmClockNeededRun;
-    CCM_BASE_PTR->PLL_CTRL[10].PLL_CTRL = ccmClockNeededRun;
-    CCM_BASE_PTR->PLL_CTRL[11].PLL_CTRL = ccmClockNeededRun;
-    CCM_BASE_PTR->PLL_CTRL[12].PLL_CTRL = ccmClockNeededRun;
-    CCM_BASE_PTR->PLL_CTRL[13].PLL_CTRL = ccmClockNeededRun;
-    CCM_BASE_PTR->PLL_CTRL[14].PLL_CTRL = ccmClockNeededRun;
-    CCM_BASE_PTR->PLL_CTRL[15].PLL_CTRL = ccmClockNeededRun;
-*/
 
     /* Enable clock gate for wakeup mix*/
     CCM_ControlGate(CCM, BOARD_SIM_WAKEUP_CCGR, ccmClockNeededAll);
