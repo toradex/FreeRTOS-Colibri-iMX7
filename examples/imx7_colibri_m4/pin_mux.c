@@ -41,7 +41,6 @@
 void configure_flexcan_pins(CAN_Type* base)
 {
     volatile GPIO_MemMapPtr gpio2_pdir;
-    void *addr;
 
     switch((uint32_t)base)
     {
@@ -49,20 +48,6 @@ void configure_flexcan_pins(CAN_Type* base)
             /*CAN 1 is not used in SDB Board*/
             break;
         case CAN2_BASE:
-            // CAN2_STB DRIVE LOW
-            /* R431 Connected */
-            /* R435 not Connected */
-            /* SDDO14 is floated (EPDC Expansion Slot J13)*/
-            IOMUXC_SW_MUX_CTL_PAD_EPDC_DATA14 = IOMUXC_SW_MUX_CTL_PAD_EPDC_DATA14_MUX_MODE(5);  // GPIO2[14]
-            IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA14 = IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA14_PE_MASK |
-                                                IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA14_PS(3)   |
-                                                IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA14_DSE(0)  |
-                                                IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA14_HYS_MASK;
-            addr = (void *) GPIO2_BASE_PTR;
-            gpio2_pdir = addr;
-            gpio2_pdir->GDIR |= 0x00004000;
-            gpio2_pdir->DR &= ~(0x00004000);
-
             // CAN2_TX
             IOMUXC_SW_MUX_CTL_PAD_GPIO1_IO15 = IOMUXC_SW_MUX_CTL_PAD_GPIO1_IO15_MUX_MODE(3);
             IOMUXC_SW_PAD_CTL_PAD_GPIO1_IO15 = IOMUXC_SW_PAD_CTL_PAD_GPIO1_IO15_PE_MASK |
