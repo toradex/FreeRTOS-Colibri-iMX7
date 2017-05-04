@@ -204,6 +204,11 @@ __isr_vector:
     .weak    Reset_Handler
     .type    Reset_Handler, %function
 Reset_Handler:
+    /*
+     * Set stack pointer manually. Not all loading mechanism setup stack
+     * e.g. when using elf file format with Toradex U-Boot 2016.11
+     */
+    ldr sp,=__stack;
     cpsid   i               /* Mask interrupts */
 #ifndef __NO_SYSTEM_INIT
     bl SystemInit
