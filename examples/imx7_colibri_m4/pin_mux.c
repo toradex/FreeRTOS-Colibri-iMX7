@@ -40,8 +40,6 @@
 
 void configure_flexcan_pins(CAN_Type* base)
 {
-    volatile GPIO_MemMapPtr gpio2_pdir;
-
     switch((uint32_t)base)
     {
         case CAN1_BASE:
