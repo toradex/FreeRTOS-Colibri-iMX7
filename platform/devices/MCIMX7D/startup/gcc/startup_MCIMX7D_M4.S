@@ -204,12 +204,18 @@ __isr_vector:
     .weak    Reset_Handler
     .type    Reset_Handler, %function
 Reset_Handler:
+    cpsid   i               /* Mask interrupts */
     /*
      * Set stack pointer manually. Not all loading mechanism setup stack
      * e.g. when using elf file format with Toradex U-Boot 2016.11
      */
-    ldr sp,=__stack;
-    cpsid   i               /* Mask interrupts */
+    ldr sp,=__stack
+    /* 
+     * When the vector table above is linked to 0x00000000 and we use elf
+     * U-Boot overwrites the stackpointer with 0... restore it...
+     */
+    ldr r1,=__isr_vector
+    str sp, [r1]
 #ifndef __NO_SYSTEM_INIT
     bl SystemInit
 #endif

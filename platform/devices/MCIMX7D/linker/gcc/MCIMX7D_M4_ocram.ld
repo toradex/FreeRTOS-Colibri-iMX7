@@ -49,15 +49,17 @@
  Linker file for Colibri i.MX7S and Colibri i.MX7D
  Storing code and data in the TCML / TCMU sections
 
-   __FLASH_END +-------------+
+               +-------------+
                |             |  ^
                |   m_text    |  |LENGTH(m_text)
                |             |  v
+        m_text +-------------+  
+
                +-------------+  
                |             |  ^
                |m_interrupts |  |LENGTH(m_interrupts)
                |             |  v
- __FLASH_START +-------------+
+  m_interrupts +-------------+
 
 
     __StackTop +-------------+
