@@ -36,6 +36,13 @@
 #include <assert.h>
 #include "device_imx.h"
 
+#define __round_mask(x, y) ((typeof(x))((y)-1))
+#define round_up(x, y) ((((x)-1) | __round_mask(x, y))+1)
+#define round_down(x, y) ((x) & ~__round_mask(x, y))
+
+#define RDC_REGION_RES_MMDC	4096
+#define RDC_REGION_RES_OCRAM	128
+
 /*!
  * @addtogroup rdc_driver
  * @{
