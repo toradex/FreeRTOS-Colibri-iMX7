@@ -523,6 +523,7 @@ void rpmsg_rx_callback(struct virtqueue *vq) {
     struct rpmsg_channel *rp_chnl;
     struct rpmsg_endpoint *rp_ept;
     struct rpmsg_hdr *rp_hdr;
+    struct rpmsg_hdr_reserved *reserved;
     struct llist *node;
     unsigned long len;
     unsigned short idx;
@@ -596,8 +597,9 @@ void rpmsg_rx_callback(struct virtqueue *vq) {
         {
             /* 'rp_hdr->reserved' field is now used as storage for
              * 'idx' and 'len' to release buffer later */
-            ((struct rpmsg_hdr_reserved*)&rp_hdr->reserved)->idx = idx;
-            ((struct rpmsg_hdr_reserved*)&rp_hdr->reserved)->totlen = len;
+            reserved = (struct rpmsg_hdr_reserved*)&rp_hdr->reserved;
+            reserved->idx = (uint16_t)idx;
+            reserved->totlen = (uint16_t)len;
         }
         else
         {

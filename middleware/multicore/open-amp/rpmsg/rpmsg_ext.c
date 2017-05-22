@@ -122,6 +122,7 @@ void rpmsg_release_rx_buffer(struct rpmsg_channel *rpdev, void *rxbuf) {
  */
 void *rpmsg_alloc_tx_buffer(struct rpmsg_channel *rpdev, unsigned long *size, int wait) {
     struct rpmsg_hdr *hdr;
+    struct rpmsg_hdr_reserved *reserved;
     struct remote_device *rdev;
     unsigned short idx;
     int buff_len, tick_count = 0;
@@ -157,8 +158,9 @@ void *rpmsg_alloc_tx_buffer(struct rpmsg_channel *rpdev, unsigned long *size, in
         }
 
         /* Store buffer size and the index into the reserved field to be used when sending */
-        ((struct rpmsg_hdr_reserved*)&hdr->reserved)->idx = idx;
-        ((struct rpmsg_hdr_reserved*)&hdr->reserved)->totlen = buff_len;
+        reserved = (struct rpmsg_hdr_reserved*)&hdr->reserved;
+        reserved->idx = idx;
+        reserved->totlen = buff_len;
 
         /* Actual data buffer size is vring buffer size minus rpmsg header length */
         *size = buff_len - offsetof(struct rpmsg_hdr, data);
