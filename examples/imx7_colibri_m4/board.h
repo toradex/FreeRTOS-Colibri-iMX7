@@ -89,6 +89,41 @@
 #define BOARD_GPIO_KEY_IRQ_NUM                GPIO2_INT31_16_IRQn
 #define BOARD_GPIO_KEY_HANDLER                GPIO2_INT31_16_Handler
 
+
+/*             Switch 1
+ * SODIMM                BALL NAME                GPIO                ALT
+ *    133                EPDC_GDRL           GPIO02_26                  5
+ */
+#define BOARD_GPIO_SWITCH1_RDC_PDAP               rdcPdapGpio2
+#define BOARD_GPIO_SWITCH1_CONFIG                 (&gpioSwitch1)
+//#define BOARD_GPIO_KEY_IRQ_NUM                GPIO2_INT31_16_IRQn
+//#define BOARD_GPIO_KEY_HANDLER                GPIO2_INT31_16_Handler
+//#define BOARD_GPIO_KEY_CCM_CCGR               ccmCcgrGateGpio2
+
+
+/*             LED 1
+ * SODIMM                BALL NAME                GPIO                ALT
+ *    127               EPDC_SDCE2           GPIO02_22                  5
+ */
+#define BOARD_GPIO_LED1_RDC_PDAP               rdcPdapGpio2
+#define BOARD_GPIO_LED1_CONFIG                 (&gpioLed1)
+
+ /*             Switch 2
+  * SODIMM                BALL NAME                GPIO                ALT
+  *    107                 EPDC_D15           GPIO02_15                  5
+  */
+#define BOARD_GPIO_SWITCH2_RDC_PDAP               rdcPdapGpio2
+#define BOARD_GPIO_SWITCH2_CONFIG                 (&gpioSwitch2)
+//#define BOARD_GPIO_KEY_IRQ_NUM                GPIO2_INT31_16_IRQn
+//#define BOARD_GPIO_KEY_HANDLER                GPIO2_INT31_16_Handler
+
+  /*             LED 2
+   * SODIMM                BALL NAME                GPIO                ALT
+   *    105                 EPDC_D10           GPIO02_10                  5
+   */
+#define BOARD_GPIO_LED2_RDC_PDAP               rdcPdapGpio2
+#define BOARD_GPIO_LED2_CONFIG                 (&gpioLed2)
+
 /* Colibri SPI is ECSPI3 */
 #define BOARD_ECSPI_RDC_PDAP                  rdcPdapEcspi3
 #define BOARD_ECSPI_CCM_ROOT                  ccmRootEcspi3

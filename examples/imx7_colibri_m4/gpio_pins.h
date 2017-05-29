@@ -32,6 +32,8 @@
 #define __GPIO_PINS_H__
 
 #include "device_imx.h"
+#include "gpio_imx.h"
+
 
 /*! @brief i.MX GPIO initialize structure. */
 typedef struct _gpio_config
@@ -53,6 +55,16 @@ extern "C" {
 extern gpio_config_t gpioLed;
 extern gpio_config_t gpioKeyFunc1;
 extern gpio_config_t gpioKeyFunc2;
+
+extern gpio_config_t gpioSwitch1;
+extern gpio_config_t gpioLed1;
+extern gpio_config_t gpioSwitch2;
+extern gpio_config_t gpioLed2;
+
+extern gpio_init_config_t Switch1;
+extern gpio_init_config_t Led1;
+extern gpio_init_config_t Switch2;
+extern gpio_init_config_t Led2;
 
 /*! @brief Configure specific GPIO pin */
 void configure_gpio_pin(gpio_config_t *config);
