@@ -31,7 +31,6 @@
 #include <assert.h>
 #include "gpio_pins.h"
 #include "board.h"
-#include "gpio_ctrl.h"
 #include "gpio_imx.h"
 
 gpio_config_t gpioLed = {
