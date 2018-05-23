@@ -159,12 +159,12 @@
 #define BOARD_I2C_FXOS8700_ADDR               (0x1E)
 
 /* FlexCAN information for this board */
-#define BOARD_FLEXCAN_RDC_PDAP                rdcPdapFlexCan2
-#define BOARD_FLEXCAN_CCM_ROOT                ccmRootCan2
-#define BOARD_FLEXCAN_CCM_CCGR                ccmCcgrGateCan2
-#define BOARD_FLEXCAN_BASEADDR                CAN2
-#define BOARD_FLEXCAN_IRQ_NUM                 FLEXCAN2_IRQn
-#define BOARD_FLEXCAN_HANDLER                 FLEXCAN2_Handler
+#define BOARD_FLEXCAN_RDC_PDAP                rdcPdapFlexCan1
+#define BOARD_FLEXCAN_CCM_ROOT                ccmRootCan1
+#define BOARD_FLEXCAN_CCM_CCGR                ccmCcgrGateCan1
+#define BOARD_FLEXCAN_BASEADDR                CAN1
+#define BOARD_FLEXCAN_IRQ_NUM                 FLEXCAN1_IRQn
+#define BOARD_FLEXCAN_HANDLER                 FLEXCAN1_Handler
 
 /* GPC information for this board*/
 #define BOARD_GPC_BASEADDR                    GPC

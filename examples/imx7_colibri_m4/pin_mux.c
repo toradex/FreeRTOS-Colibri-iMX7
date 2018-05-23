@@ -43,17 +43,29 @@ void configure_flexcan_pins(CAN_Type* base)
     switch((uint32_t)base)
     {
         case CAN1_BASE:
-            /*CAN 1 is not used in SDB Board*/
+            // CAN1_TX SODIMM 63
+            IOMUXC_SW_MUX_CTL_PAD_ENET1_RGMII_RD2 = IOMUXC_SW_MUX_CTL_PAD_ENET1_RGMII_RD2_MUX_MODE(3);
+            IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_RD2 = IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_RD2_PE_MASK |
+                                               IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_RD2_PS(3)   |
+                                               IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_RD2_DSE(0)  |
+                                               IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_RD2_HYS_MASK;
+
+            // CAN1_RX SODIMM 55
+            IOMUXC_SW_MUX_CTL_PAD_ENET1_RGMII_RD3 = IOMUXC_SW_MUX_CTL_PAD_ENET1_RGMII_RD3_MUX_MODE(3);
+            IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_RD3 = IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_RD3_PE_MASK |
+                                               IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_RD3_PS(3)   |
+                                               IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_RD3_DSE(0)  |
+                                               IOMUXC_SW_PAD_CTL_PAD_ENET1_RGMII_RD3_HYS_MASK;
             break;
         case CAN2_BASE:
-            // CAN2_TX
+            // CAN2_TX SODIMM 178
             IOMUXC_SW_MUX_CTL_PAD_GPIO1_IO15 = IOMUXC_SW_MUX_CTL_PAD_GPIO1_IO15_MUX_MODE(3);
             IOMUXC_SW_PAD_CTL_PAD_GPIO1_IO15 = IOMUXC_SW_PAD_CTL_PAD_GPIO1_IO15_PE_MASK |
                                                IOMUXC_SW_PAD_CTL_PAD_GPIO1_IO15_PS(3)   |
                                                IOMUXC_SW_PAD_CTL_PAD_GPIO1_IO15_DSE(0)  |
                                                IOMUXC_SW_PAD_CTL_PAD_GPIO1_IO15_HYS_MASK;
 
-            // CAN2_RX
+            // CAN2_RX SODIMM 188
             IOMUXC_SW_MUX_CTL_PAD_GPIO1_IO14 = IOMUXC_SW_MUX_CTL_PAD_GPIO1_IO14_MUX_MODE(3);
             IOMUXC_SW_PAD_CTL_PAD_GPIO1_IO14 = IOMUXC_SW_PAD_CTL_PAD_GPIO1_IO14_PE_MASK |
                                                IOMUXC_SW_PAD_CTL_PAD_GPIO1_IO14_PS(3)   |
