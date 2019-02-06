@@ -113,6 +113,7 @@ static void UART_XFER_Config(uart_init_config_t* initConfig)
 
     /* Initialize UART baud rate, bit count, parity, stop bit and direction. */
     UART_Init(BOARD_DEBUG_UART_BASEADDR, initConfig);
+    UART_SetModemMode(BOARD_DEBUG_UART_BASEADDR, uartModemModeDte);
 
     UART_SetTxFifoWatermark(BOARD_DEBUG_UART_BASEADDR, 16);
     UART_SetRxFifoWatermark(BOARD_DEBUG_UART_BASEADDR, 1);

@@ -66,6 +66,7 @@ int main(void)
 
     /* Initialize UART baud rate, bit count, parity, stop bit and direction. */
     UART_Init(BOARD_DEBUG_UART_BASEADDR, &initConfig);
+    UART_SetModemMode(BOARD_DEBUG_UART_BASEADDR, uartModemModeDte);
 
     /* Set UART build-in hardware FIFO Watermark. */
     UART_SetTxFifoWatermark(BOARD_DEBUG_UART_BASEADDR, 16);
