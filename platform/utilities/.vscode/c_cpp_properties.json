@@ -1,0 +1,47 @@
+{
+    "configurations": [
+        {
+            "name": "DEBUG",
+            "compilerPath": "\"${env:ARMGCC_DIR}/bin/arm-none-eabi-gcc\"",
+            "cStandard": "c99",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "gcc-x64",
+            "includePath": [
+                "../CMSIS/Include/",
+                "../devices/",
+                "../devices/MCIMX7D/include/",
+                "../devices/MCIMX7D/startup/",
+                "../drivers/inc/",
+                "../utilities/inc/",
+                "../../rtos/FreeRTOS/Source/include/",
+                "../../rtos/FreeRTOS/Source/portable/GCC/ARM_CM4F/"
+                ],
+            "defines": [
+                "__DEBUG",
+                "CPU_MCIMX7D_M4"
+            ]
+        },
+        {
+            "name": "RELEASE",
+            "compilerPath": "\"${env:ARMGCC_DIR}/bin/arm-none-eabi-gcc\"",
+            "cStandard": "c99",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "gcc-x64",
+            "includePath": [
+                "../CMSIS/Include/",
+                "../devices/",
+                "../devices/MCIMX7D/include/",
+                "../devices/MCIMX7D/startup/",
+                "../drivers/inc/",
+                "../utilities/inc/",
+                "../../rtos/FreeRTOS/Source/include/",
+                "../../rtos/FreeRTOS/Source/portable/GCC/ARM_CM4F/"
+                ],
+            "defines": [
+                "__NDEBUG",
+                "CPU_MCIMX7D_M4"
+            ]
+        }
+    ],
+    "version": 4
+}
