@@ -13,8 +13,7 @@
             "stopOnEntry": false,
             "args":
                 [
-                    "arg1",
-                    "arg2"
+                    "../../..",
                 ]
         }
     ]

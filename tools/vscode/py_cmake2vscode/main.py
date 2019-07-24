@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
 """main.py: Create VSCode support files for all FreeRTOS demos.
 
-The routine walks through all projects in this git repository starting
-from location of 'add-vscode-support.code-workspace': ../../../  and all
-subfolders.
-The library doe *not* create the c_cpp_properties.json files for the common
-subprojects platform/devices, platform/drivers, platform/utilities and
-rtos/FreeRTOS.
+Usage:
+    python3 main.py <base_path>
+
+The routine walks through all projects in <base_path> and all subfolders.
+If <base_path> is not provided, "../../.." is taken as a default path,
+which should be the main folder for the current SoC's M4 code.
+
+The library does *not* create the c_cpp_properties.json files for the common
+subprojects 
+ - platform/devices, 
+ - platform/drivers, 
+ - platform/utilities and
+ - rtos/FreeRTOS.
 
 __author__     = "Andy Kiser"
 __copyright__  = "Copyright 2019, Toradex AG"
@@ -27,9 +34,18 @@ import sys
 import os
 import json
 
+if len(sys.argv) > 1:
+    walk_root_dir = os.path.abspath("../../..")
+else:
+    walk_root_dir = os.path.abspath(sys.argv[1])
+
+print()
+print("Converting armgcc to vscode in subfolders of" , walk_root_dir)
+print()
+
 # get a list of all 'CMakeLists.txt' files
 cmakelists_files = []
-for f in Path("../../..").glob('**/CMakeLists.txt'):
+for f in Path(walk_root_dir).glob('**/CMakeLists.txt'):
     cmakelists_files.append(os.path.abspath(f))
 
 # walk through the list of all 'CMakeLists.txt' files
