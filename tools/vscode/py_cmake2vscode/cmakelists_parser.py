@@ -83,7 +83,8 @@ def cmake_get_configurations(cmake_content: str, flag_prefix: str) -> list:
 
     Returns
     -------
-    A list of all configurations matching the given flag_prefix. 
+    A list of all configurations matching the given flag_prefix, 
+    converted to Cmake standard camel case.
 	Duplicates are removed.
     """
     # find all occurence of SET(...FLAGS...) statements
@@ -92,6 +93,18 @@ def cmake_get_configurations(cmake_content: str, flag_prefix: str) -> list:
 
     # remove duplicates
     flag_keywords = list(dict.fromkeys(flag_keywords))
+
+    for i, f in enumerate(flag_keywords):
+        if f.upper() == "DEBUG":
+            flag_keywords[i] = "Debug"
+        elif f.upper() == "RELEASE":
+            flag_keywords[i] = "Release"
+        elif f.upper() == "RELWITHDEBINFO":
+            flag_keywords[i] = "RelWithDebInfo"
+        elif f.upper() == "MINSIZEREL":
+            flag_keywords[i] = "MinSizeRel"
+        else:
+            assert False
 
     return flag_keywords
 

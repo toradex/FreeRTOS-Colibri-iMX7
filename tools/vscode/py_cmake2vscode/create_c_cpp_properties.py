@@ -88,7 +88,7 @@ def get_c_cpp_properties(paths: dict, dirs: dict) -> str:
         configuration['intelliSenseMode'] = 'gcc-x64'
         configuration['includePath'] = all_include_dirs
         configuration['defines'] = cmake_get_defines(
-            file_content, "CMAKE_C_FLAGS_" + config_name)
+            file_content, "CMAKE_C_FLAGS_" + config_name.upper())
         json_data['configurations'].append(configuration)
 
     # print the full json file content (for debug, instead of writing it to a file)
