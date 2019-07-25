@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "J-Link Debug gpio_imx.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "rtos": "FreeRTOS",
+            "servertype": "jlink",
+            "interface": "swd",
+            "device": "MCIMX7D5_M4",
+            "cwd": "${workspaceRoot}",
+            "executable": "armgcc/debug/gpio_imx.elf",
+            "runToMain": true,
+            "postLaunchCommands": [
+                "flush regs",
+                "load"
+            ],
+            "postRestartCommands": [
+                "flush regs",
+                "load"
+            ]
+        }
+    ]
+}

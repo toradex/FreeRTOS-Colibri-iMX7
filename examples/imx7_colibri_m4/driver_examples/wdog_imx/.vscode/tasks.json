@@ -1,0 +1,133 @@
+{
+    "version": "2.0.0",
+    "windows": {
+        "options": {
+            "cwd": "${workspaceFolder}/armgcc",
+            "shell": {
+                "executable": "cmd.exe",
+                "args": [
+                    "/d",
+                    "/c"
+                ]
+            }
+        }
+    },
+    "linux": {
+        "options": {
+            "cwd": "${workspaceFolder}/armgcc"
+        }
+    },
+    "tasks": [
+        {
+            "label": "CMake (Debug)",
+            "group": "build",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/armgcc/debug"
+            },
+            "command": "cmake",
+            "windows": {
+                "args": [
+                    "-DCMAKE_TOOLCHAIN_FILE=../../../../../tools/cmake_toolchain_files/armgcc.cmake",
+                    "-G",
+                    "MinGW Makefiles",
+                    "-DCMAKE_BUILD_TYPE=Debug",
+                    ".."
+                ]
+            },
+            "linux": {
+                "args": [
+                    "-DCMAKE_TOOLCHAIN_FILE=../../../../../tools/cmake_toolchain_files/armgcc.cmake",
+                    "-G",
+                    "Unix Makefiles",
+                    "-DCMAKE_BUILD_TYPE=Debug",
+                    ".."
+                ]
+            },
+            "presentation": {
+                "showReuseMessage": false
+            }
+        },
+        {
+            "label": "make (Debug)",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/armgcc/debug"
+            },
+            "windows": {
+                "command": "mingw32-make"
+            },
+            "linux": {
+                "command": "make"
+            },
+            "args": [
+                "-j4"
+            ],
+            "dependsOn": [
+                "CMake (Debug)"
+            ],
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": "absolute"
+            }
+        },
+        {
+            "label": "CMake (Release)",
+            "group": "build",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/armgcc/release"
+            },
+            "command": "cmake",
+            "windows": {
+                "args": [
+                    "-DCMAKE_TOOLCHAIN_FILE=../../../../../tools/cmake_toolchain_files/armgcc.cmake",
+                    "-G",
+                    "MinGW Makefiles",
+                    "-DCMAKE_BUILD_TYPE=Release",
+                    ".."
+                ]
+            },
+            "linux": {
+                "args": [
+                    "-DCMAKE_TOOLCHAIN_FILE=../../../../../tools/cmake_toolchain_files/armgcc.cmake",
+                    "-G",
+                    "Unix Makefiles",
+                    "-DCMAKE_BUILD_TYPE=Release",
+                    ".."
+                ]
+            },
+            "presentation": {
+                "showReuseMessage": false
+            }
+        },
+        {
+            "label": "make (Release)",
+            "group": "build",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/armgcc/release"
+            },
+            "windows": {
+                "command": "mingw32-make"
+            },
+            "linux": {
+                "command": "make"
+            },
+            "args": [
+                "-j4"
+            ],
+            "dependsOn": [
+                "CMake (Release)"
+            ],
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": "absolute"
+            }
+        }
+    ]
+}

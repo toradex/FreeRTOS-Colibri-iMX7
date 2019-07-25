@@ -1,0 +1,51 @@
+{
+    "version": 4,
+    "configurations": [
+        {
+            "name": "Debug",
+            "compilerPath": "\"${env:ARMGCC_DIR}/bin/arm-none-eabi-gcc\"",
+            "cStandard": "c99",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "gcc-x64",
+            "includePath": [
+                "./",
+                "../../../",
+                "../../../../../platform/CMSIS/Include/",
+                "../../../../../platform/devices/",
+                "../../../../../platform/devices/MCIMX7D/include/",
+                "../../../../../platform/devices/MCIMX7D/startup/",
+                "../../../../../platform/drivers/inc/",
+                "../../../../../platform/utilities/inc/",
+                "../../../../../rtos/FreeRTOS/Source/include/",
+                "../../../../../rtos/FreeRTOS/Source/portable/GCC/ARM_CM4F/",
+                "../common/"
+            ],
+            "defines": [
+                "__DEBUG"
+            ]
+        },
+        {
+            "name": "Release",
+            "compilerPath": "\"${env:ARMGCC_DIR}/bin/arm-none-eabi-gcc\"",
+            "cStandard": "c99",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "gcc-x64",
+            "includePath": [
+                "./",
+                "../../../",
+                "../../../../../platform/CMSIS/Include/",
+                "../../../../../platform/devices/",
+                "../../../../../platform/devices/MCIMX7D/include/",
+                "../../../../../platform/devices/MCIMX7D/startup/",
+                "../../../../../platform/drivers/inc/",
+                "../../../../../platform/utilities/inc/",
+                "../../../../../rtos/FreeRTOS/Source/include/",
+                "../../../../../rtos/FreeRTOS/Source/portable/GCC/ARM_CM4F/",
+                "../common/"
+            ],
+            "defines": [
+                "__NDEBUG"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,41 @@
+{
+    "folders": [
+        {
+            "name": "Application",
+            "path": ".."
+        },
+        {
+            "name": "../../../../../platform/devices",
+            "path": "../../../../../platform/devices"
+        },
+        {
+            "name": "../../../../../platform/drivers",
+            "path": "../../../../../platform/drivers"
+        },
+        {
+            "name": "../../../../../platform/utilities",
+            "path": "../../../../../platform/utilities"
+        },
+        {
+            "name": "../../../../../rtos/FreeRTOS",
+            "path": "../../../../../rtos/FreeRTOS"
+        }
+    ],
+    "settings": {
+        "C_Cpp.default.browse.path": [
+            "../../../../.."
+        ],
+        "C_Cpp.dimInactiveRegions": true,
+        "C_Cpp.inactiveRegionForegroundColor": "#808080"
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-vscode.cpptools",
+            "marus25.cortex-debug",
+            "ms-vscode-remote.remote-wsl",
+            "dan-c-underwood.arm",
+            "twxs.cmake",
+            "amapleaf.linker-script"
+        ]
+    }
+}
