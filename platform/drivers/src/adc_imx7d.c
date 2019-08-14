@@ -286,14 +286,14 @@ void ADC_SetConvertRate(ADC_Type* base, uint8_t logicCh, uint32_t convertRate)
     uint32_t sampleRate = (4000000 >> (2 + (ADC_TIMER_UNIT_REG(base) >> ADC_TIMER_UNIT_PRE_DIV_SHIFT))) / \
                            ((ADC_TIMER_UNIT_REG(base) & ADC_TIMER_UNIT_CORE_TIMER_UNIT_MASK) + 1);
 
-    uint32_t convertDiv = sampleRate / convertRate;
+    uint32_t convertDiv = (sampleRate / convertRate) - 1;
     assert((sampleRate / convertRate) <= ADC_CH_A_CFG1_CHA_TIMER_MASK);
 
     switch (logicCh)
     {
         case adcLogicChA:
             ADC_CH_A_CFG1_REG(base) = (ADC_CH_A_CFG1_REG(base) & ~ADC_CH_A_CFG1_CHA_TIMER_MASK) | \
-                                      ADC_CH_A_CFG1_CHA_TIMER(convertDiv);
+                                      ADC_CH_A_CFG1_CHA_TIMER(convertDiv); 
             break;
         case adcLogicChB:
             ADC_CH_B_CFG1_REG(base) = (ADC_CH_B_CFG1_REG(base) & ~ADC_CH_B_CFG1_CHB_TIMER_MASK) | \
