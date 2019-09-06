@@ -140,6 +140,26 @@ def cmake_get_defines(cmake_content: str, flags_keyword: str) -> list:
     print(len(defs), "compiler defines")
     return defs
 
+def cmake_get_projectname(cmake_content: str) -> str:
+    """ extract the project name from a CMakeLists.txt file 
+    
+    Parameters
+    ----------
+    cmake_content: str
+            Full contents of the CMakeLists.txt file
+
+    Returns
+    -------
+    project name (which is typically used as the name of the .elf output file)
+    """
+
+    regex = "SET\(ProjectName (\w*)"
+    projectname = re.findall(regex, cmake_content)
+    if len(projectname) == 1:
+        return projectname[0]
+    else:
+        return ""
+
 
 def cmake_get_jlink_cpu(cmake_content: str) -> str:
     """ extract the CPU name from a CMakeLists.txt file in the form as it is 

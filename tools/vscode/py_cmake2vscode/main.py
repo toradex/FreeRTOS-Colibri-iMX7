@@ -24,6 +24,7 @@ __email__      = "andy.kiser@toradex.com"
 __status__     = "dev"
 """
 
+from cmakelists_parser import cmake_get_projectname
 from create_c_cpp_properties import get_c_cpp_properties
 from create_tasks import cmakelists_to_tasks
 from create_workspace import create_workspace
@@ -50,6 +51,11 @@ for f in Path(walk_root_dir).glob('**/CMakeLists.txt'):
 
 # walk through the list of all 'CMakeLists.txt' files
 for cmakelists in cmakelists_files:
+    # read the CMakeLists.txt file
+    f = open(cmakelists, 'r')
+    cmakelists_txt = f.read()
+    f.close()
+
     # evaluate and store required directories (all are absolute)
     dirs = {}
     dirs["python"] = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -63,9 +69,11 @@ for cmakelists in cmakelists_files:
     dirs["repository_root"] = os.path.abspath(r)
 
     # evaluate the project name
-    project_name = os.path.basename(dirs["${workspaceFolder}"])
-
-    # evaluate and store full paths of required filenames (all are absolute)
+    project_name = cmake_get_projectname(cmakelists_txt)
+    if project_name == "":
+        project_name = os.path.basename(dirs["${workspaceFolder}"])
+ 
+   # evaluate and store full paths of required filenames (all are absolute)
     paths = {}
     paths["CMakeLists.txt"] = \
         cmakelists
@@ -95,7 +103,7 @@ for cmakelists in cmakelists_files:
         dirs["python"] + "/launch_template.json"
 
     paths["debug.elf"] = \
-        dirs["armgcc"] + "/debug/" + project_name + ".elf"
+        paths["CMakeLists.txt"] + "/debug/" + project_name + ".elf"
 
     # print on console, which project is being processed
     print("\033[95m", dirs["${workspaceFolder}"], "\033[0m")
@@ -128,3 +136,4 @@ for cmakelists in cmakelists_files:
     f = open(paths["launch.json"], "w+")
     f.write(launch_txt)
     f.close()
+    
