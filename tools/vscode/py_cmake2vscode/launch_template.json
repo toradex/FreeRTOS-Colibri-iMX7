@@ -5,9 +5,7 @@
             "name": "J-Link Debug <project name>.elf",
             "request": "launch",
             "type": "cortex-debug",
-            "rtos": "FreeRTOS",
             "servertype": "jlink",
-            "interface": "swd",
             "device": "<j-link cpu>",
             "cwd": "${workspaceRoot}",
             "executable": "<executable path>.elf",
@@ -19,6 +17,19 @@
             "postRestartCommands": [
                 "flush regs",
                 "load"
+            ]
+        },
+        {
+            "name": "J-Link Debug <project name>.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "cwd": "${workspaceRoot}",
+            "executable": "<executable path>.elf",
+            "runToMain": true,
+            "configFiles": [
+                "interface/ftdi/olimex-arm-usb-ocd-h.cfg",
+                "target/imx7_m4.cfg"
             ]
         }
     ]

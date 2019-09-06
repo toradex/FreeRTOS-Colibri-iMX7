@@ -45,36 +45,42 @@ def create_launch(project_name: str, paths: dict, dirs: dict) -> str:
     launch_template_txt = f.read()
     f.close()
 
+    f = open(paths["CMakeLists.txt"], 'r')
+    cmakelists_txt = f.read()
+    f.close()
+
     # parse json template, remove "configurations" section
     # (we will later add it again)
     launch_json = json.loads(launch_template_txt)
     
-    configurations = launch_json["configurations"][0]
+    cfg_jlink = launch_json["configurations"][0]
+    assert(cfg_jlink["servertype"] == "jlink")
+    cfg_openocd = launch_json["configurations"][1]
+    assert(cfg_openocd["servertype"] == "openocd")
+    
     launch_json["configurations"] = []
 
     # ==== J-Link specific settings: ====
-    cfg_jlink = configurations
-    
-    cfg_jlink["name"] = f"J-Link Debug {project_name}.elf"
-    cfg_jlink["executable"] = \
-        os.path.relpath(paths["debug.elf"], dirs["${workspaceFolder}"])
-    cfg_jlink["interface"] = "swd"
-
     # parse Segger J-Link CPU name from CmakeLists.txt
-    f = open(paths["CMakeLists.txt"], 'r')
-    cmakelists_txt = f.read()
-    f.close()
     jlink_cpu = cmake_get_jlink_cpu(cmakelists_txt)
 
     cfg_jlink["device"] = jlink_cpu
-
+    cfg_jlink["name"] = f"J-Link Debug {project_name}.elf"
+    cfg_jlink["executable"] = \
+        os.path.relpath(paths["debug.elf"], dirs["${workspaceFolder}"])
+ 
     # As an option the precise J-Link Pro adapter can be specified
     # cfg_jlink["ipAddress"] = "null"
     # cfg_jlink["serialNumber"] = "null"
-  
-    # add the J-Link configuration to launch.json
-    launch_json["configurations"].append(cfg_jlink)
-    
-    # ==== end J-Link ====
 
+    # ==== OpenOCD specific settings: ====
+    cfg_openocd["name"] = f"J-Link Debug {project_name}.elf"
+    cfg_openocd["executable"] = \
+        os.path.relpath(paths["debug.elf"], dirs["${workspaceFolder}"])
+  
+    # add the J-Link and openocd configurations to launch.json
+    launch_json["configurations"].append(cfg_jlink)
+    launch_json["configurations"].append(cfg_openocd)
+    
     return json.dumps(launch_json, indent=4, sort_keys=False)
+    
