@@ -103,7 +103,7 @@ for cmakelists in cmakelists_files:
         dirs["python"] + "/launch_template.json"
 
     paths["debug.elf"] = \
-        paths["CMakeLists.txt"] + "/debug/" + project_name + ".elf"
+        dirs["armgcc"] + "/debug/" + project_name + ".elf"
 
     # print on console, which project is being processed
     print("\033[95m", dirs["${workspaceFolder}"], "\033[0m")
