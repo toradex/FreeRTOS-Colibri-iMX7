@@ -2,15 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "J-Link Debug str_echo_bm.elf",
+            "name": "J-Link Debug rpmsg_str_echo_bm.elf",
             "request": "launch",
             "type": "cortex-debug",
-            "rtos": "FreeRTOS",
             "servertype": "jlink",
-            "interface": "swd",
             "device": "MCIMX7D5_M4",
             "cwd": "${workspaceRoot}",
-            "executable": "armgcc/debug/str_echo_bm.elf",
+            "executable": "armgcc/debug/rpmsg_str_echo_bm.elf",
             "runToMain": true,
             "postLaunchCommands": [
                 "flush regs",
@@ -19,6 +17,19 @@
             "postRestartCommands": [
                 "flush regs",
                 "load"
+            ]
+        },
+        {
+            "name": "J-Link Debug rpmsg_str_echo_bm.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "cwd": "${workspaceRoot}",
+            "executable": "armgcc/debug/rpmsg_str_echo_bm.elf",
+            "runToMain": true,
+            "configFiles": [
+                "interface/ftdi/olimex-arm-usb-ocd-h.cfg",
+                "target/imx7_m4.cfg"
             ]
         }
     ]

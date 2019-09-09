@@ -2,15 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "J-Link Debug master.elf",
+            "name": "J-Link Debug ecspi_interrupt_master.elf",
             "request": "launch",
             "type": "cortex-debug",
-            "rtos": "FreeRTOS",
             "servertype": "jlink",
-            "interface": "swd",
             "device": "MCIMX7D5_M4",
             "cwd": "${workspaceRoot}",
-            "executable": "armgcc/debug/master.elf",
+            "executable": "armgcc/debug/ecspi_interrupt_master.elf",
             "runToMain": true,
             "postLaunchCommands": [
                 "flush regs",
@@ -19,6 +17,19 @@
             "postRestartCommands": [
                 "flush regs",
                 "load"
+            ]
+        },
+        {
+            "name": "J-Link Debug ecspi_interrupt_master.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "cwd": "${workspaceRoot}",
+            "executable": "armgcc/debug/ecspi_interrupt_master.elf",
+            "runToMain": true,
+            "configFiles": [
+                "interface/ftdi/olimex-arm-usb-ocd-h.cfg",
+                "target/imx7_m4.cfg"
             ]
         }
     ]

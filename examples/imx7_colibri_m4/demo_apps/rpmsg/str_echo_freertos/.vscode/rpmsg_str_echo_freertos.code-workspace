@@ -5,8 +5,8 @@
             "path": ".."
         },
         {
-            "name": "../../../../../../middleware/multicore/open-amp",
-            "path": "../../../../../../middleware/multicore/open-amp"
+            "name": "../../../../../../platform/devices",
+            "path": "../../../../../../platform/devices"
         },
         {
             "name": "../../../../../../platform/drivers",
@@ -19,10 +19,6 @@
         {
             "name": "../../../../../../rtos/FreeRTOS",
             "path": "../../../../../../rtos/FreeRTOS"
-        },
-        {
-            "name": "../../../../../../middleware/multicore/open-amp",
-            "path": "../../../../../../middleware/multicore/open-amp"
         }
     ],
     "settings": {

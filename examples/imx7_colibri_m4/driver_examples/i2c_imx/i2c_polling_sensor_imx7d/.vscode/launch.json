@@ -2,15 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "J-Link Debug i2c_polling_sensor_imx7d.elf",
+            "name": "J-Link Debug i2c_imx_polling_sensor_imx7d.elf",
             "request": "launch",
             "type": "cortex-debug",
-            "rtos": "FreeRTOS",
             "servertype": "jlink",
-            "interface": "swd",
             "device": "MCIMX7D5_M4",
             "cwd": "${workspaceRoot}",
-            "executable": "armgcc/debug/i2c_polling_sensor_imx7d.elf",
+            "executable": "armgcc/debug/i2c_imx_polling_sensor_imx7d.elf",
             "runToMain": true,
             "postLaunchCommands": [
                 "flush regs",
@@ -19,6 +17,19 @@
             "postRestartCommands": [
                 "flush regs",
                 "load"
+            ]
+        },
+        {
+            "name": "J-Link Debug i2c_imx_polling_sensor_imx7d.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "cwd": "${workspaceRoot}",
+            "executable": "armgcc/debug/i2c_imx_polling_sensor_imx7d.elf",
+            "runToMain": true,
+            "configFiles": [
+                "interface/ftdi/olimex-arm-usb-ocd-h.cfg",
+                "target/imx7_m4.cfg"
             ]
         }
     ]
