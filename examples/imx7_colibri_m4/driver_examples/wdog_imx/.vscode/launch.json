@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug wdog_imx.elf",
+            "name": "OpenOcd Debug wdog_imx.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

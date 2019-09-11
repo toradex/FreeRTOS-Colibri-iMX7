@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug flexcan_loopback.elf",
+            "name": "OpenOcd Debug flexcan_loopback.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

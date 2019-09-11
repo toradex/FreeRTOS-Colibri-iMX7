@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug rand_wfi.elf",
+            "name": "OpenOcd Debug rand_wfi.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

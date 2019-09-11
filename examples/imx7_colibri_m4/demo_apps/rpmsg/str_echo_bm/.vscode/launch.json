@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug rpmsg_str_echo_bm.elf",
+            "name": "OpenOcd Debug rpmsg_str_echo_bm.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

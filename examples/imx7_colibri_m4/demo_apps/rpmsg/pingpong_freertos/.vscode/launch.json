@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug rpmsg_pingpong_freertos.elf",
+            "name": "OpenOcd Debug rpmsg_pingpong_freertos.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

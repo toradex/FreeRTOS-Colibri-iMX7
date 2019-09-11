@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug hello_world_ocram.elf",
+            "name": "OpenOcd Debug hello_world_ocram.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

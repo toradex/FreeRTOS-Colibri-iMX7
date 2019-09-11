@@ -74,7 +74,7 @@ def create_launch(project_name: str, paths: dict, dirs: dict) -> str:
     # cfg_jlink["serialNumber"] = "null"
 
     # ==== OpenOCD specific settings: ====
-    cfg_openocd["name"] = f"J-Link Debug {project_name}.elf"
+    cfg_openocd["name"] = f"OpenOcd Debug {project_name}.elf"
     cfg_openocd["executable"] = \
         os.path.relpath(paths["debug.elf"], dirs["${workspaceFolder}"])
   

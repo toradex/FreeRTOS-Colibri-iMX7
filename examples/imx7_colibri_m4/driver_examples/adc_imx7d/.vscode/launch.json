@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug adc_imx7d.elf",
+            "name": "OpenOcd Debug adc_imx7d.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

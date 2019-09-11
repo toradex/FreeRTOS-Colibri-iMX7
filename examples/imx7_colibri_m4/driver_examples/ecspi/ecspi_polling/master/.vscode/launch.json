@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug ecspi_polling_master.elf",
+            "name": "OpenOcd Debug ecspi_polling_master.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

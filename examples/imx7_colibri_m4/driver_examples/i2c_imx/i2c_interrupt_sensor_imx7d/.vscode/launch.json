@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug i2c_interrupt_sensor_imx7d.elf",
+            "name": "OpenOcd Debug i2c_interrupt_sensor_imx7d.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

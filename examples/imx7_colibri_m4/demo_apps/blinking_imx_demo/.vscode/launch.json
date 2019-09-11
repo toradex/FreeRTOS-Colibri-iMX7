@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug blinking_imx_demo.elf",
+            "name": "OpenOcd Debug blinking_imx_demo.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

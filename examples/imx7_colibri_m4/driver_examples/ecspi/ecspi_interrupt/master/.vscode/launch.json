@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug ecspi_interrupt_master.elf",
+            "name": "OpenOcd Debug ecspi_interrupt_master.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug sema4_demo.elf",
+            "name": "OpenOcd Debug sema4_demo.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

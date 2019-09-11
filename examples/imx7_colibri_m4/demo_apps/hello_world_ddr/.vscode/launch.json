@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug hello_world_ddr.elf",
+            "name": "OpenOcd Debug hello_world_ddr.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

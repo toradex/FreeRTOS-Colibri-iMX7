@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug flexcan_network.elf",
+            "name": "OpenOcd Debug flexcan_network.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

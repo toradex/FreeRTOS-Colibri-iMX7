@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug gpt.elf",
+            "name": "OpenOcd Debug gpt.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

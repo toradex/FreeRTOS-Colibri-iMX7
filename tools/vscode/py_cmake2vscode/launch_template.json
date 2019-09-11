@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug <project name>.elf",
+            "name": "OpenOcd Debug <project name>.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug pingpong_bm.elf",
+            "name": "OpenOcd Debug pingpong_bm.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

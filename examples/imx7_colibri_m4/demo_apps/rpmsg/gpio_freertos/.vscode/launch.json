@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug gpio_freertos.elf",
+            "name": "OpenOcd Debug gpio_freertos.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug gpio_imx.elf",
+            "name": "OpenOcd Debug gpio_imx.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

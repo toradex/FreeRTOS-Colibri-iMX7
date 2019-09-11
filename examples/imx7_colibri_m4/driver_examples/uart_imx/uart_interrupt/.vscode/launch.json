@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "J-Link Debug uart_interrupt.elf",
+            "name": "OpenOcd Debug uart_interrupt.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",
