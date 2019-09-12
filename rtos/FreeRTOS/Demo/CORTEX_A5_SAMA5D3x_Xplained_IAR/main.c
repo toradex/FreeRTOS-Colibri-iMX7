@@ -1,22 +1,8 @@
 /*
-    FreeRTOS V8.1.2 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.2.0rc1 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
-
-    ***************************************************************************
-     *                                                                       *
-     *    FreeRTOS provides completely free yet professionally developed,    *
-     *    robust, strictly quality controlled, supported, and cross          *
-     *    platform software that has become a de facto standard.             *
-     *                                                                       *
-     *    Help yourself get started quickly and support the FreeRTOS         *
-     *    project by purchasing a FreeRTOS tutorial book, reference          *
-     *    manual, or both from: http://www.FreeRTOS.org/Documentation        *
-     *                                                                       *
-     *    Thank you!                                                         *
-     *                                                                       *
-    ***************************************************************************
 
     This file is part of the FreeRTOS distribution.
 
@@ -31,7 +17,7 @@
 
     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-    FOR A PARTICULAR PURPOSE.  Full license text is available from the following
+    FOR A PARTICULAR PURPOSE.  Full license text is available on the following
     link: http://www.freertos.org/a00114.html
 
     1 tab == 4 spaces!
@@ -39,9 +25,50 @@
     ***************************************************************************
      *                                                                       *
      *    Having a problem?  Start by reading the FAQ "My application does   *
-     *    not run, what could be wrong?"                                     *
+     *    not run, what could be wrong?".  Have you defined configASSERT()?  *
      *                                                                       *
      *    http://www.FreeRTOS.org/FAQHelp.html                               *
+     *                                                                       *
+    ***************************************************************************
+
+    ***************************************************************************
+     *                                                                       *
+     *    FreeRTOS provides completely free yet professionally developed,    *
+     *    robust, strictly quality controlled, supported, and cross          *
+     *    platform software that is more than just the market leader, it     *
+     *    is the industry's de facto standard.                               *
+     *                                                                       *
+     *    Help yourself get started quickly while simultaneously helping     *
+     *    to support the FreeRTOS project by purchasing a FreeRTOS           *
+     *    tutorial book, reference manual, or both:                          *
+     *    http://www.FreeRTOS.org/Documentation                              *
+     *                                                                       *
+    ***************************************************************************
+
+    ***************************************************************************
+     *                                                                       *
+     *   Investing in training allows your team to be as productive as       *
+     *   possible as early as possible, lowering your overall development    *
+     *   cost, and enabling you to bring a more robust product to market     *
+     *   earlier than would otherwise be possible.  Richard Barry is both    *
+     *   the architect and key author of FreeRTOS, and so also the world's   *
+     *   leading authority on what is the world's most popular real time     *
+     *   kernel for deeply embedded MCU designs.  Obtaining your training    *
+     *   from Richard ensures your team will gain directly from his in-depth *
+     *   product knowledge and years of usage experience.  Contact Real Time *
+     *   Engineers Ltd to enquire about the FreeRTOS Masterclass, presented  *
+     *   by Richard Barry:  http://www.FreeRTOS.org/contact
+     *                                                                       *
+    ***************************************************************************
+
+    ***************************************************************************
+     *                                                                       *
+     *    You are receiving this top quality software for free.  Please play *
+     *    fair and reciprocate by reporting any suspected issues and         *
+     *    participating in the community forum:                              *
+     *    http://www.FreeRTOS.org/support                                    *
+     *                                                                       *
+     *    Thank you!                                                         *
      *                                                                       *
     ***************************************************************************
 
@@ -52,9 +79,12 @@
     including FreeRTOS+Trace - an indispensable productivity tool, a DOS
     compatible FAT file system, and our tiny thread aware UDP/IP stack.
 
+    http://www.FreeRTOS.org/labs - Where new FreeRTOS products go to incubate.
+    Come and try FreeRTOS+TCP, our new open source TCP/IP stack for FreeRTOS.
+
     http://www.OpenRTOS.com - Real Time Engineers ltd license FreeRTOS to High
-    Integrity Systems to sell under the OpenRTOS brand.  Low cost OpenRTOS
-    licenses offer ticketed support, indemnification and middleware.
+    Integrity Systems ltd. to sell under the OpenRTOS brand.  Low cost OpenRTOS
+    licenses offer ticketed support, indemnification and commercial middleware.
 
     http://www.SafeRTOS.com - High Integrity Systems also provide a safety
     engineered and independently SIL3 certified version for use in safety and
@@ -97,7 +127,7 @@
 
 /* Set mainCREATE_SIMPLE_BLINKY_DEMO_ONLY to one to run the simple blinky demo,
 or 0 to run the more comprehensive test and demo application. */
-#define mainCREATE_SIMPLE_BLINKY_DEMO_ONLY	0
+#define mainCREATE_SIMPLE_BLINKY_DEMO_ONLY	1
 
 /*-----------------------------------------------------------*/
 
@@ -124,11 +154,8 @@ void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName );
 void vApplicationTickHook( void );
 
 /* Prototype for the IRQ handler called by the generic Cortex-A5 RTOS port
-layer.  The address of the ISR is passed into this function as a parameter.
-Note this level of indirection could be removed by creating a SAMA5 specific
-port layer that calls the IRQ directly from the port layer rather than via this
-application callback. */
-void vApplicationIRQHandler( uint32_t ulInterruptVectorAddress );
+layer. */
+void vApplicationIRQHandler( void );
 
 /*-----------------------------------------------------------*/
 
@@ -164,7 +191,12 @@ static void prvSetupHardware( void )
 	/* Configure ports used by LEDs. */
 	vParTestInitialise();
 
-	CP15_EnableIcache();
+	#if defined (ddram)
+		MMU_Initialize( ( uint32_t * ) 0x30C000 );
+		CP15_EnableMMU();
+		CP15_EnableDcache();
+		CP15_EnableIcache();
+	#endif
 }
 /*-----------------------------------------------------------*/
 
@@ -175,8 +207,9 @@ void vApplicationMallocFailedHook( void )
 	internally by FreeRTOS API functions that create tasks, queues, software
 	timers, and semaphores.  The size of the FreeRTOS heap is set by the
 	configTOTAL_HEAP_SIZE configuration constant in FreeRTOSConfig.h. */
-	taskDISABLE_INTERRUPTS();
-	for( ;; );
+
+	/* Force an assert. */
+	configASSERT( ( volatile void * ) NULL );
 }
 /*-----------------------------------------------------------*/
 
@@ -188,8 +221,9 @@ void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName )
 	/* Run time stack overflow checking is performed if
 	configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2.  This hook
 	function is called if a stack overflow is detected. */
-	taskDISABLE_INTERRUPTS();
-	for( ;; );
+
+	/* Force an assert. */
+	configASSERT( ( volatile void * ) NULL );
 }
 /*-----------------------------------------------------------*/
 
@@ -251,19 +285,19 @@ void vApplicationTickHook( void )
 
 /* The function called by the RTOS port layer after it has managed interrupt
 entry. */
-void vApplicationIRQHandler( uint32_t ulInterruptVectorAddress )
+void vApplicationIRQHandler( void )
 {
 typedef void (*ISRFunction_t)( void );
 ISRFunction_t pxISRFunction;
 volatile uint32_t * pulAIC_IVR = ( uint32_t * ) configINTERRUPT_VECTOR_ADDRESS;
 
-	/* On the SAMA5 the parameter is a pointer to the ISR handling function. */
-	pxISRFunction = ( ISRFunction_t ) ulInterruptVectorAddress;
+	/* Obtain the address of the interrupt handler from the AIR. */
+	pxISRFunction = ( ISRFunction_t ) *pulAIC_IVR;
 
 	/* Write back to the SAMA5's interrupt controller's IVR register in case the
 	CPU is in protect mode.  If the interrupt controller is not in protect mode
 	then this write is not necessary. */
-	*pulAIC_IVR = 0;
+	*pulAIC_IVR = ( uint32_t ) pxISRFunction;
 
 	/* Ensure the write takes before re-enabling interrupts. */
 	__DSB();

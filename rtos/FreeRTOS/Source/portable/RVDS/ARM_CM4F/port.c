@@ -1,22 +1,8 @@
 /*
-    FreeRTOS V8.1.2 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.2.0rc1 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
-
-    ***************************************************************************
-     *                                                                       *
-     *    FreeRTOS provides completely free yet professionally developed,    *
-     *    robust, strictly quality controlled, supported, and cross          *
-     *    platform software that has become a de facto standard.             *
-     *                                                                       *
-     *    Help yourself get started quickly and support the FreeRTOS         *
-     *    project by purchasing a FreeRTOS tutorial book, reference          *
-     *    manual, or both from: http://www.FreeRTOS.org/Documentation        *
-     *                                                                       *
-     *    Thank you!                                                         *
-     *                                                                       *
-    ***************************************************************************
 
     This file is part of the FreeRTOS distribution.
 
@@ -31,7 +17,7 @@
 
     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-    FOR A PARTICULAR PURPOSE.  Full license text is available from the following
+    FOR A PARTICULAR PURPOSE.  Full license text is available on the following
     link: http://www.freertos.org/a00114.html
 
     1 tab == 4 spaces!
@@ -39,9 +25,50 @@
     ***************************************************************************
      *                                                                       *
      *    Having a problem?  Start by reading the FAQ "My application does   *
-     *    not run, what could be wrong?"                                     *
+     *    not run, what could be wrong?".  Have you defined configASSERT()?  *
      *                                                                       *
      *    http://www.FreeRTOS.org/FAQHelp.html                               *
+     *                                                                       *
+    ***************************************************************************
+
+    ***************************************************************************
+     *                                                                       *
+     *    FreeRTOS provides completely free yet professionally developed,    *
+     *    robust, strictly quality controlled, supported, and cross          *
+     *    platform software that is more than just the market leader, it     *
+     *    is the industry's de facto standard.                               *
+     *                                                                       *
+     *    Help yourself get started quickly while simultaneously helping     *
+     *    to support the FreeRTOS project by purchasing a FreeRTOS           *
+     *    tutorial book, reference manual, or both:                          *
+     *    http://www.FreeRTOS.org/Documentation                              *
+     *                                                                       *
+    ***************************************************************************
+
+    ***************************************************************************
+     *                                                                       *
+     *   Investing in training allows your team to be as productive as       *
+     *   possible as early as possible, lowering your overall development    *
+     *   cost, and enabling you to bring a more robust product to market     *
+     *   earlier than would otherwise be possible.  Richard Barry is both    *
+     *   the architect and key author of FreeRTOS, and so also the world's   *
+     *   leading authority on what is the world's most popular real time     *
+     *   kernel for deeply embedded MCU designs.  Obtaining your training    *
+     *   from Richard ensures your team will gain directly from his in-depth *
+     *   product knowledge and years of usage experience.  Contact Real Time *
+     *   Engineers Ltd to enquire about the FreeRTOS Masterclass, presented  *
+     *   by Richard Barry:  http://www.FreeRTOS.org/contact
+     *                                                                       *
+    ***************************************************************************
+
+    ***************************************************************************
+     *                                                                       *
+     *    You are receiving this top quality software for free.  Please play *
+     *    fair and reciprocate by reporting any suspected issues and         *
+     *    participating in the community forum:                              *
+     *    http://www.FreeRTOS.org/support                                    *
+     *                                                                       *
+     *    Thank you!                                                         *
      *                                                                       *
     ***************************************************************************
 
@@ -52,9 +79,12 @@
     including FreeRTOS+Trace - an indispensable productivity tool, a DOS
     compatible FAT file system, and our tiny thread aware UDP/IP stack.
 
+    http://www.FreeRTOS.org/labs - Where new FreeRTOS products go to incubate.
+    Come and try FreeRTOS+TCP, our new open source TCP/IP stack for FreeRTOS.
+
     http://www.OpenRTOS.com - Real Time Engineers ltd license FreeRTOS to High
-    Integrity Systems to sell under the OpenRTOS brand.  Low cost OpenRTOS
-    licenses offer ticketed support, indemnification and middleware.
+    Integrity Systems ltd. to sell under the OpenRTOS brand.  Low cost OpenRTOS
+    licenses offer ticketed support, indemnification and commercial middleware.
 
     http://www.SafeRTOS.com - High Integrity Systems also provide a safety
     engineered and independently SIL3 certified version for use in safety and
@@ -124,7 +154,7 @@ is defined. */
 #define portPRIGROUP_SHIFT					( 8UL )
 
 /* Masks off all bits but the VECTACTIVE bits in the ICSR register. */
-#define portVECTACTIVE_MASK					( 0x1FUL )
+#define portVECTACTIVE_MASK					( 0xFFUL )
 
 /* Constants required to manipulate the VFP. */
 #define portFPCCR					( ( volatile uint32_t * ) 0xe000ef34 ) /* Floating point context control register. */
@@ -133,9 +163,6 @@ is defined. */
 /* Constants required to set up the initial stack. */
 #define portINITIAL_XPSR			( 0x01000000 )
 #define portINITIAL_EXEC_RETURN		( 0xfffffffd )
-
-/* Constants used with memory barrier intrinsics. */
-#define portSY_FULL_READ_WRITE		( 15 )
 
 /* The systick is a 24-bit counter. */
 #define portMAX_24_BIT_NUMBER				( 0xffffffUL )
@@ -401,24 +428,10 @@ void vPortEndScheduler( void )
 }
 /*-----------------------------------------------------------*/
 
-void vPortYield( void )
-{
-	/* Set a PendSV to request a context switch. */
-	portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
-
-	/* Barriers are normally not required but do ensure the code is completely
-	within the specified behaviour for the architecture. */
-	__dsb( portSY_FULL_READ_WRITE );
-	__isb( portSY_FULL_READ_WRITE );
-}
-/*-----------------------------------------------------------*/
-
 void vPortEnterCritical( void )
 {
 	portDISABLE_INTERRUPTS();
 	uxCriticalNesting++;
-	__dsb( portSY_FULL_READ_WRITE );
-	__isb( portSY_FULL_READ_WRITE );
 
 	/* This is not the interrupt safe version of the enter critical function so
 	assert() if it is being called from an interrupt context.  Only API
@@ -471,6 +484,8 @@ __asm void xPortPendSVHandler( void )
 	stmdb sp!, {r3}
 	mov r0, #configMAX_SYSCALL_INTERRUPT_PRIORITY
 	msr basepri, r0
+	dsb
+	isb
 	bl vTaskSwitchContext
 	mov r0, #0
 	msr basepri, r0
@@ -700,26 +715,6 @@ void xPortSysTickHandler( void )
 	}
 
 #endif /* configOVERRIDE_DEFAULT_TICK_CONFIGURATION */
-/*-----------------------------------------------------------*/
-
-__asm uint32_t ulPortSetInterruptMask( void )
-{
-	PRESERVE8
-
-	mrs r0, basepri
-	mov r1, #configMAX_SYSCALL_INTERRUPT_PRIORITY
-	msr basepri, r1
-	bx r14
-}
-/*-----------------------------------------------------------*/
-
-__asm void vPortClearInterruptMask( uint32_t ulNewMask )
-{
-	PRESERVE8
-
-	msr basepri, r0
-	bx r14
-}
 /*-----------------------------------------------------------*/
 
 __asm uint32_t vPortGetIPSR( void )

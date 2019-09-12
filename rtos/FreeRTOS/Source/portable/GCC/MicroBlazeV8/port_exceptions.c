@@ -1,22 +1,8 @@
 /*
-    FreeRTOS V8.1.2 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.2.0rc1 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
-
-    ***************************************************************************
-     *                                                                       *
-     *    FreeRTOS provides completely free yet professionally developed,    *
-     *    robust, strictly quality controlled, supported, and cross          *
-     *    platform software that has become a de facto standard.             *
-     *                                                                       *
-     *    Help yourself get started quickly and support the FreeRTOS         *
-     *    project by purchasing a FreeRTOS tutorial book, reference          *
-     *    manual, or both from: http://www.FreeRTOS.org/Documentation        *
-     *                                                                       *
-     *    Thank you!                                                         *
-     *                                                                       *
-    ***************************************************************************
 
     This file is part of the FreeRTOS distribution.
 
@@ -31,7 +17,7 @@
 
     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-    FOR A PARTICULAR PURPOSE.  Full license text is available from the following
+    FOR A PARTICULAR PURPOSE.  Full license text is available on the following
     link: http://www.freertos.org/a00114.html
 
     1 tab == 4 spaces!
@@ -39,9 +25,50 @@
     ***************************************************************************
      *                                                                       *
      *    Having a problem?  Start by reading the FAQ "My application does   *
-     *    not run, what could be wrong?"                                     *
+     *    not run, what could be wrong?".  Have you defined configASSERT()?  *
      *                                                                       *
      *    http://www.FreeRTOS.org/FAQHelp.html                               *
+     *                                                                       *
+    ***************************************************************************
+
+    ***************************************************************************
+     *                                                                       *
+     *    FreeRTOS provides completely free yet professionally developed,    *
+     *    robust, strictly quality controlled, supported, and cross          *
+     *    platform software that is more than just the market leader, it     *
+     *    is the industry's de facto standard.                               *
+     *                                                                       *
+     *    Help yourself get started quickly while simultaneously helping     *
+     *    to support the FreeRTOS project by purchasing a FreeRTOS           *
+     *    tutorial book, reference manual, or both:                          *
+     *    http://www.FreeRTOS.org/Documentation                              *
+     *                                                                       *
+    ***************************************************************************
+
+    ***************************************************************************
+     *                                                                       *
+     *   Investing in training allows your team to be as productive as       *
+     *   possible as early as possible, lowering your overall development    *
+     *   cost, and enabling you to bring a more robust product to market     *
+     *   earlier than would otherwise be possible.  Richard Barry is both    *
+     *   the architect and key author of FreeRTOS, and so also the world's   *
+     *   leading authority on what is the world's most popular real time     *
+     *   kernel for deeply embedded MCU designs.  Obtaining your training    *
+     *   from Richard ensures your team will gain directly from his in-depth *
+     *   product knowledge and years of usage experience.  Contact Real Time *
+     *   Engineers Ltd to enquire about the FreeRTOS Masterclass, presented  *
+     *   by Richard Barry:  http://www.FreeRTOS.org/contact
+     *                                                                       *
+    ***************************************************************************
+
+    ***************************************************************************
+     *                                                                       *
+     *    You are receiving this top quality software for free.  Please play *
+     *    fair and reciprocate by reporting any suspected issues and         *
+     *    participating in the community forum:                              *
+     *    http://www.FreeRTOS.org/support                                    *
+     *                                                                       *
+     *    Thank you!                                                         *
      *                                                                       *
     ***************************************************************************
 
@@ -52,9 +79,12 @@
     including FreeRTOS+Trace - an indispensable productivity tool, a DOS
     compatible FAT file system, and our tiny thread aware UDP/IP stack.
 
+    http://www.FreeRTOS.org/labs - Where new FreeRTOS products go to incubate.
+    Come and try FreeRTOS+TCP, our new open source TCP/IP stack for FreeRTOS.
+
     http://www.OpenRTOS.com - Real Time Engineers ltd license FreeRTOS to High
-    Integrity Systems to sell under the OpenRTOS brand.  Low cost OpenRTOS
-    licenses offer ticketed support, indemnification and middleware.
+    Integrity Systems ltd. to sell under the OpenRTOS brand.  Low cost OpenRTOS
+    licenses offer ticketed support, indemnification and commercial middleware.
 
     http://www.SafeRTOS.com - High Integrity Systems also provide a safety
     engineered and independently SIL3 certified version for use in safety and
@@ -120,10 +150,10 @@ extern void vPortExceptionHandlerEntry( void *pvExceptionID );
 
 /*-----------------------------------------------------------*/
 
-/* vApplicationExceptionRegisterDump() is a callback function that the 
+/* vApplicationExceptionRegisterDump() is a callback function that the
 application can optionally define to receive a populated xPortRegisterDump
-structure.  If the application chooses not to define a version of 
-vApplicationExceptionRegisterDump() then this weekly defined default 
+structure.  If the application chooses not to define a version of
+vApplicationExceptionRegisterDump() then this weekly defined default
 implementation will be called instead. */
 extern void vApplicationExceptionRegisterDump( xPortRegisterDump *xRegisterDump ) __attribute__((weak));
 void vApplicationExceptionRegisterDump( xPortRegisterDump *xRegisterDump )
@@ -143,8 +173,8 @@ extern void *pxCurrentTCB;
 
 	/* Fill an xPortRegisterDump structure with the MicroBlaze context as it
 	was immediately before the exception occurrence. */
-	
-	/* First fill in the name and handle of the task that was in the Running 
+
+	/* First fill in the name and handle of the task that was in the Running
 	state when the exception occurred. */
 	xRegisterDump.xCurrentTaskHandle = pxCurrentTCB;
 	xRegisterDump.pcCurrentTaskName = pcTaskGetTaskName( NULL );
@@ -167,7 +197,7 @@ extern void *pxCurrentTCB;
 	xRegisterDump.ulR18 = pulStackPointerOnFunctionEntry[ portexR18_STACK_OFFSET ];
 	xRegisterDump.ulR19 = pulStackPointerOnFunctionEntry[ portexR19_STACK_OFFSET ];
 	xRegisterDump.ulMSR = pulStackPointerOnFunctionEntry[ portexMSR_STACK_OFFSET ];
-	
+
 	/* Obtain the value of all other registers. */
 	xRegisterDump.ulR2_small_data_area = mfgpr( R2 );
 	xRegisterDump.ulR13_read_write_small_data_area = mfgpr( R13 );
@@ -190,13 +220,13 @@ extern void *pxCurrentTCB;
 	xRegisterDump.ulEAR = mfear();
 	xRegisterDump.ulESR = mfesr();
 	xRegisterDump.ulEDR = mfedr();
-	
+
 	/* Move the saved program counter back to the instruction that was executed
 	when the exception occurred.  This is only valid for certain types of
 	exception. */
 	xRegisterDump.ulPC = xRegisterDump.ulR17_return_address_from_exceptions - portexINSTRUCTION_SIZE;
 
-	#if XPAR_MICROBLAZE_0_USE_FPU == 1
+	#if XPAR_MICROBLAZE_0_USE_FPU != 0
 	{
 		xRegisterDump.ulFSR = mffsr();
 	}
@@ -239,7 +269,7 @@ extern void *pxCurrentTCB;
 				xRegisterDump.pcExceptionCause = ( int8_t * const ) "XEXC_ID_STACK_VIOLATION or XEXC_ID_MMU";
 				break;
 
-		#if XPAR_MICROBLAZE_0_USE_FPU == 1
+		#if XPAR_MICROBLAZE_0_USE_FPU != 0
 
 			case XEXC_ID_FPU :
 						xRegisterDump.pcExceptionCause = ( int8_t * const ) "XEXC_ID_FPU see ulFSR value";
@@ -248,10 +278,10 @@ extern void *pxCurrentTCB;
 		#endif /* XPAR_MICROBLAZE_0_USE_FPU */
 	}
 
-	/* vApplicationExceptionRegisterDump() is a callback function that the 
+	/* vApplicationExceptionRegisterDump() is a callback function that the
 	application can optionally define to receive the populated xPortRegisterDump
-	structure.  If the application chooses not to define a version of 
-	vApplicationExceptionRegisterDump() then the weekly defined default 
+	structure.  If the application chooses not to define a version of
+	vApplicationExceptionRegisterDump() then the weekly defined default
 	implementation within this file will be called instead. */
 	vApplicationExceptionRegisterDump( &xRegisterDump );
 
@@ -310,7 +340,7 @@ static uint32_t ulHandlersAlreadyInstalled = pdFALSE;
 }
 
 /* Exclude the entire file if the MicroBlaze is not configured to handle
-exceptions, or the application defined configuration item 
+exceptions, or the application defined configuration item
 configINSTALL_EXCEPTION_HANDLERS is not set to 1. */
 #endif /* ( MICROBLAZE_EXCEPTIONS_ENABLED == 1 ) && ( configINSTALL_EXCEPTION_HANDLERS == 1 ) */
 

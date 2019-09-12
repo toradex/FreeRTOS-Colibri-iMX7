@@ -143,11 +143,13 @@
     <ClCompile Include="..\Common\Minimal\flop.c" />
     <ClCompile Include="..\Common\Minimal\GenQTest.c" />
     <ClCompile Include="..\Common\Minimal\integer.c" />
+    <ClCompile Include="..\Common\Minimal\IntSemTest.c" />
     <ClCompile Include="..\Common\Minimal\PollQ.c" />
     <ClCompile Include="..\Common\Minimal\QPeek.c" />
     <ClCompile Include="..\Common\Minimal\QueueOverwrite.c" />
     <ClCompile Include="..\Common\Minimal\QueueSet.c" />
     <ClCompile Include="..\Common\Minimal\semtest.c" />
+    <ClCompile Include="..\Common\Minimal\TaskNotify.c" />
     <ClCompile Include="..\Common\Minimal\timerdemo.c" />
     <ClCompile Include="DemosModifiedForLowTickRate\recmutex.c" />
     <ClCompile Include="main.c">
