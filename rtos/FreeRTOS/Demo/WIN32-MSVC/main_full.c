@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.1 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -162,7 +162,7 @@ static void prvTestTask( void *pvParameters );
 static void prvDemonstrateTaskStateAndHandleGetFunctions( void );
 
 /*
- * Called from the idle task hook function to demonstrate the use of 
+ * Called from the idle task hook function to demonstrate the use of
  * xTimerPendFunctionCall() as xTimerPendFunctionCall() is not demonstrated by
  * any of the standard demo tasks.
  */
@@ -401,6 +401,9 @@ void vFullDemoTickHookFunction( void )
 
 	/* Exercise event groups from interrupts. */
 	vPeriodicEventGroupsProcessing();
+
+	/* Exercise giving mutexes from an interrupt. */
+	vMutexISRInteractionTest();
 }
 /*-----------------------------------------------------------*/
 

@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.1 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -297,7 +297,7 @@ volatile uint32_t ulSetToNonZeroInDebuggerToContinue = 0;
 	( void ) ulLine;
 	( void ) pcFileName;
 
-	taskENTER_CRITICAL();
+ 	taskENTER_CRITICAL();
 	{
 		/* Stop the trace recording. */
 		if( xPrinted == pdFALSE )

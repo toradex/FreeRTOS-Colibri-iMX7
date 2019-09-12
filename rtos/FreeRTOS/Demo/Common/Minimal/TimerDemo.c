@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.1 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -741,7 +741,12 @@ static TickType_t uxTick = ( TickType_t ) -1;
 	as well as late timer expiries. */
 	const TickType_t xMargin = 6;
 #else
-	const TickType_t xMargin = 3;
+	#ifdef _WINDOWS_
+		/* Windows is not real real time. */
+		const TickType_t xMargin = 8;
+	#else
+		const TickType_t xMargin = 4;
+	#endif /* _WINDOWS_ */
 #endif
 
 
