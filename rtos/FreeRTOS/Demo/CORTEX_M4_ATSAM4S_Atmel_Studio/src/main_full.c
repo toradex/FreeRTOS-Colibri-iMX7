@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.1.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.2 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -123,6 +123,7 @@
 #include "partest.h"
 #include "comtest2.h"
 #include "QueueSet.h"
+#include "IntQueue.h"
 
 /* Atmel library includes. */
 #include "asf.h"
@@ -180,6 +181,7 @@ TimerHandle_t xCheckTimer = NULL;
 	/* Start all the other standard demo/test tasks.  The have not particular
 	functionality, but do demonstrate how to use the FreeRTOS API and test the
 	kernel port. */
+	vStartInterruptQueueTasks();
 	vStartIntegerMathTasks( tskIDLE_PRIORITY );
 	vStartDynamicPriorityTasks();
 	vStartBlockingQueueTasks( mainBLOCK_Q_PRIORITY );
@@ -231,6 +233,11 @@ unsigned long ulErrorFound = pdFALSE;
 
 	/* Check all the demo tasks (other than the flash tasks) to ensure
 	they are all still running, and that none have detected an error. */
+
+	if( xAreIntQueueTasksStillRunning() != pdTRUE )
+	{
+		ulErrorFound = pdTRUE;
+	}
 
 	if( xAreIntegerMathsTaskStillRunning() != pdTRUE )
 	{
