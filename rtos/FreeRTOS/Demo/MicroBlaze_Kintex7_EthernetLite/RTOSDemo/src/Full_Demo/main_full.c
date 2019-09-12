@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.0 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -10,12 +10,12 @@
     the terms of the GNU General Public License (version 2) as published by the
     Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
 
-	***************************************************************************
+    ***************************************************************************
     >>!   NOTE: The modification to the GPL is included to allow you to     !<<
     >>!   distribute a combined work that includes FreeRTOS without being   !<<
     >>!   obliged to provide the source code for proprietary components     !<<
     >>!   outside of the FreeRTOS kernel.                                   !<<
-	***************************************************************************
+    ***************************************************************************
 
     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -37,17 +37,17 @@
     ***************************************************************************
 
     http://www.FreeRTOS.org/FAQHelp.html - Having a problem?  Start by reading
-	the FAQ page "My application does not run, what could be wrong?".  Have you
-	defined configASSERT()?
+    the FAQ page "My application does not run, what could be wrong?".  Have you
+    defined configASSERT()?
 
-	http://www.FreeRTOS.org/support - In return for receiving this top quality
-	embedded software for free we request you assist our global community by
-	participating in the support forum.
+    http://www.FreeRTOS.org/support - In return for receiving this top quality
+    embedded software for free we request you assist our global community by
+    participating in the support forum.
 
-	http://www.FreeRTOS.org/training - Investing in training allows your team to
-	be as productive as possible as early as possible.  Now you can receive
-	FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
-	Ltd, and the world's leading authority on the world's leading RTOS.
+    http://www.FreeRTOS.org/training - Investing in training allows your team to
+    be as productive as possible as early as possible.  Now you can receive
+    FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
+    Ltd, and the world's leading authority on the world's leading RTOS.
 
     http://www.FreeRTOS.org/plus - A selection of FreeRTOS ecosystem products,
     including FreeRTOS+Trace - an indispensable productivity tool, a DOS
@@ -69,10 +69,10 @@
 
 
 /******************************************************************************
- * NOTE 1:  This project provides two demo applications.  A simple blinky
- * style project, and a more comprehensive test and demo application.  The
- * mainCREATE_SIMPLY_BLINKY_DEMO_ONLY setting in main.c is used to select
- * between the two.  See the notes on using mainCREATE_SIMPLY_BLINKY_DEMO_ONLY
+ * NOTE 1:  This project provides three demo applications.  A simple blinky
+ * style project, a more comprehensive test and demo application, and an
+ * lwIP example.  The mainSELECTED_APPLICATION setting in main.c is used to
+ * select between the three.  See the notes on using mainSELECTED_APPLICATION
  * in main.c.  This file implements the comprehensive version.
  *
  * NOTE 2:  This file only contains the source code that is specific to the
@@ -137,7 +137,6 @@
 #include "partest.h"
 #include "serial.h"
 #include "TimerDemo.h"
-#include "IntQueue.h"
 #include "EventGroupsDemo.h"
 #include "TaskNotify.h"
 #include "IntSemTest.h"
@@ -147,7 +146,7 @@
 #define mainBLOCK_Q_PRIORITY				( tskIDLE_PRIORITY + 2UL )
 #define mainCREATOR_TASK_PRIORITY			( tskIDLE_PRIORITY + 3UL )
 #define mainFLOP_TASK_PRIORITY				( tskIDLE_PRIORITY )
-#define mainUART_COMMAND_CONSOLE_STACK_SIZE	( configMINIMAL_STACK_SIZE * 3UL )
+#define mainUART_COMMAND_CONSOLE_STACK_SIZE	( configMINIMAL_STACK_SIZE * 2UL )
 #define mainCOM_TEST_TASK_PRIORITY			( tskIDLE_PRIORITY + 2 )
 #define mainCHECK_TASK_PRIORITY				( configMAX_PRIORITIES - 1 )
 #define mainQUEUE_OVERWRITE_PRIORITY		( tskIDLE_PRIORITY )
@@ -242,8 +241,6 @@ void main_full( void )
 	/* Start all the other standard demo/test tasks.  They have not particular
 	functionality, but do demonstrate how to use the FreeRTOS API and test the
 	kernel port. */
-//	vStartInterruptQueueTasks();
-
 	vStartDynamicPriorityTasks();
 	vCreateBlockTimeTasks();
 	vStartCountingSemaphoreTasks();
@@ -321,11 +318,6 @@ unsigned long ulErrorFound = pdFALSE;
 
 		/* Check all the demo tasks (other than the flash tasks) to ensure
 		that they are all still running, and that none have detected an error. */
-if( 0 )//		if( xAreIntQueueTasksStillRunning() != pdTRUE )
-		{
-			ulErrorFound |= 1UL << 0UL;
-		}
-
 		if( xAreMathsTaskStillRunning() != pdTRUE )
 		{
 			ulErrorFound |= 1UL << 1UL;
@@ -356,19 +348,14 @@ if( 0 )//		if( xAreIntQueueTasksStillRunning() != pdTRUE )
 			ulErrorFound |= 1UL << 8UL;
 		}
 
-		if( xAreCountingSemaphoreTasksStillRunning() != pdTRUE )
-		{
-			ulErrorFound |= 1UL << 10UL;
-		}
-
-		if( xAreInterruptSemaphoreTasksStillRunning() != pdTRUE )
-		{
-			ulErrorFound |= 1UL << 14UL;
-		}
-
 		if( xAreTimerDemoTasksStillRunning( ( TickType_t ) mainNO_ERROR_CHECK_TASK_PERIOD ) != pdPASS )
 		{
 			ulErrorFound |= 1UL << 9UL;
+		}
+
+		if( xAreCountingSemaphoreTasksStillRunning() != pdTRUE )
+		{
+			ulErrorFound |= 1UL << 10UL;
 		}
 
 		if( xAreEventGroupTasksStillRunning() != pdPASS )
@@ -379,6 +366,11 @@ if( 0 )//		if( xAreIntQueueTasksStillRunning() != pdTRUE )
 		if( xAreTaskNotificationTasksStillRunning() != pdTRUE )
 		{
 			ulErrorFound |= 1UL << 13UL;
+		}
+
+		if( xAreInterruptSemaphoreTasksStillRunning() != pdTRUE )
+		{
+			ulErrorFound |= 1UL << 14UL;
 		}
 
 		/* Check that the register test 1 task is still running. */
@@ -404,8 +396,7 @@ if( 0 )//		if( xAreIntQueueTasksStillRunning() != pdTRUE )
 		{
 			/* An error has been detected in one of the tasks - flash the LED
 			at a higher frequency to give visible feedback that something has
-			gone wrong (it might just be that the loop back connector required
-			by the comtest tasks has not been fitted). */
+			gone wrong. */
 			xDelayPeriod = mainERROR_CHECK_TASK_PERIOD;
 		}
 	}

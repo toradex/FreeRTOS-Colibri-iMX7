@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.0 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -10,12 +10,12 @@
     the terms of the GNU General Public License (version 2) as published by the
     Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
 
-	***************************************************************************
+    ***************************************************************************
     >>!   NOTE: The modification to the GPL is included to allow you to     !<<
     >>!   distribute a combined work that includes FreeRTOS without being   !<<
     >>!   obliged to provide the source code for proprietary components     !<<
     >>!   outside of the FreeRTOS kernel.                                   !<<
-	***************************************************************************
+    ***************************************************************************
 
     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -37,17 +37,17 @@
     ***************************************************************************
 
     http://www.FreeRTOS.org/FAQHelp.html - Having a problem?  Start by reading
-	the FAQ page "My application does not run, what could be wrong?".  Have you
-	defined configASSERT()?
+    the FAQ page "My application does not run, what could be wrong?".  Have you
+    defined configASSERT()?
 
-	http://www.FreeRTOS.org/support - In return for receiving this top quality
-	embedded software for free we request you assist our global community by
-	participating in the support forum.
+    http://www.FreeRTOS.org/support - In return for receiving this top quality
+    embedded software for free we request you assist our global community by
+    participating in the support forum.
 
-	http://www.FreeRTOS.org/training - Investing in training allows your team to
-	be as productive as possible as early as possible.  Now you can receive
-	FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
-	Ltd, and the world's leading authority on the world's leading RTOS.
+    http://www.FreeRTOS.org/training - Investing in training allows your team to
+    be as productive as possible as early as possible.  Now you can receive
+    FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
+    Ltd, and the world's leading authority on the world's leading RTOS.
 
     http://www.FreeRTOS.org/plus - A selection of FreeRTOS ecosystem products,
     including FreeRTOS+Trace - an indispensable productivity tool, a DOS
@@ -395,6 +395,7 @@ static void prvQueueSetReceivingTask( void *pvParameters )
 {
 uint32_t ulReceived;
 QueueHandle_t xActivatedQueue;
+TickType_t xBlockTime;
 
 	/* Remove compiler warnings. */
 	( void ) pvParameters;
@@ -405,14 +406,28 @@ QueueHandle_t xActivatedQueue;
 
 	for( ;; )
 	{
+		/* For test coverage reasons, the block time is dependent on the
+		priority of this task - which changes during the test.  When the task
+		is at the idle priority it polls the queue set. */
+		if( uxTaskPriorityGet( NULL ) == tskIDLE_PRIORITY )
+		{
+			xBlockTime = 0;
+		}
+		else
+		{
+			xBlockTime = portMAX_DELAY;
+		}
+
 		/* Wait for a message to arrive on one of the queues in the set. */
-		xActivatedQueue = xQueueSelectFromSet( xQueueSet, portMAX_DELAY );
-		configASSERT( xActivatedQueue );
+		xActivatedQueue = xQueueSelectFromSet( xQueueSet, portMAX_DELAY );		
 
 		if( xActivatedQueue == NULL )
 		{
-			/* This should not happen as an infinite delay was used. */
-			xQueueSetTasksStatus = pdFAIL;
+			if( xBlockTime != 0 )
+			{
+				/* This should not happen as an infinite delay was used. */
+				xQueueSetTasksStatus = pdFAIL;
+			}
 		}
 		else
 		{
@@ -432,11 +447,11 @@ QueueHandle_t xActivatedQueue;
 				prvCheckReceivedValue( ulReceived );
 			}
 			taskEXIT_CRITICAL();
-		}
 
-		if( xQueueSetTasksStatus == pdPASS )
-		{
-			ulCycleCounter++;
+			if( xQueueSetTasksStatus == pdPASS )
+			{
+				ulCycleCounter++;
+			}
 		}
 	}
 }
@@ -604,8 +619,7 @@ static BaseType_t xQueueToWriteTo = 0;
 	{
 		ulISRTxValue++;
 
-		/* If the Tx value has wrapped then set it back to its
-		initial	value. */
+		/* If the Tx value has wrapped then set it back to its initial value. */
 		if( ulISRTxValue == 0UL )
 		{
 			ulISRTxValue = queuesetINITIAL_ISR_TX_VALUE;

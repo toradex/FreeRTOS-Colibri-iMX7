@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.0 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -10,12 +10,12 @@
     the terms of the GNU General Public License (version 2) as published by the
     Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
 
-	***************************************************************************
+    ***************************************************************************
     >>!   NOTE: The modification to the GPL is included to allow you to     !<<
     >>!   distribute a combined work that includes FreeRTOS without being   !<<
     >>!   obliged to provide the source code for proprietary components     !<<
     >>!   outside of the FreeRTOS kernel.                                   !<<
-	***************************************************************************
+    ***************************************************************************
 
     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -37,17 +37,17 @@
     ***************************************************************************
 
     http://www.FreeRTOS.org/FAQHelp.html - Having a problem?  Start by reading
-	the FAQ page "My application does not run, what could be wrong?".  Have you
-	defined configASSERT()?
+    the FAQ page "My application does not run, what could be wrong?".  Have you
+    defined configASSERT()?
 
-	http://www.FreeRTOS.org/support - In return for receiving this top quality
-	embedded software for free we request you assist our global community by
-	participating in the support forum.
+    http://www.FreeRTOS.org/support - In return for receiving this top quality
+    embedded software for free we request you assist our global community by
+    participating in the support forum.
 
-	http://www.FreeRTOS.org/training - Investing in training allows your team to
-	be as productive as possible as early as possible.  Now you can receive
-	FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
-	Ltd, and the world's leading authority on the world's leading RTOS.
+    http://www.FreeRTOS.org/training - Investing in training allows your team to
+    be as productive as possible as early as possible.  Now you can receive
+    FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
+    Ltd, and the world's leading authority on the world's leading RTOS.
 
     http://www.FreeRTOS.org/plus - A selection of FreeRTOS ecosystem products,
     including FreeRTOS+Trace - an indispensable productivity tool, a DOS
@@ -106,9 +106,9 @@ this demo on the FreeRTOS.org web site for more information. */
 
 /* Constants that describe the hardware and memory usage. */
 #define configCPU_CLOCK_HZ						( Not used in this demo as it is determined by the hardware )
-#define configMINIMAL_STACK_SIZE				( ( uint16_t ) 220 )
-#define configTOTAL_HEAP_SIZE					( ( size_t ) ( 50 * 1024 ) ) /* No effect if heap_3.c is used. */
-#define configMAX_TASK_NAME_LEN					( 12 )
+#define configMINIMAL_STACK_SIZE				( ( uint16_t ) 170 )
+#define configTOTAL_HEAP_SIZE					( ( size_t ) ( 80 * 1024 ) ) /* No effect if heap_3.c is used. */
+#define configMAX_TASK_NAME_LEN					( 10 )
 
 /* Constants that build features in or out. */
 #define configUSE_MUTEXES						1
@@ -133,8 +133,8 @@ this demo on the FreeRTOS.org web site for more information. */
 
 /* Constants related to the generation of run time stats. */
 #define configGENERATE_RUN_TIME_STATS			1
-#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() vMainConfigTimerForRunTimeStats(); /* Only used when configGENERATE_RUN_TIME_STATS is 1. */
-#define portGET_RUN_TIME_COUNTER_VALUE() 		ulMainGetRunTimeCounterValue();		/* Only used when configGENERATE_RUN_TIME_STATS is 1. */
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() /* Only used when configGENERATE_RUN_TIME_STATS is 1.  In this case the timer is setup when the tick timer is set up. */
+#define portGET_RUN_TIME_COUNTER_VALUE() ulMainGetRunTimeCounterValue()	 /* Only used when configGENERATE_RUN_TIME_STATS is 1. */
 
 /* Software timer definitions. */
 #define configUSE_TIMERS						1
@@ -149,7 +149,6 @@ referenced anyway. */
 #define INCLUDE_vTaskPrioritySet				1
 #define INCLUDE_uxTaskPriorityGet				1
 #define INCLUDE_vTaskDelete						1
-#define INCLUDE_vTaskCleanUpResources			0
 #define INCLUDE_vTaskSuspend					1
 #define INCLUDE_vTaskDelayUntil					1
 #define INCLUDE_vTaskDelay						1
@@ -175,14 +174,49 @@ are multiple command interpreters running at once (for example, one on a UART
 and one on TCP/IP).  This is done to prevent an output buffer being defined by
 each implementation - which would waste RAM.  In this case, there is only one
 command interpreter running. */
-#define configCOMMAND_INT_MAX_OUTPUT_SIZE 1024
+#define configCOMMAND_INT_MAX_OUTPUT_SIZE 2048
 
 /* Prevent the function prototypes being included from asm files. */
 #ifndef __ASSEMBLER__
-	void vMainConfigTimerForRunTimeStats( void );
 	uint32_t ulMainGetRunTimeCounterValue( void );
 	void vAssertCalled( const char * pcFile, unsigned long ulLine );
 #endif
+
+
+/****** Network configuration settings - only used when the lwIP example is
+built.  See the page that documents this demo on the http://www.FreeRTOS.org
+website for more information. ***********************************************/
+
+/* The priority for the task that unblocked by the MAC interrupt to process
+received packets. */
+#define configMAC_INPUT_TASK_PRIORITY		( configMAX_PRIORITIES - 1 )
+
+/* The priority of the task that runs the lwIP stack. */
+#define configLWIP_TASK_PRIORITY			( configMAX_PRIORITIES - 2 )
+
+/* The priority of the task that uses lwIP sockets to provide a simple command
+line interface. */
+#define configCLI_TASK_PRIORITY				( tskIDLE_PRIORITY )
+
+/* MAC address configuration. */
+#define configMAC_ADDR0	0x00
+#define configMAC_ADDR1	0x13
+#define configMAC_ADDR2	0x14
+#define configMAC_ADDR3	0x15
+#define configMAC_ADDR4	0x15
+#define configMAC_ADDR5	0x16
+
+/* IP address configuration. */
+#define configIP_ADDR0		172
+#define configIP_ADDR1		25
+#define configIP_ADDR2		218
+#define configIP_ADDR3		200
+
+/* Netmask configuration. */
+#define configNET_MASK0		255
+#define configNET_MASK1		255
+#define configNET_MASK2		255
+#define configNET_MASK3		0
 
 #endif /* FREERTOS_CONFIG_H */
 

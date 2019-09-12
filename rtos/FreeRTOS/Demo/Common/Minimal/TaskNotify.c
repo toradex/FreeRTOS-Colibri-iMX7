@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.0 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -10,12 +10,12 @@
     the terms of the GNU General Public License (version 2) as published by the
     Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
 
-	***************************************************************************
+    ***************************************************************************
     >>!   NOTE: The modification to the GPL is included to allow you to     !<<
     >>!   distribute a combined work that includes FreeRTOS without being   !<<
     >>!   obliged to provide the source code for proprietary components     !<<
     >>!   outside of the FreeRTOS kernel.                                   !<<
-	***************************************************************************
+    ***************************************************************************
 
     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -37,17 +37,17 @@
     ***************************************************************************
 
     http://www.FreeRTOS.org/FAQHelp.html - Having a problem?  Start by reading
-	the FAQ page "My application does not run, what could be wrong?".  Have you
-	defined configASSERT()?
+    the FAQ page "My application does not run, what could be wrong?".  Have you
+    defined configASSERT()?
 
-	http://www.FreeRTOS.org/support - In return for receiving this top quality
-	embedded software for free we request you assist our global community by
-	participating in the support forum.
+    http://www.FreeRTOS.org/support - In return for receiving this top quality
+    embedded software for free we request you assist our global community by
+    participating in the support forum.
 
-	http://www.FreeRTOS.org/training - Investing in training allows your team to
-	be as productive as possible as early as possible.  Now you can receive
-	FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
-	Ltd, and the world's leading authority on the world's leading RTOS.
+    http://www.FreeRTOS.org/training - Investing in training allows your team to
+    be as productive as possible as early as possible.  Now you can receive
+    FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
+    Ltd, and the world's leading authority on the world's leading RTOS.
 
     http://www.FreeRTOS.org/plus - A selection of FreeRTOS ecosystem products,
     including FreeRTOS+Trace - an indispensable productivity tool, a DOS
@@ -147,7 +147,7 @@ static void prvSingleTaskTests( void )
 {
 const TickType_t xTicksToWait = pdMS_TO_TICKS( 100UL );
 BaseType_t xReturned;
-uint32_t ulNotifiedValue, ulLoop, ulNotifyingValue;
+uint32_t ulNotifiedValue, ulLoop, ulNotifyingValue, ulPreviousValue, ulExpectedValue;
 TickType_t xTimeOnEntering;
 const uint32_t ulFirstNotifiedConst = 100001UL, ulSecondNotifiedValueConst = 5555UL, ulMaxLoops = 5UL;
 const uint32_t ulBit0 = 0x01UL, ulBit1 = 0x02UL;
@@ -172,11 +172,14 @@ const uint32_t ulBit0 = 0x01UL, ulBit1 = 0x02UL;
 	Check no blocking when notifications are pending.  First notify itself -
 	this would not be a normal thing to do and is done here for test purposes
 	only. */
-	xReturned = xTaskNotify( xTaskToNotify, ulFirstNotifiedConst, eSetValueWithoutOverwrite );
+	xReturned = xTaskNotifyAndQuery( xTaskToNotify, ulFirstNotifiedConst, eSetValueWithoutOverwrite, &ulPreviousValue );
 
 	/* Even through the 'without overwrite' action was used the update should
 	have been successful. */
 	configASSERT( xReturned == pdPASS );
+
+	/* No bits should have been pending previously. */
+	configASSERT( ulPreviousValue == 0 );
 
 	/* The task should now have a notification pending, and so not time out. */
 	xTimeOnEntering = xTaskGetTickCount();
@@ -350,6 +353,28 @@ const uint32_t ulBit0 = 0x01UL, ulBit1 = 0x02UL;
 	configASSERT( ulNotifiedValue == ( ULONG_MAX & ~( ulBit0 | ulBit1 ) ) );
 
 
+
+
+	/*--------------------------------------------------------------------------
+	Now try querying the previus value while notifying a task. */
+	xTaskNotifyAndQuery( xTaskToNotify, 0x00, eSetBits, &ulPreviousValue );
+	configASSERT( ulNotifiedValue == ( ULONG_MAX & ~( ulBit0 | ulBit1 ) ) );
+
+	/* Clear all bits. */
+	xTaskNotifyWait( 0x00, ULONG_MAX, &ulNotifiedValue, 0 );
+	xTaskNotifyAndQuery( xTaskToNotify, 0x00, eSetBits, &ulPreviousValue );
+	configASSERT( ulPreviousValue == 0 );
+
+	ulExpectedValue = 0;
+	for( ulLoop = 0x01; ulLoop < 0x80UL; ulLoop <<= 1UL )
+	{
+		/* Set the next bit up, and expect to receive the last bits set (so
+		the previous value will not yet have the bit being set this time
+		around). */
+		xTaskNotifyAndQuery( xTaskToNotify, ulLoop, eSetBits, &ulPreviousValue );
+		configASSERT( ulExpectedValue == ulPreviousValue );
+		ulExpectedValue |= ulLoop;
+	}
 
 	/* Incremented to show the task is still running. */
 	ulNotifyCycleCount++;

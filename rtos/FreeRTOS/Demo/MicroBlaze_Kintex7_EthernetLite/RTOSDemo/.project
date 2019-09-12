@@ -49,6 +49,11 @@
 			<type>1</type>
 			<locationURI>FREERTOS_ROOT/FreeRTOS-Plus/Demo/Common/FreeRTOS_Plus_CLI_Demos/UARTCommandConsole.c</locationURI>
 		</link>
+		<link>
+			<name>src/lwIP_Demo/lwIP-1.4.0</name>
+			<type>2</type>
+			<locationURI>FREERTOS_ROOT/FreeRTOS/Demo/Common/ethernet/lwip-1.4.0</locationURI>
+		</link>
 	</linkedResources>
 	<filteredResources>
 		<filter>
@@ -97,6 +102,15 @@
 			</matcher>
 		</filter>
 		<filter>
+			<id>1426008704838</id>
+			<name>src/lwIP_Demo/lwIP-1.4.0</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-ports</arguments>
+			</matcher>
+		</filter>
+		<filter>
 			<id>1420635505242</id>
 			<name>src/FreeRTOS_Source/portable/GCC</name>
 			<type>9</type>
@@ -115,7 +129,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1421425118832</id>
+			<id>1426001044021</id>
 			<name>src/Full_Demo/Common_Demo_Source/Minimal</name>
 			<type>5</type>
 			<matcher>
@@ -124,7 +138,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1421425118842</id>
+			<id>1426001044028</id>
 			<name>src/Full_Demo/Common_Demo_Source/Minimal</name>
 			<type>5</type>
 			<matcher>
@@ -133,7 +147,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1421425118842</id>
+			<id>1426001044037</id>
 			<name>src/Full_Demo/Common_Demo_Source/Minimal</name>
 			<type>5</type>
 			<matcher>
@@ -142,7 +156,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1421425118852</id>
+			<id>1426001044046</id>
 			<name>src/Full_Demo/Common_Demo_Source/Minimal</name>
 			<type>5</type>
 			<matcher>
@@ -151,7 +165,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1421425118852</id>
+			<id>1426001044057</id>
 			<name>src/Full_Demo/Common_Demo_Source/Minimal</name>
 			<type>5</type>
 			<matcher>
@@ -160,7 +174,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1421425118852</id>
+			<id>1426001044063</id>
 			<name>src/Full_Demo/Common_Demo_Source/Minimal</name>
 			<type>5</type>
 			<matcher>
@@ -169,7 +183,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1421425118862</id>
+			<id>1426001044071</id>
 			<name>src/Full_Demo/Common_Demo_Source/Minimal</name>
 			<type>5</type>
 			<matcher>
@@ -178,7 +192,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1421425118872</id>
+			<id>1426001044076</id>
 			<name>src/Full_Demo/Common_Demo_Source/Minimal</name>
 			<type>5</type>
 			<matcher>
@@ -187,7 +201,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1421425118872</id>
+			<id>1426001044081</id>
 			<name>src/Full_Demo/Common_Demo_Source/Minimal</name>
 			<type>5</type>
 			<matcher>
@@ -196,7 +210,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1421425118872</id>
+			<id>1426001044088</id>
 			<name>src/Full_Demo/Common_Demo_Source/Minimal</name>
 			<type>5</type>
 			<matcher>
@@ -205,7 +219,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1421425118882</id>
+			<id>1426001044094</id>
 			<name>src/Full_Demo/Common_Demo_Source/Minimal</name>
 			<type>5</type>
 			<matcher>
@@ -214,7 +228,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1421425118882</id>
+			<id>1426001044098</id>
 			<name>src/Full_Demo/Common_Demo_Source/Minimal</name>
 			<type>5</type>
 			<matcher>
@@ -223,7 +237,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1421425118892</id>
+			<id>1426001044103</id>
 			<name>src/Full_Demo/Common_Demo_Source/Minimal</name>
 			<type>5</type>
 			<matcher>
@@ -232,12 +246,39 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1421425118892</id>
+			<id>1426001044107</id>
 			<name>src/Full_Demo/Common_Demo_Source/Minimal</name>
 			<type>5</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-false-blocktim.c</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1426008787023</id>
+			<name>src/lwIP_Demo/lwIP-1.4.0/src/core</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-ipv6</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1426008787043</id>
+			<name>src/lwIP_Demo/lwIP-1.4.0/src/core</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-snmp</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1426008835701</id>
+			<name>src/lwIP_Demo/lwIP-1.4.0/src/netif</name>
+			<type>14</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-ppp</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>

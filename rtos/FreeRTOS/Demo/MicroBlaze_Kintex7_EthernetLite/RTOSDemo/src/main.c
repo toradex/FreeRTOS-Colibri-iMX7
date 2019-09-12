@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.0 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -10,12 +10,12 @@
     the terms of the GNU General Public License (version 2) as published by the
     Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
 
-	***************************************************************************
+    ***************************************************************************
     >>!   NOTE: The modification to the GPL is included to allow you to     !<<
     >>!   distribute a combined work that includes FreeRTOS without being   !<<
     >>!   obliged to provide the source code for proprietary components     !<<
     >>!   outside of the FreeRTOS kernel.                                   !<<
-	***************************************************************************
+    ***************************************************************************
 
     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -37,17 +37,17 @@
     ***************************************************************************
 
     http://www.FreeRTOS.org/FAQHelp.html - Having a problem?  Start by reading
-	the FAQ page "My application does not run, what could be wrong?".  Have you
-	defined configASSERT()?
+    the FAQ page "My application does not run, what could be wrong?".  Have you
+    defined configASSERT()?
 
-	http://www.FreeRTOS.org/support - In return for receiving this top quality
-	embedded software for free we request you assist our global community by
-	participating in the support forum.
+    http://www.FreeRTOS.org/support - In return for receiving this top quality
+    embedded software for free we request you assist our global community by
+    participating in the support forum.
 
-	http://www.FreeRTOS.org/training - Investing in training allows your team to
-	be as productive as possible as early as possible.  Now you can receive
-	FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
-	Ltd, and the world's leading authority on the world's leading RTOS.
+    http://www.FreeRTOS.org/training - Investing in training allows your team to
+    be as productive as possible as early as possible.  Now you can receive
+    FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
+    Ltd, and the world's leading authority on the world's leading RTOS.
 
     http://www.FreeRTOS.org/plus - A selection of FreeRTOS ecosystem products,
     including FreeRTOS+Trace - an indispensable productivity tool, a DOS
@@ -68,12 +68,13 @@
 */
 
 /******************************************************************************
- * This project provides two demo applications.  A simple blinky style project,
- * and a more comprehensive test and demo application.  The
- * mainCREATE_SIMPLE_BLINKY_DEMO_ONLY setting (defined in this file) is used to
- * select between the two.  The simply blinky demo is implemented and described
- * in main_blinky.c.  The more comprehensive test and demo application is
- * implemented and described in main_full.c.
+ * This project provides three demo applications.  A simple blinky style
+ * project, a more comprehensive test and demo application, and an lwIP example.
+ * The mainSELECTED_APPLICATION setting (defined in this file) is used to
+ * select between the three.  The simply blinky demo is implemented and
+ * described in main_blinky.c.  The more comprehensive test and demo application
+ * is implemented and described in main_full.c.  The lwIP example is implemented
+ * and described in main_lwIP.c.
  *
  * This file implements the code that is not demo specific, including the
  * hardware setup and FreeRTOS hook functions.
@@ -83,8 +84,6 @@
  * APPLICATION, AND ITS ASSOCIATE FreeRTOS ARCHITECTURE PORT!
  *
  */
-
-#warning Try reducing minimal stack size.
 
 /* Standard includes. */
 #include <stdio.h>
@@ -101,16 +100,18 @@
 #include "xtmrctr.h"
 #include "xil_cache.h"
 
-/* mainCREATE_SIMPLE_BLINKY_DEMO_ONLY is used to select between the simply
- * blinky demo and the comprehensive test and demo application.
+/* mainSELECTED_APPLICATION is used to select between three demo applications,
+ * as described at the top of this file.
  *
- * When mainCREATE_SIMPLE_BLINKY_DEMO_ONLY is set to 1 the simple blinky example
- * will be run.
+ * When mainSELECTED_APPLICATION is set to 0 the simple blinky example will
+ * be run.
  *
- * When mainCREATE_SIMPLE_BLINKY_DEMO_ONLY is set to 0 the comprehensive test
- * and demo application will be run.
+ * When mainSELECTED_APPLICATION is set to 1 the comprehensive test and demo
+ * application will be run.
+ *
+ * When mainSELECTED_APPLICATION is set to 2 the lwIP example will be run.
  */
-#define mainCREATE_SIMPLE_BLINKY_DEMO_ONLY	0
+#define mainSELECTED_APPLICATION	0
 
 /*-----------------------------------------------------------*/
 
@@ -120,13 +121,17 @@
 static void prvSetupHardware( void );
 
 /*
- * See the comments at the top of this file and above the
- * mainCREATE_SIMPLE_BLINKY_DEMO_ONLY definition.
- */
-#if ( mainCREATE_SIMPLE_BLINKY_DEMO_ONLY == 1 )
+* See the comments at the top of this file and above the
+* mainSELECTED_APPLICATION definition.
+*/
+#if ( mainSELECTED_APPLICATION == 0 )
 	extern void main_blinky( void );
-#else
+#elif ( mainSELECTED_APPLICATION == 1 )
 	extern void main_full( void );
+#elif ( mainSELECTED_APPLICATION == 2 )
+	extern void main_lwIP( void );
+#else
+	#error Invalid mainSELECTED_APPLICATION setting.  See the comments at the top of this file and above the mainSELECTED_APPLICATION definition.
 #endif
 
 /* Prototypes for the standard FreeRTOS callback/hook functions implemented
@@ -136,8 +141,9 @@ void vApplicationIdleHook( void );
 void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName );
 void vApplicationTickHook( void );
 
-/* The dual timer is used to generate the RTOS tick interrupt. */
-static XTmrCtr xDualTimerInstance;
+/* The dual timer is used to generate the RTOS tick interrupt and as a time base
+for the run time stats. */
+static XTmrCtr xTickTimerInstance;
 
 /*-----------------------------------------------------------*/
 
@@ -146,15 +152,19 @@ int main( void )
 	/* Configure the hardware ready to run the demo. */
 	prvSetupHardware();
 
-	/* The mainCREATE_SIMPLE_BLINKY_DEMO_ONLY setting is described at the top
+	/* The mainSELECTED_APPLICATION setting is described at the top
 	of this file. */
-	#if( mainCREATE_SIMPLE_BLINKY_DEMO_ONLY == 1 )
+	#if( mainSELECTED_APPLICATION == 0 )
 	{
 		main_blinky();
 	}
-	#else
+	#elif( mainSELECTED_APPLICATION == 1 )
 	{
 		main_full();
+	}
+	#else
+	{
+		main_lwIP();
 	}
 	#endif
 
@@ -165,20 +175,18 @@ int main( void )
 
 static void prvSetupHardware( void )
 {
-#warning Stacks are in BRAM.
-#warning Caches are disabled.
-//	init_platform();
-
 	microblaze_disable_interrupts();
 
 	#if defined( XPAR_MICROBLAZE_USE_ICACHE ) && ( XPAR_MICROBLAZE_USE_ICACHE != 0 )
 	{
+		Xil_ICacheInvalidate();
 		Xil_ICacheEnable();
 	}
 	#endif
 
 	#if defined( XPAR_MICROBLAZE_USE_DCACHE ) && ( XPAR_MICROBLAZE_USE_DCACHE != 0 )
 	{
+		Xil_DCacheInvalidate();
 		Xil_DCacheEnable();
 	}
 	#endif
@@ -211,14 +219,14 @@ void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName )
 	/* Run time stack overflow checking is performed if
 	configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2.  This hook
 	function is called if a stack overflow is detected.  Force an assertion
-	failuse. */
+	failure. */
 	configASSERT( ( char * ) pxTask == pcTaskName );
 }
 /*-----------------------------------------------------------*/
 
 void vApplicationIdleHook( void )
 {
-	#if( mainCREATE_SIMPLE_BLINKY_DEMO_ONLY == 0 )
+	#if( mainSELECTED_APPLICATION == 1 )
 	{
 		extern void vFullDemoIdleHook( void );
 
@@ -252,7 +260,7 @@ volatile unsigned long ul = 0;
 
 void vApplicationTickHook( void )
 {
-	#if( mainCREATE_SIMPLE_BLINKY_DEMO_ONLY == 0 )
+	#if( mainSELECTED_APPLICATION == 1 )
 	{
 		extern void vFullDemoTickHook( void );
 
@@ -275,12 +283,13 @@ below declares as an extern. */
 void vApplicationSetupTimerInterrupt( void )
 {
 portBASE_TYPE xStatus;
-const unsigned char ucTimerCounterNumber = ( unsigned char ) 0U;
+const unsigned char ucTickTimerCounterNumber = ( unsigned char ) 0U;
+const unsigned char ucRunTimeStatsCounterNumber = ( unsigned char ) 1U;
 const unsigned long ulCounterValue = ( ( XPAR_TMRCTR_0_CLOCK_FREQ_HZ / configTICK_RATE_HZ ) - 1UL );
 extern void vPortTickISR( void *pvUnused );
 
 	/* Initialise the timer/counter. */
-	xStatus = XTmrCtr_Initialize( &xDualTimerInstance, XPAR_TMRCTR_0_DEVICE_ID );
+	xStatus = XTmrCtr_Initialize( &xTickTimerInstance, XPAR_TMRCTR_0_DEVICE_ID );
 
 	if( xStatus == XST_SUCCESS )
 	{
@@ -297,20 +306,32 @@ extern void vPortTickISR( void *pvUnused );
 		purpose. */
 		vPortEnableInterrupt( XPAR_INTC_0_TMRCTR_0_VEC_ID );
 
-		/* Configure the timer interrupt handler. */
-		XTmrCtr_SetHandler( &xDualTimerInstance, ( void * ) vPortTickISR, NULL );
+		/* Configure the timer interrupt handler.  This installs the handler
+		directly, rather than through the Xilinx driver.  This is done for
+		efficiency. */
+		XTmrCtr_SetHandler( &xTickTimerInstance, ( void * ) vPortTickISR, NULL );
 
 		/* Set the correct period for the timer. */
-		XTmrCtr_SetResetValue( &xDualTimerInstance, ucTimerCounterNumber, ulCounterValue );
+		XTmrCtr_SetResetValue( &xTickTimerInstance, ucTickTimerCounterNumber, ulCounterValue );
 
 		/* Enable the interrupts.  Auto-reload mode is used to generate a
 		periodic tick.  Note that interrupts are disabled when this function is
 		called, so interrupts will not start to be processed until the first
 		task has started to run. */
-		XTmrCtr_SetOptions( &xDualTimerInstance, ucTimerCounterNumber, ( XTC_INT_MODE_OPTION | XTC_AUTO_RELOAD_OPTION | XTC_DOWN_COUNT_OPTION ) );
+		XTmrCtr_SetOptions( &xTickTimerInstance, ucTickTimerCounterNumber, ( XTC_INT_MODE_OPTION | XTC_AUTO_RELOAD_OPTION | XTC_DOWN_COUNT_OPTION ) );
 
 		/* Start the timer. */
-		XTmrCtr_Start( &xDualTimerInstance, ucTimerCounterNumber );
+		XTmrCtr_Start( &xTickTimerInstance, ucTickTimerCounterNumber );
+
+
+
+
+		/* The second timer is used as the time base for the run time stats.
+		Auto-reload mode is used to ensure the timer does not stop. */
+		XTmrCtr_SetOptions( &xTickTimerInstance, ucRunTimeStatsCounterNumber, XTC_AUTO_RELOAD_OPTION );
+
+		/* Start the timer. */
+		XTmrCtr_Start( &xTickTimerInstance, ucRunTimeStatsCounterNumber );
 	}
 
 	/* Sanity check that the function executed as expected. */
@@ -344,12 +365,35 @@ void *malloc( size_t x )
 }
 /*-----------------------------------------------------------*/
 
-void vMainConfigTimerForRunTimeStats( void )
+uint32_t ulMainGetRunTimeCounterValue( void )
 {
+static uint32_t ulOverflows = 0, ulLastTime = 0;
+uint32_t ulTimeNow, ulReturn;
+const uint32_t ulPrescale = 10, ulTCR2Offset = 24UL;
+
+	ulTimeNow = * ( ( uint32_t * ) ( XPAR_TMRCTR_0_BASEADDR + ulTCR2Offset ) );
+
+	if( ulTimeNow < ulLastTime )
+	{
+		/* 32 as its a 32-bit number. */
+		ulOverflows += ( 1UL << ( 32 - ulPrescale ) );
+	}
+	ulLastTime = ulTimeNow;
+
+	ulReturn = ( ulTimeNow >> ulPrescale ) + ulOverflows;
+
+	return ulReturn;
 }
 /*-----------------------------------------------------------*/
 
-uint32_t ulMainGetRunTimeCounterValue( void )
+int outbyte( int c )
 {
-	return 0;
+	return c;
 }
+
+void xil_printf( const char *pc, ... )
+{
+	( void ) pc;
+}
+
+
