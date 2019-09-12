@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.0 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -24,10 +24,10 @@
     the terms of the GNU General Public License (version 2) as published by the
     Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
 
-    >>! NOTE: The modification to the GPL is included to allow you to distribute
-    >>! a combined work that includes FreeRTOS without being obliged to provide
-    >>! the source code for proprietary components outside of the FreeRTOS
-    >>! kernel.
+    >>!   NOTE: The modification to the GPL is included to allow you to     !<<
+    >>!   distribute a combined work that includes FreeRTOS without being   !<<
+    >>!   obliged to provide the source code for proprietary components     !<<
+    >>!   outside of the FreeRTOS kernel.                                   !<<
 
     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -544,6 +544,38 @@ EventBits_t uxBits;
 		xError = pdTRUE;
 	}
 
+	/* Try a synch with no other tasks involved.  First set all the bits other
+	than this task's bit. */
+	xEventGroupSetBits( xEventGroup, ( ebALL_SYNC_BITS & ~ebSET_BIT_TASK_SYNC_BIT ) );
+
+	/* Then wait on just one bit - the bit that is being set. */
+	uxBits = xEventGroupSync( xEventGroup,			/* The event group used for the synchronisation. */
+							ebSET_BIT_TASK_SYNC_BIT,/* The bit set by this task when it reaches the sync point. */
+							ebSET_BIT_TASK_SYNC_BIT,/* The bits to wait for - in this case it is just waiting for itself. */
+							portMAX_DELAY );		/* The maximum time to wait for the sync condition to be met. */
+
+	/* A sync with a max delay should only exit when all the synchronise
+	bits are set...check that is the case.  In this case there is only one
+	sync bit anyway. */
+	if( ( uxBits & ebSET_BIT_TASK_SYNC_BIT ) != ebSET_BIT_TASK_SYNC_BIT )
+	{
+		xError = pdTRUE;
+	}
+
+	/* ...but now the sync bits should be clear again, leaving all the other
+	bits set (as only one bit was being waited for). */
+	if( xEventGroupGetBits( xEventGroup ) != ( ebALL_SYNC_BITS & ~ebSET_BIT_TASK_SYNC_BIT ) )
+	{
+		xError = pdTRUE;
+	}
+
+	/* Clear all the bits to zero again. */
+	xEventGroupClearBits( xEventGroup, ( ebALL_SYNC_BITS & ~ebSET_BIT_TASK_SYNC_BIT ) );
+	if( xEventGroupGetBits( xEventGroup ) != 0 )
+	{
+		xError = pdTRUE;
+	}
+
 	/* Unsuspend the other tasks then check they have executed up to the
 	synchronisation point. */
 	vTaskResume( xTestSlaveTaskHandle );
@@ -987,8 +1019,8 @@ BaseType_t xMessagePosted;
 		/* Clear the bits again. */
 		uxReturned = xEventGroupClearBitsFromISR( xISREventGroup, uxBitsToSet );
 
-		/* The returned value should be the value before the bits were cleaed.*/
-		if( uxReturned != uxBitsToSet )
+		/* Check the message was posted. */
+		if( uxReturned != pdPASS )
 		{
 			xISRTestError = pdTRUE;
 		}

@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -24,10 +24,10 @@
     the terms of the GNU General Public License (version 2) as published by the
     Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
 
-    >>! NOTE: The modification to the GPL is included to allow you to distribute
-    >>! a combined work that includes FreeRTOS without being obliged to provide
-    >>! the source code for proprietary components outside of the FreeRTOS
-    >>! kernel.
+    >>!   NOTE: The modification to the GPL is included to allow you to     !<<
+    >>!   distribute a combined work that includes FreeRTOS without being   !<<
+    >>!   obliged to provide the source code for proprietary components     !<<
+    >>!   outside of the FreeRTOS kernel.                                   !<<
 
     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -92,6 +92,13 @@ included.  Alternatively, just manually include the correct files here. */
 		#define LED_BIT			( P0_bit.no1 )
 		#define LED_INIT()		P0 &= 0xFD; PM0 &= 0xFD
 	#endif /* RSKRL78G1C */
+
+	#ifdef RSKRL78L1C
+		#include "ior5f110pj.h"
+		#include "ior5f110pj_ext.h"
+		#define LED_BIT			( P4_bit.no1 )
+		#define LED_INIT()		P4 &= 0xFD; PM4 &= 0xFD
+	#endif /* RSKRL78L1C */
 
 	#ifdef RSKRL78L13
 		#include "ior5f10wmg.h"
