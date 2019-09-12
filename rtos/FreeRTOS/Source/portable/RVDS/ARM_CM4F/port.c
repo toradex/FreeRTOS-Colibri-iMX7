@@ -486,6 +486,7 @@ __asm void xPortPendSVHandler( void )
 
 	bx r14
 	nop
+	nop
 }
 /*-----------------------------------------------------------*/
 
