@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -82,7 +82,7 @@
  *----------------------------------------------------------*/
 
 #define configUSE_PREEMPTION			1
-#define configMAX_PRIORITIES			( ( unsigned portBASE_TYPE ) 7 )
+#define configMAX_PRIORITIES			( ( UBaseType_t ) 7 )
 #define configTICK_RATE_HZ				( 1000 ) /* In this non-real time simulated environment the tick frequency has to be at least a multiple of the Win32 tick frequency, and therefore very slow. */
 #define configMINIMAL_STACK_SIZE		( ( unsigned short ) 60 ) /* In this simulated case, the stack only has to hold one small structure as the real stack is part of the Win32 thread. */
 #define configTOTAL_HEAP_SIZE			( ( size_t ) ( 32U * 1024U ) )

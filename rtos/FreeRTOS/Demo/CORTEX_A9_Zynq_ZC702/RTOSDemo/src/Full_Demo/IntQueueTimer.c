@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -148,9 +148,9 @@ actually being reached. */
 extern uint32_t ulPortInterruptNesting;
 static uint32_t ulMaxRecordedNesting = 0;
 
-/* For convenience the high frequency timer increments a variable that is then
-used as the time base for the run time stats. */
-volatile uint32_t ulHighFrequencyTimerCounts = 0;
+/* Used to ensure the high frequency timer is running at the expected
+frequency. */
+static volatile uint32_t ulHighFrequencyTimerCounts = 0;
 
 /*-----------------------------------------------------------*/
 
@@ -238,8 +238,7 @@ BaseType_t xYieldRequired;
 	}
 	else
 	{
-		/* The high frequency timer is also used to generate the time base for
-		the run time state. */
+		/* Used to check the timer is running at the expected frequency. */
 		ulHighFrequencyTimerCounts++;
 
 		/* Latch the highest interrupt nesting count detected. */

@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -138,7 +138,7 @@ signed char cRxedChar;
 uint8_t ucInputIndex = 0;
 char *pcOutputString;
 static char cInputString[ cmdMAX_INPUT_SIZE ], cLastInputString[ cmdMAX_INPUT_SIZE ];
-portBASE_TYPE xReturned;
+BaseType_t xReturned;
 xComPortHandle xPort;
 
 	( void ) pvParameters;

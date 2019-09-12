@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -105,7 +105,7 @@
 #define configTIMER_QUEUE_LENGTH		20
 #define configTIMER_TASK_STACK_DEPTH	( configMINIMAL_STACK_SIZE * 2 )
 
-#define configMAX_PRIORITIES			( ( unsigned portBASE_TYPE ) 7 )
+#define configMAX_PRIORITIES			( ( UBaseType_t ) 7 )
 #define configMAX_CO_ROUTINE_PRIORITIES ( 2 )
 
 

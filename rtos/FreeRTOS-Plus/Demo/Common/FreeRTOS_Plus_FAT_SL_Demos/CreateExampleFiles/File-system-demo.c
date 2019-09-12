@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -164,9 +164,9 @@ unsigned char ucStatus;
 
 static void prvCreateDemoFilesUsing_f_write( void )
 {
-portBASE_TYPE xFileNumber, xWriteNumber;
+BaseType_t xFileNumber, xWriteNumber;
 char cFileName[ fsMAX_FILE_NAME_LEN ];
-const portBASE_TYPE xMaxFiles = 5;
+const BaseType_t xMaxFiles = 5;
 long lItemsWritten;
 F_FILE *pxFile;
 
@@ -207,9 +207,9 @@ F_FILE *pxFile;
 
 static void prvVerifyDemoFileUsing_f_read( void )
 {
-portBASE_TYPE xFileNumber, xReadNumber;
+BaseType_t xFileNumber, xReadNumber;
 char cFileName[ fsMAX_FILE_NAME_LEN ];
-const portBASE_TYPE xMaxFiles = 5;
+const BaseType_t xMaxFiles = 5;
 long lItemsRead, lChar;
 F_FILE *pxFile;
 

@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -112,6 +112,9 @@
 #define portMAX_PRIGROUP_BITS				( ( uint8_t ) 7 )
 #define portPRIORITY_GROUP_MASK				( 0x07UL << 8UL )
 #define portPRIGROUP_SHIFT					( 8UL )
+
+/* Masks off all bits but the VECTACTIVE bits in the ICSR register. */
+#define portVECTACTIVE_MASK					( 0x1FUL )
 
 /* Constants required to set up the initial stack. */
 #define portINITIAL_XPSR					( 0x01000000 )
@@ -324,6 +327,16 @@ void vPortEnterCritical( void )
 	uxCriticalNesting++;
 	__DSB();
 	__ISB();
+	
+	/* This is not the interrupt safe version of the enter critical function so
+	assert() if it is being called from an interrupt context.  Only API 
+	functions that end in "FromISR" can be used in an interrupt.  Only assert if
+	the critical nesting count is 1 to protect against recursive calls if the
+	assert function also uses a critical section. */
+	if( uxCriticalNesting == 1 )
+	{
+		configASSERT( ( portNVIC_INT_CTRL_REG & portVECTACTIVE_MASK ) == 0 );
+	}
 }
 /*-----------------------------------------------------------*/
 

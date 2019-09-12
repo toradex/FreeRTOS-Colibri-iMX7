@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -64,11 +64,11 @@
 */
 
 /******************************************************************************
- * NOTE 1:  This project provides two demo applications.  A simple blinky style
- * project, and a more comprehensive test and demo application.  The
- * mainCREATE_SIMPLE_BLINKY_DEMO_ONLY setting in main.c is used to select
- * between the two.  See the notes on using mainCREATE_SIMPLE_BLINKY_DEMO_ONLY
- * in main.c.  This file implements the comprehensive test and demo version.
+ * NOTE 1:  This project provides three demo applications.  A simple blinky
+ * style project, a more comprehensive test and demo application, and an
+ * lwIP example.  The mainSELECTED_APPLICATION setting in main.c is used to
+ * select between the three.  See the notes on using mainSELECTED_APPLICATION
+ * in main.c.  This file implements the simply blinky style version.
  *
  * NOTE 2:  This file only contains the source code that is specific to the
  * full demo.  Generic functions, such FreeRTOS hook functions, and functions
@@ -184,11 +184,6 @@ purpose of ensuring parameters are passed into tasks correctly. */
 
 /*-----------------------------------------------------------*/
 
-/*
- * Called by main() to run the full demo (as opposed to the blinky demo) when
- * mainCREATE_SIMPLE_BLINKY_DEMO_ONLY is set to 0.
- */
-void main_full( void );
 
 /*
  * The check task, as described at the top of this file.
@@ -233,6 +228,9 @@ then the register check tasks has not discovered any errors.  If a variable
 stops incrementing, then an error has been found. */
 volatile unsigned long ulRegTest1LoopCounter = 0UL, ulRegTest2LoopCounter = 0UL;
 
+/* String for display in the web server.  It is set to an error message if the
+check task detects an error.  */
+char *pcStatusMessage = "All tasks running without error";
 /*-----------------------------------------------------------*/
 
 void main_full( void )
@@ -409,8 +407,15 @@ unsigned long ulErrorFound = pdFALSE;
 			gone wrong (it might just be that the loop back connector required
 			by the comtest tasks has not been fitted). */
 			xDelayPeriod = mainERROR_CHECK_TASK_PERIOD;
+			pcStatusMessage = "Error found in at least one task.";
 		}
 	}
+}
+/*-----------------------------------------------------------*/
+
+char *pcMainGetTaskStatusMessage( void )
+{
+	return pcStatusMessage;
 }
 /*-----------------------------------------------------------*/
 

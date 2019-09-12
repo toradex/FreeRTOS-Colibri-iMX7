@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -67,9 +67,9 @@
 #define QUEUE_ACCESS_TEST
 
 void vStartInterruptQueueTasks( void );
-portBASE_TYPE xAreIntQueueTasksStillRunning( void );
-portBASE_TYPE xFirstTimerHandler( void );
-portBASE_TYPE xSecondTimerHandler( void );
+BaseType_t xAreIntQueueTasksStillRunning( void );
+BaseType_t xFirstTimerHandler( void );
+BaseType_t xSecondTimerHandler( void );
 
 #endif /* QUEUE_ACCESS_TEST */
 

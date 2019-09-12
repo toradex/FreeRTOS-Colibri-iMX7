@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -86,7 +86,7 @@
 
 #define tmrdemoDONT_BLOCK				( ( TickType_t ) 0 )
 #define tmrdemoONE_SHOT_TIMER_PERIOD	( xBasePeriod * ( TickType_t ) 3 )
-#define trmdemoNUM_TIMER_RESETS			( ( unsigned char ) 10 )
+#define trmdemoNUM_TIMER_RESETS			( ( uint8_t ) 10 )
 
 /*-----------------------------------------------------------*/
 
@@ -118,35 +118,35 @@ static void prvResetStartConditionsForNextIteration( void );
 
 /* Flag that will be latched to pdFAIL should any unexpected behaviour be
 detected in any of the demo tests. */
-static volatile portBASE_TYPE xTestStatus = pdPASS;
+static volatile BaseType_t xTestStatus = pdPASS;
 
 /* Counter that is incremented on each cycle of a test.  This is used to
 detect a stalled task - a test that is no longer running. */
-static volatile unsigned long ulLoopCounter = 0;
+static volatile uint32_t ulLoopCounter = 0;
 
 /* A set of auto reload timers - each of which use the same callback function.
 The callback function uses the timer ID to index into, and then increment, a
 counter in the ucAutoReloadTimerCounters[] array.  The auto reload timers
 referenced from xAutoReloadTimers[] are used by the prvTimerTestTask task. */
 static TimerHandle_t xAutoReloadTimers[ configTIMER_QUEUE_LENGTH + 1 ] = { 0 };
-static unsigned char ucAutoReloadTimerCounters[ configTIMER_QUEUE_LENGTH + 1 ] = { 0 };
+static uint8_t ucAutoReloadTimerCounters[ configTIMER_QUEUE_LENGTH + 1 ] = { 0 };
 
 /* The one shot timer is configured to use a callback function that increments
 ucOneShotTimerCounter each time it gets called. */
 static TimerHandle_t xOneShotTimer = NULL;
-static unsigned char ucOneShotTimerCounter = ( unsigned char ) 0;
+static uint8_t ucOneShotTimerCounter = ( uint8_t ) 0;
 
 /* The ISR reload timer is controlled from the tick hook to exercise the timer
 API functions that can be used from an ISR.  It is configured to increment
 ucISRReloadTimerCounter each time its callback function is executed. */
 static TimerHandle_t xISRAutoReloadTimer = NULL;
-static unsigned char ucISRAutoReloadTimerCounter = ( unsigned char ) 0;
+static uint8_t ucISRAutoReloadTimerCounter = ( uint8_t ) 0;
 
 /* The ISR one shot timer is controlled from the tick hook to exercise the timer
 API functions that can be used from an ISR.  It is configured to increment
 ucISRReloadTimerCounter each time its callback function is executed. */
 static TimerHandle_t xISROneShotTimer = NULL;
-static unsigned char ucISROneShotTimerCounter = ( unsigned char ) 0;
+static uint8_t ucISROneShotTimerCounter = ( uint8_t ) 0;
 
 /* The period of all the timers are a multiple of the base period.  The base
 period is configured by the parameter to vStartTimerDemoTask(). */
@@ -210,7 +210,7 @@ static void prvTimerTestTask( void *pvParameters )
 		/* Check the auto reload timers can be stopped correctly, and correctly
 		report their state. */
 		prvTest4_CheckAutoReloadTimersCanBeStopped();
-				
+
 		/* Check the one shot timer only calls its callback once after it has been
 		started, and that it reports its state correctly. */
 		prvTest5_CheckBasicOneShotTimerBehaviour();
@@ -226,9 +226,9 @@ static void prvTimerTestTask( void *pvParameters )
 
 /* This is called to check that the created task is still running and has not
 detected any errors. */
-portBASE_TYPE xAreTimerDemoTasksStillRunning( TickType_t xCycleFrequency )
+BaseType_t xAreTimerDemoTasksStillRunning( TickType_t xCycleFrequency )
 {
-static unsigned long ulLastLoopCounter = 0UL;
+static uint32_t ulLastLoopCounter = 0UL;
 TickType_t xMaxBlockTimeUsedByTheseTests, xLoopCounterIncrementTimeMax;
 static TickType_t xIterationsWithoutCounterIncrement = ( TickType_t ) 0, xLastCycleFrequency;
 
@@ -238,7 +238,7 @@ static TickType_t xIterationsWithoutCounterIncrement = ( TickType_t ) 0, xLastCy
 		elsewhere.  Start counting Iterations again. */
 		xIterationsWithoutCounterIncrement = ( TickType_t ) 0;
 		xLastCycleFrequency = xCycleFrequency;
-	}		
+	}
 
 	/* Calculate the maximum number of times that it is permissible for this
 	function to be called without ulLoopCounter being incremented.  This is
@@ -277,7 +277,7 @@ static TickType_t xIterationsWithoutCounterIncrement = ( TickType_t ) 0, xLastCy
 
 static void prvTest1_CreateTimersWithoutSchedulerRunning( void )
 {
-unsigned portBASE_TYPE xTimer;
+UBaseType_t xTimer;
 
 	for( xTimer = 0; xTimer < configTIMER_QUEUE_LENGTH; xTimer++ )
 	{
@@ -336,7 +336,7 @@ unsigned portBASE_TYPE xTimer;
 			configASSERT( xTestStatus );
 		}
 	}
-	
+
 	/* Create the timers that are used from the tick interrupt to test the timer
 	API functions that can be called from an ISR. */
 	xISRAutoReloadTimer = xTimerCreate( "ISR AR",							/* The text name given to the timer. */
@@ -350,7 +350,7 @@ unsigned portBASE_TYPE xTimer;
 										pdFALSE,							/* This is a one shot timer. */
 										( void * ) NULL,					/* The identifier is not required. */
 										prvISROneShotTimerCallback );		/* The callback that is executed when the timer expires. */
-										
+
 	if( ( xISRAutoReloadTimer == NULL ) || ( xISROneShotTimer == NULL ) )
 	{
 		xTestStatus = pdFAIL;
@@ -361,7 +361,7 @@ unsigned portBASE_TYPE xTimer;
 
 static void prvTest2_CheckTaskAndTimersInitialState( void )
 {
-unsigned char ucTimer;
+uint8_t ucTimer;
 
 	/* Ensure all the timers are in their expected initial state.  This	depends
 	on the timer service task having a higher priority than this task.
@@ -370,7 +370,7 @@ unsigned char ucTimer;
 	and auto reload timer configTIMER_QUEUE_LENGTH should not yet be active (it
 	could not be started prior to the scheduler being started when it was
 	created). */
-	for( ucTimer = 0; ucTimer < ( unsigned char ) configTIMER_QUEUE_LENGTH; ucTimer++ )
+	for( ucTimer = 0; ucTimer < ( uint8_t ) configTIMER_QUEUE_LENGTH; ucTimer++ )
 	{
 		if( xTimerIsTimerActive( xAutoReloadTimers[ ucTimer ] ) == pdFALSE )
 		{
@@ -389,28 +389,28 @@ unsigned char ucTimer;
 
 static void	prvTest3_CheckAutoReloadExpireRates( void )
 {
-unsigned char ucMaxAllowableValue, ucMinAllowableValue, ucTimer;
+uint8_t ucMaxAllowableValue, ucMinAllowableValue, ucTimer;
 TickType_t xBlockPeriod, xTimerPeriod, xExpectedNumber;
 
 	/* Check the auto reload timers expire at the expected rates. */
 
-	
+
 	/* Delaying for configTIMER_QUEUE_LENGTH * xBasePeriod ticks should allow
 	all the auto reload timers to expire at least once. */
 	xBlockPeriod = ( ( TickType_t ) configTIMER_QUEUE_LENGTH ) * xBasePeriod;
 	vTaskDelay( xBlockPeriod );
 
-	/* Check that all the auto reload timers have called their callback	
+	/* Check that all the auto reload timers have called their callback
 	function the expected number of times. */
-	for( ucTimer = 0; ucTimer < ( unsigned char ) configTIMER_QUEUE_LENGTH; ucTimer++ )
+	for( ucTimer = 0; ucTimer < ( uint8_t ) configTIMER_QUEUE_LENGTH; ucTimer++ )
 	{
 		/* The expected number of expiries is equal to the block period divided
 		by the timer period. */
 		xTimerPeriod = ( ( ( TickType_t ) ucTimer + ( TickType_t ) 1 ) * xBasePeriod );
 		xExpectedNumber = xBlockPeriod / xTimerPeriod;
-		
-		ucMaxAllowableValue = ( ( unsigned char ) xExpectedNumber ) ;
-		ucMinAllowableValue = ( ( unsigned char ) xExpectedNumber - ( unsigned char ) 1 );
+
+		ucMaxAllowableValue = ( ( uint8_t ) xExpectedNumber ) ;
+		ucMinAllowableValue = ( uint8_t ) ( ( uint8_t ) xExpectedNumber - ( uint8_t ) 1 ); /* Weird casting to try and please all compilers. */
 
 		if( ( ucAutoReloadTimerCounters[ ucTimer ] < ucMinAllowableValue ) ||
 			( ucAutoReloadTimerCounters[ ucTimer ] > ucMaxAllowableValue )
@@ -431,14 +431,14 @@ TickType_t xBlockPeriod, xTimerPeriod, xExpectedNumber;
 /*-----------------------------------------------------------*/
 
 static void prvTest4_CheckAutoReloadTimersCanBeStopped( void )
-{		
-unsigned char ucTimer;
+{
+uint8_t ucTimer;
 
 	/* Check the auto reload timers can be stopped correctly, and correctly
 	report their state. */
 
 	/* Stop all the active timers. */
-	for( ucTimer = 0; ucTimer < ( unsigned char ) configTIMER_QUEUE_LENGTH; ucTimer++ )
+	for( ucTimer = 0; ucTimer < ( uint8_t ) configTIMER_QUEUE_LENGTH; ucTimer++ )
 	{
 		/* The timer has not been stopped yet! */
 		if( xTimerIsTimerActive( xAutoReloadTimers[ ucTimer ] ) == pdFALSE )
@@ -466,7 +466,7 @@ unsigned char ucTimer;
 		be active.  The critical section is used to ensure the timer does
 		not call its callback between the next line running and the array
 		being cleared back to zero, as that would mask an error condition. */
-		if( ucAutoReloadTimerCounters[ configTIMER_QUEUE_LENGTH ] != ( unsigned char ) 0 )
+		if( ucAutoReloadTimerCounters[ configTIMER_QUEUE_LENGTH ] != ( uint8_t ) 0 )
 		{
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
@@ -480,9 +480,9 @@ unsigned char ucTimer;
 	/* The timers are now all inactive, so this time, after delaying, none
 	of the callback counters should have incremented. */
 	vTaskDelay( ( ( TickType_t ) configTIMER_QUEUE_LENGTH ) * xBasePeriod );
-	for( ucTimer = 0; ucTimer < ( unsigned char ) configTIMER_QUEUE_LENGTH; ucTimer++ )
+	for( ucTimer = 0; ucTimer < ( uint8_t ) configTIMER_QUEUE_LENGTH; ucTimer++ )
 	{
-		if( ucAutoReloadTimerCounters[ ucTimer ] != ( unsigned char ) 0 )
+		if( ucAutoReloadTimerCounters[ ucTimer ] != ( uint8_t ) 0 )
 		{
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
@@ -510,7 +510,7 @@ static void prvTest5_CheckBasicOneShotTimerBehaviour( void )
 		configASSERT( xTestStatus );
 	}
 
-	if( ucOneShotTimerCounter != ( unsigned char ) 0 )
+	if( ucOneShotTimerCounter != ( uint8_t ) 0 )
 	{
 		xTestStatus = pdFAIL;
 		configASSERT( xTestStatus );
@@ -535,7 +535,7 @@ static void prvTest5_CheckBasicOneShotTimerBehaviour( void )
 		configASSERT( xTestStatus );
 	}
 
-	if( ucOneShotTimerCounter != ( unsigned char ) 1 )
+	if( ucOneShotTimerCounter != ( uint8_t ) 1 )
 	{
 		xTestStatus = pdFAIL;
 		configASSERT( xTestStatus );
@@ -543,7 +543,7 @@ static void prvTest5_CheckBasicOneShotTimerBehaviour( void )
 	else
 	{
 		/* Reset the one shot timer callback count. */
-		ucOneShotTimerCounter = ( unsigned char ) 0;
+		ucOneShotTimerCounter = ( uint8_t ) 0;
 	}
 
 	if( xTestStatus == pdPASS )
@@ -557,7 +557,7 @@ static void prvTest5_CheckBasicOneShotTimerBehaviour( void )
 
 static void prvTest6_CheckAutoReloadResetBehaviour( void )
 {
-unsigned char ucTimer;
+uint8_t ucTimer;
 
 	/* Check timer reset behaviour. */
 
@@ -593,7 +593,7 @@ unsigned char ucTimer;
 			configASSERT( xTestStatus );
 		}
 
-		if( ucOneShotTimerCounter != ( unsigned char ) 0 )
+		if( ucOneShotTimerCounter != ( uint8_t ) 0 )
 		{
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
@@ -605,7 +605,7 @@ unsigned char ucTimer;
 			configASSERT( xTestStatus );
 		}
 
-		if( ucAutoReloadTimerCounters[ configTIMER_QUEUE_LENGTH - 1 ] != ( unsigned char ) 0 )
+		if( ucAutoReloadTimerCounters[ configTIMER_QUEUE_LENGTH - 1 ] != ( uint8_t ) 0 )
 		{
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
@@ -628,7 +628,7 @@ unsigned char ucTimer;
 
 	/* The timers were not reset during the above delay period so should now
 	both have called their callback functions. */
-	if( ucOneShotTimerCounter != ( unsigned char ) 1 )
+	if( ucOneShotTimerCounter != ( uint8_t ) 1 )
 	{
 		xTestStatus = pdFAIL;
 		configASSERT( xTestStatus );
@@ -665,8 +665,8 @@ unsigned char ucTimer;
 
 	/* Clear the timer callback counts, ready for another iteration of these
 	tests. */
-	ucAutoReloadTimerCounters[ configTIMER_QUEUE_LENGTH - 1 ] = ( unsigned char ) 0;
-	ucOneShotTimerCounter = ( unsigned char ) 0;
+	ucAutoReloadTimerCounters[ configTIMER_QUEUE_LENGTH - 1 ] = ( uint8_t ) 0;
+	ucOneShotTimerCounter = ( uint8_t ) 0;
 
 	if( xTestStatus == pdPASS )
 	{
@@ -679,12 +679,12 @@ unsigned char ucTimer;
 
 static void prvResetStartConditionsForNextIteration( void )
 {
-unsigned char ucTimer;
+uint8_t ucTimer;
 
 	/* Start the timers again to start all the tests over again. */
 
 	/* Start the timers again. */
-	for( ucTimer = 0; ucTimer < ( unsigned char ) configTIMER_QUEUE_LENGTH; ucTimer++ )
+	for( ucTimer = 0; ucTimer < ( uint8_t ) configTIMER_QUEUE_LENGTH; ucTimer++ )
 	{
 		/* The timer has not been started yet! */
 		if( xTimerIsTimerActive( xAutoReloadTimers[ ucTimer ] ) != pdFALSE )
@@ -749,7 +749,7 @@ static TickType_t uxTick = ( TickType_t ) -1;
 
 	if( uxTick == 0 )
 	{
-		/* The timers will have been created, but not started.  Start them now 
+		/* The timers will have been created, but not started.  Start them now
 		by setting their period. */
 		ucISRAutoReloadTimerCounter = 0;
 		ucISROneShotTimerCounter = 0;
@@ -765,7 +765,7 @@ static TickType_t uxTick = ( TickType_t ) -1;
 			/* First timer was started, try starting the second timer. */
 			if( xTimerChangePeriodFromISR( xISROneShotTimer, xBasePeriod, NULL ) == pdPASS )
 			{
-				/* Both timers were started, so set the uxTick back to its 
+				/* Both timers were started, so set the uxTick back to its
 				proper value. */
 				uxTick = 0;
 			}
@@ -805,7 +805,7 @@ static TickType_t uxTick = ( TickType_t ) -1;
 		{
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
-		}		
+		}
 	}
 	else if( uxTick == ( ( 2 * xBasePeriod ) + xMargin ) )
 	{
@@ -817,7 +817,7 @@ static TickType_t uxTick = ( TickType_t ) -1;
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		if( ucISROneShotTimerCounter != 1 )
 		{
 			xTestStatus = pdFAIL;
@@ -834,13 +834,13 @@ static TickType_t uxTick = ( TickType_t ) -1;
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		if( ucISROneShotTimerCounter != 1 )
 		{
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-	}	
+	}
 	else if( uxTick == ( 3 * xBasePeriod ) )
 	{
 		/* Start the one shot timer again. */
@@ -856,17 +856,17 @@ static TickType_t uxTick = ( TickType_t ) -1;
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		if( ucISROneShotTimerCounter != 1 )
 		{
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		/* Now stop the auto reload timer.  The one shot timer was started
 		a few ticks ago. */
 		xTimerStopFromISR( xISRAutoReloadTimer, NULL );
-	}	
+	}
 	else if( uxTick == ( 4 * ( xBasePeriod - xMargin ) ) )
 	{
 		/* The auto reload timer is now stopped, and the one shot timer is
@@ -877,13 +877,13 @@ static TickType_t uxTick = ( TickType_t ) -1;
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		if( ucISROneShotTimerCounter != 1 )
 		{
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-	}	
+	}
 	else if( uxTick == ( ( 4 * xBasePeriod ) + xMargin ) )
 	{
 		/* The auto reload timer is now stopped, and the one shot timer is
@@ -894,13 +894,13 @@ static TickType_t uxTick = ( TickType_t ) -1;
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		if( ucISROneShotTimerCounter != 2 )
 		{
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-	}	
+	}
 	else if( uxTick == ( 8 * xBasePeriod ) )
 	{
 		/* The auto reload timer is now stopped, and the one shot timer has
@@ -911,16 +911,16 @@ static TickType_t uxTick = ( TickType_t ) -1;
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		if( ucISROneShotTimerCounter != 2 )
 		{
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		/* Now reset the one shot timer. */
 		xTimerResetFromISR( xISROneShotTimer, NULL );
-	}	
+	}
 	else if( uxTick == ( ( 9 * xBasePeriod ) - xMargin ) )
 	{
 		/* Only the one shot timer should be running, but it should not have
@@ -931,15 +931,15 @@ static TickType_t uxTick = ( TickType_t ) -1;
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		if( ucISROneShotTimerCounter != 2 )
 		{
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		xTimerResetFromISR( xISROneShotTimer, NULL );
-	}	
+	}
 	else if( uxTick == ( ( 10 * xBasePeriod ) - ( 2 * xMargin ) ) )
 	{
 		/* Only the one shot timer should be running, but it should not have
@@ -950,13 +950,13 @@ static TickType_t uxTick = ( TickType_t ) -1;
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		if( ucISROneShotTimerCounter != 2 )
 		{
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		xTimerResetFromISR( xISROneShotTimer, NULL );
 	}
 	else if( uxTick == ( ( 11 * xBasePeriod ) - ( 3 * xMargin ) ) )
@@ -969,15 +969,15 @@ static TickType_t uxTick = ( TickType_t ) -1;
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		if( ucISROneShotTimerCounter != 2 )
 		{
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		xTimerResetFromISR( xISROneShotTimer, NULL );
-	}	
+	}
 	else if( uxTick == ( ( 12 * xBasePeriod ) - ( 2 * xMargin ) ) )
 	{
 		/* Only the one shot timer should have been running and this time it
@@ -990,7 +990,7 @@ static TickType_t uxTick = ( TickType_t ) -1;
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		if( ucISROneShotTimerCounter != 3 )
 		{
 			xTestStatus = pdFAIL;
@@ -1007,15 +1007,15 @@ static TickType_t uxTick = ( TickType_t ) -1;
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		if( ucISROneShotTimerCounter != 3 )
 		{
 			xTestStatus = pdFAIL;
 			configASSERT( xTestStatus );
 		}
-		
+
 		uxTick = ( TickType_t ) -1;
-	}	
+	}
 }
 /*-----------------------------------------------------------*/
 
@@ -1023,9 +1023,9 @@ static TickType_t uxTick = ( TickType_t ) -1;
 
 static void prvAutoReloadTimerCallback( TimerHandle_t pxExpiredTimer )
 {
-unsigned long ulTimerID;
+uint32_t ulTimerID;
 
-	ulTimerID = ( unsigned long ) pvTimerGetTimerID( pxExpiredTimer );
+	ulTimerID = ( uint32_t ) pvTimerGetTimerID( pxExpiredTimer );
 	if( ulTimerID <= ( configTIMER_QUEUE_LENGTH + 1 ) )
 	{
 		( ucAutoReloadTimerCounters[ ulTimerID ] )++;

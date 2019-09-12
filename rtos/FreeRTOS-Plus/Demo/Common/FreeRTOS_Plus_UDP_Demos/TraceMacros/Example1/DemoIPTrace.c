@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -128,17 +128,17 @@ xExampleDebugStatEntry_t xIPTraceValues[] =
 
 /*-----------------------------------------------------------*/
 
-portBASE_TYPE xExampleDebugStatEntries( void )
+BaseType_t xExampleDebugStatEntries( void )
 {
 	/* Return the number of entries in the xIPTraceValues[] table. */
-	return ( portBASE_TYPE ) ( sizeof( xIPTraceValues ) / sizeof( xExampleDebugStatEntry_t ) );
+	return ( BaseType_t ) ( sizeof( xIPTraceValues ) / sizeof( xExampleDebugStatEntry_t ) );
 }
 /*-----------------------------------------------------------*/
 
 void vExampleDebugStatUpdate( uint8_t ucIdentifier, uint32_t ulValue )
 {
-portBASE_TYPE xIndex;
-const portBASE_TYPE xEntries = sizeof( xIPTraceValues ) / sizeof( xExampleDebugStatEntry_t );
+BaseType_t xIndex;
+const BaseType_t xEntries = sizeof( xIPTraceValues ) / sizeof( xExampleDebugStatEntry_t );
 
 	/* Update an entry in the xIPTraceValues[] table.  Each row in the table
 	includes a pointer to a function that performs the actual update.  This

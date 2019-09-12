@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -66,6 +66,6 @@
 #ifndef UDP_COMMAND_INTERPRETER_H
 #define UDP_COMMAND_INTERPRETER_H
 
-void vStartUDPCommandInterpreterTask( uint16_t usStackSize, uint32_t ulPort, unsigned portBASE_TYPE uxPriority );
+void vStartUDPCommandInterpreterTask( uint16_t usStackSize, uint32_t ulPort, UBaseType_t uxPriority );
 
 #endif /* UDP_COMMAND_INTERPRETER_H */

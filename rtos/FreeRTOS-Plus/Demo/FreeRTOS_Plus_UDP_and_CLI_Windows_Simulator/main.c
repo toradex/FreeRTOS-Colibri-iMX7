@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -225,7 +225,7 @@ void vApplicationIPNetworkEventHook( eIPCallbackEvent_t eNetworkEvent )
 {
 uint32_t ulIPAddress, ulNetMask, ulGatewayAddress, ulDNSServerAddress;
 int8_t cBuffer[ 16 ];
-static portBASE_TYPE xTasksAlreadyCreated = pdFALSE;
+static BaseType_t xTasksAlreadyCreated = pdFALSE;
 
 	if( eNetworkEvent == eNetworkUp )
 	{

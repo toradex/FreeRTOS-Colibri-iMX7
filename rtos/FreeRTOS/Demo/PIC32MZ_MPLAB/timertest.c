@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -117,7 +117,6 @@ void vSetupTimerTest( unsigned short usFrequencyHz )
 
 void vT2InterruptHandler( void )
 {
-extern unsigned long uxInterruptNesting;
 static unsigned long ulMaxNestingDepth = 0;
 
 	/* Keep a count of interrupts so the check timer can ensure they are

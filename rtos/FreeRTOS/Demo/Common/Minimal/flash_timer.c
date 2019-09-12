@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -93,9 +93,9 @@ static void prvLEDTimerCallback( TimerHandle_t xTimer );
 
 /*-----------------------------------------------------------*/
 
-void vStartLEDFlashTimers( unsigned portBASE_TYPE uxNumberOfLEDs )
+void vStartLEDFlashTimers( UBaseType_t uxNumberOfLEDs )
 {
-unsigned portBASE_TYPE uxLEDTimer;
+UBaseType_t uxLEDTimer;
 TimerHandle_t xTimer;
 
 	/* Create and start the requested number of timers. */
@@ -124,12 +124,12 @@ TimerHandle_t xTimer;
 
 static void prvLEDTimerCallback( TimerHandle_t xTimer )
 {
-portBASE_TYPE xTimerID;
+BaseType_t xTimerID;
 
 	/* The timer ID is used to identify the timer that has actually expired as
 	each timer uses the same callback.  The ID is then also used as the number
 	of the LED that is to be toggled. */
-	xTimerID = ( portBASE_TYPE ) pvTimerGetTimerID( xTimer );
+	xTimerID = ( BaseType_t ) pvTimerGetTimerID( xTimer );
 	vParTestToggleLED( xTimerID );
 }
 

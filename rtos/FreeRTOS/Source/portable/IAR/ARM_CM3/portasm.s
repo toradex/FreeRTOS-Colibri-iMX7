@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -145,8 +145,9 @@ vPortStartFirstTask
 	ldr r0, [r0]
 	/* Set the msp back to the start of the stack. */
 	msr msp, r0
-	/* Call SVC to start the first task. */
+	/* Call SVC to start the first task, ensuring interrupts are enabled. */
 	cpsie i
+	cpsie f
 	dsb
 	isb
 	svc 0

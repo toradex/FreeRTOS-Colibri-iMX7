@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -148,14 +148,14 @@ void vInitialiseTimerForIntQueueTest( void )
 }
 /*-----------------------------------------------------------*/
 
-#pragma interrupt ( Excep_PERIB_INTB128( vect = 128 ) )
+#pragma interrupt ( Excep_PERIB_INTB128( vect = 128, enable ) )
 void Excep_PERIB_INTB128( void )
 {
 	portYIELD_FROM_ISR( xFirstTimerHandler() );
 }
 /*-----------------------------------------------------------*/
 
-#pragma interrupt ( Excep_PERIB_INTB129( vect = 129 ) )
+#pragma interrupt ( Excep_PERIB_INTB129( vect = 129, enable ) )
 void Excep_PERIB_INTB129( void )
 {
 	portYIELD_FROM_ISR( xSecondTimerHandler() );

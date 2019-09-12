@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -93,16 +93,16 @@
 
 /* Variable used by the created tasks to calculate the LED number to use, and
 the rate at which they should flash the LED. */
-static volatile unsigned portBASE_TYPE uxFlashTaskNumber = 0;
+static volatile UBaseType_t uxFlashTaskNumber = 0;
 
 /* The task that is created three times. */
 static portTASK_FUNCTION_PROTO( vLEDFlashTask, pvParameters );
 
 /*-----------------------------------------------------------*/
 
-void vStartLEDFlashTasks( unsigned portBASE_TYPE uxPriority )
+void vStartLEDFlashTasks( UBaseType_t uxPriority )
 {
-signed portBASE_TYPE xLEDTask;
+BaseType_t xLEDTask;
 
 	/* Create the three tasks. */
 	for( xLEDTask = 0; xLEDTask < ledNUMBER_OF_LEDS; ++xLEDTask )
@@ -116,7 +116,7 @@ signed portBASE_TYPE xLEDTask;
 static portTASK_FUNCTION( vLEDFlashTask, pvParameters )
 {
 TickType_t xFlashRate, xLastFlashTime;
-unsigned portBASE_TYPE uxLED;
+UBaseType_t uxLED;
 
 	/* The parameters are not used. */
 	( void ) pvParameters;

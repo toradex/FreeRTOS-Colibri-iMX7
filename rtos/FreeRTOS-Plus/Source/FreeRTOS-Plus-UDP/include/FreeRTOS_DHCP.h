@@ -1,5 +1,5 @@
 /*
- * FreeRTOS+UDP V1.0.3 (C) 2014 Real Time Engineers ltd.
+ * FreeRTOS+UDP V1.0.4 (C) 2014 Real Time Engineers ltd.
  * All rights reserved
  *
  * This file is part of the FreeRTOS+UDP distribution.  The FreeRTOS+UDP license
@@ -50,7 +50,7 @@
 /*
  * NOT A PUBLIC API FUNCTION.
  */
-void vDHCPProcess( portBASE_TYPE xReset, xMACAddress_t *pxMACAddress, uint32_t *pulIPAddress, xNetworkAddressingParameters_t *pxNetworkAddressing );
+void vDHCPProcess( BaseType_t xReset, xMACAddress_t *pxMACAddress, uint32_t *pulIPAddress, xNetworkAddressingParameters_t *pxNetworkAddressing );
 
 #endif /* FREERTOS_DHCP_H */
 

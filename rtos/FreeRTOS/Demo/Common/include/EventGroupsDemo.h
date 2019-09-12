@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -75,7 +75,7 @@
 #define EVENT_GROUPS_DEMO_H
 
 void vStartEventGroupTasks( void );
-portBASE_TYPE xAreEventGroupTasksStillRunning( void );
+BaseType_t xAreEventGroupTasksStillRunning( void );
 void vPeriodicEventGroupsProcessing( void );
 
 #endif /* EVENT_GROUPS_DEMO_H */

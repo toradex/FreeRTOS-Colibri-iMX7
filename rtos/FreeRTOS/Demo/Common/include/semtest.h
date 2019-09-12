@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -66,8 +66,8 @@
 #ifndef SEMAPHORE_TEST_H
 #define SEMAPHORE_TEST_H
 
-void vStartSemaphoreTasks( unsigned portBASE_TYPE uxPriority );
-portBASE_TYPE xAreSemaphoreTasksStillRunning( void );
+void vStartSemaphoreTasks( UBaseType_t uxPriority );
+BaseType_t xAreSemaphoreTasksStillRunning( void );
 
 #endif
 

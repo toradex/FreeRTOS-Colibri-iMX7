@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -117,7 +117,7 @@
 #define configUSE_TICK_HOOK						1
 #define configMAX_PRIORITIES					( 7 )
 #define configMINIMAL_STACK_SIZE				( ( unsigned short ) 200 )
-#define configTOTAL_HEAP_SIZE					( ( size_t ) ( 65536 ) )
+#define configTOTAL_HEAP_SIZE					( 80 * 1024 )
 #define configMAX_TASK_NAME_LEN					( 10 )
 #define configUSE_TRACE_FACILITY				1
 #define configUSE_16_BIT_TICKS					0
@@ -159,14 +159,13 @@ readable ASCII form.  See the notes in the implementation of vTaskList() within
 FreeRTOS/Source/tasks.c for limitations. */
 #define configUSE_STATS_FORMATTING_FUNCTIONS	1
 
-/* portCONFIGURE_TIMER_FOR_RUN_TIME_STATS is not required because the time base
-comes from the ulHighFrequencyTimerCounts variable which is incremented in a
-high frequency timer that is already being started as part of the interrupt
-nesting test. */
-#define configGENERATE_RUN_TIME_STATS	1
-extern volatile uint32_t ulHighFrequencyTimerCounts;
-#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS()
-#define portGET_RUN_TIME_COUNTER_VALUE() ulHighFrequencyTimerCounts
+/* The private watchdog is used to generate run time stats. */
+#include "xscuwdt.h"
+extern XScuWdt xWatchDogInstance;
+extern void vInitialiseTimerForRunTimeStats( void );
+#define configGENERATE_RUN_TIME_STATS 1
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() vInitialiseTimerForRunTimeStats()
+#define portGET_RUN_TIME_COUNTER_VALUE() ( ( 0xffffffffUL - XScuWdt_ReadReg( xWatchDogInstance.Config.BaseAddr, XSCUWDT_COUNTER_OFFSET ) ) >> 1 )
 
 /* The size of the global output buffer that is available for use when there
 are multiple command interpreters running at once (for example, one on a UART
@@ -180,6 +179,12 @@ header file. */
 void vAssertCalled( const char * pcFile, unsigned long ulLine );
 #define configASSERT( x ) if( ( x ) == 0 ) vAssertCalled( __FILE__, __LINE__ );
 
+/* If configTASK_RETURN_ADDRESS is not defined then a task that attempts to
+return from its implementing function will end up in a "task exit error"
+function - which contains a call to configASSERT().  However this can give GCC
+some problems when it tries to unwind the stack, as the exit error function has
+nothing to return to.  To avoid this define configTASK_RETURN_ADDRESS to 0.  */
+#define configTASK_RETURN_ADDRESS	NULL
 
 
 /****** Hardware specific settings. *******************************************/
@@ -202,6 +207,43 @@ Zynq MPU. */
 #define configINTERRUPT_CONTROLLER_BASE_ADDRESS 		( XPAR_PS7_SCUGIC_0_DIST_BASEADDR )
 #define configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET ( -0xf00 )
 #define configUNIQUE_INTERRUPT_PRIORITIES				32
+
+
+
+/****** Network configuration settings - only used when the lwIP example is
+built.  See the page that documents this demo on the http://www.FreeRTOS.org
+website for more information. ***********************************************/
+
+/* The priority for the task that unblocked by the MAC interrupt to process
+received packets. */
+#define configMAC_INPUT_TASK_PRIORITY		( configMAX_PRIORITIES - 1 )
+
+/* The priority of the task that runs the lwIP stack. */
+#define configLWIP_TASK_PRIORITY			( configMAX_PRIORITIES - 2 )
+
+/* The priority of the task that uses lwIP sockets to provide a simple command
+line interface. */
+#define configCLI_TASK_PRIORITY				( tskIDLE_PRIORITY )
+
+/* MAC address configuration. */
+#define configMAC_ADDR0	0x00
+#define configMAC_ADDR1	0x13
+#define configMAC_ADDR2	0x14
+#define configMAC_ADDR3	0x15
+#define configMAC_ADDR4	0x15
+#define configMAC_ADDR5	0x16
+
+/* IP address configuration. */
+#define configIP_ADDR0		172
+#define configIP_ADDR1		25
+#define configIP_ADDR2		218
+#define configIP_ADDR3		200
+
+/* Netmask configuration. */
+#define configNET_MASK0		255
+#define configNET_MASK1		255
+#define configNET_MASK2		255
+#define configNET_MASK3		0
 
 #endif /* FREERTOS_CONFIG_H */
 

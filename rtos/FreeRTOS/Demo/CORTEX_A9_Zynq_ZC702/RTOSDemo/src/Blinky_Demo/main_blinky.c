@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -64,10 +64,10 @@
 */
 
 /******************************************************************************
- * NOTE 1:  This project provides two demo applications.  A simple blinky style
- * project, and a more comprehensive test and demo application.  The
- * mainCREATE_SIMPLE_BLINKY_DEMO_ONLY setting in main.c is used to select
- * between the two.  See the notes on using mainCREATE_SIMPLE_BLINKY_DEMO_ONLY
+ * NOTE 1:  This project provides three demo applications.  A simple blinky
+ * style project, a more comprehensive test and demo application, and an
+ * lwIP example.  The mainSELECTED_APPLICATION setting in main.c is used to
+ * select between the three.  See the notes on using mainSELECTED_APPLICATION
  * in main.c.  This file implements the simply blinky style version.
  *
  * NOTE 2:  This file only contains the source code that is specific to the
@@ -131,12 +131,6 @@ the queue empty. */
  */
 static void prvQueueReceiveTask( void *pvParameters );
 static void prvQueueSendTask( void *pvParameters );
-
-/*
- * Called by main() to create the simply blinky style application if
- * mainCREATE_SIMPLE_BLINKY_DEMO_ONLY is set to 1.
- */
-void main_blinky( void );
 
 /*-----------------------------------------------------------*/
 

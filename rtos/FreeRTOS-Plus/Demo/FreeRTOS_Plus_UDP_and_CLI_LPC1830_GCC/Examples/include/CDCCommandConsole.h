@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -70,7 +70,7 @@
  * Create the task that implements a command console using the USB virtual com
  * port driver for intput and output.
  */
-void vCDCCommandConsoleStart( uint16_t usStackSize, unsigned portBASE_TYPE uxPriority );
+void vCDCCommandConsoleStart( uint16_t usStackSize, UBaseType_t uxPriority );
 
 #endif /* CDC_COMMAND_CONSOLE_H */
 

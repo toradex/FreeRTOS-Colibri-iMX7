@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -150,7 +150,7 @@ configINCLUDE_DEMO_DEBUG_STATS setting in FreeRTOSIPConfig.h. */
 	/*
 	 * Returns the number of entries in the xIPTraceValues table.
 	 */
-	portBASE_TYPE xExampleDebugStatEntries( void );
+	BaseType_t xExampleDebugStatEntries( void );
 
 #endif /* configINCLUDE_DEMO_DEBUG_STATS == 1 */
 

@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
 
@@ -120,9 +120,6 @@
 
 .macro portRESTORE_CONTEXT
 
-	/* Switch to system mode. */
-	CPS		#SYS_MODE
-
 	/* Set the SP to point to the stack of the task being restored. */
 	LDR		R0, pxCurrentTCBConst
 	LDR		R1, [R0]
@@ -168,7 +165,7 @@
 
 
 /******************************************************************************
- * SVC handler is used to start the scheduler and yield a task.
+ * SVC handler is used to start the scheduler.
  *****************************************************************************/
 .align 4
 .type FreeRTOS_SWI_Handler, %function
@@ -177,9 +174,16 @@ FreeRTOS_SWI_Handler:
 	portSAVE_CONTEXT
 	LDR R0, vTaskSwitchContextConst
 	BLX	R0
+	portRESTORE_CONTEXT
 
+
+/******************************************************************************
+ * vPortRestoreTaskContext is used to start the scheduler.
+ *****************************************************************************/
 .type vPortRestoreTaskContext, %function
 vPortRestoreTaskContext:
+	/* Switch to system mode. */
+	CPS		#SYS_MODE
 	portRESTORE_CONTEXT
 
 .align 4

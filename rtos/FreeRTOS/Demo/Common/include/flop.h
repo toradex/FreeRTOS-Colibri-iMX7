@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -66,8 +66,8 @@
 #ifndef FLOP_TASKS_H
 #define FLOP_TASKS_H
 
-void vStartMathTasks( unsigned portBASE_TYPE uxPriority );
-portBASE_TYPE xAreMathsTaskStillRunning( void );
+void vStartMathTasks( UBaseType_t uxPriority );
+BaseType_t xAreMathsTaskStillRunning( void );
 
 #endif
 

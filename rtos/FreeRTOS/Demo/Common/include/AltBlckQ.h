@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -66,8 +66,8 @@
 #ifndef ALT_BLOCK_Q_H
 #define ALT_BLOCK_Q_H
 
-void vStartAltBlockingQueueTasks( unsigned portBASE_TYPE uxPriority );
-portBASE_TYPE xAreAltBlockingQueuesStillRunning( void );
+void vStartAltBlockingQueueTasks( UBaseType_t uxPriority );
+BaseType_t xAreAltBlockingQueuesStillRunning( void );
 
 #endif
 

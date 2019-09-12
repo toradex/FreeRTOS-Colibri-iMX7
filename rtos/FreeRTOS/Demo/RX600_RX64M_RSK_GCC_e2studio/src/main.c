@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -91,8 +91,9 @@
 #include "QueueOverwrite.h"
 #include "EventGroupsDemo.h"
 
-/* Renesas includes. */
+/* Hardware specifics. */
 #include "iodefine.h"
+#include "rskrx64mdef.h"
 
 /* Set option bytes */
 #pragma address OFS0_location = 0xFFFFFF8CUL
@@ -163,6 +164,9 @@ int main( void )
 
 static void prvSetupHardware( void )
 {
+	/* Set up the ports used by the LED outputs (the name ParTest is now
+	obsolete - it originally came from "parallel port test"). */
+	vParTestInitialise();
 }
 /*-----------------------------------------------------------*/
 

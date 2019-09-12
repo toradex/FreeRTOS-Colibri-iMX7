@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -127,7 +127,7 @@ static const char * const pcNewLine = "\r\n";
 
 /*-----------------------------------------------------------*/
 
-void vCDCCommandConsoleStart( uint16_t usStackSize, unsigned portBASE_TYPE uxPriority )
+void vCDCCommandConsoleStart( uint16_t usStackSize, UBaseType_t uxPriority )
 {
 	/* Create the semaphores and mutexes used by the CDC to task interface. */
 	xCDCMutex = xSemaphoreCreateMutex();
@@ -156,7 +156,7 @@ char cRxedChar;
 uint8_t ucInputIndex = 0;
 char *pcOutputString;
 static char cInputString[ cmdMAX_INPUT_SIZE ], cLastInputString[ cmdMAX_INPUT_SIZE ];
-portBASE_TYPE xReturned;
+BaseType_t xReturned;
 
 	( void ) pvParameters;
 
@@ -310,7 +310,7 @@ char cInputChar;
 /* Callback function executed by the USB interrupt when new data arrives. */
 void vCDCNewDataNotify( void )
 {
-portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
 	configASSERT( xNewDataSemaphore );
 

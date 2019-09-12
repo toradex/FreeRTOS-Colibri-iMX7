@@ -1,5 +1,5 @@
 ;/*
-;    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+;    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
 ;    All rights reserved
 ;
 ;
@@ -96,9 +96,6 @@ portSAVE_CONTEXT macro
 ; /**********************************************************************/
 
 portRESTORE_CONTEXT macro
-
-	; Switch to system mode
-	CPS		#SYS_MODE
 
 	; Set the SP to point to the stack of the task being restored.
 	LDR		R0, =pxCurrentTCB

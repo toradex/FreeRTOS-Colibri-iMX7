@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -119,9 +119,9 @@ void vNetifTx( void )
 }
 /*-----------------------------------------------------------*/
 
-unsigned portBASE_TYPE uxNetifRx( void )
+UBaseType_t uxNetifRx( void )
 {
-unsigned portBASE_TYPE xDataLen;
+UBaseType_t xDataLen;
 unsigned char *pucTemp;
 
 	/* Check there is really data available. */
@@ -156,9 +156,9 @@ unsigned char *pucTemp;
 }
 /*-----------------------------------------------------------*/
 
-portBASE_TYPE xNetifInit( void )
+BaseType_t xNetifInit( void )
 {
-portBASE_TYPE x;
+BaseType_t x;
 pcap_if_t *pxAllNetworkInterfaces;
 
 	/* Allocate a free buffer to each buffer pointer. */

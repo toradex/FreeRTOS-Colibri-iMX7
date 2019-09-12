@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -75,10 +75,9 @@
 #include "string.h"
 
 /* Hardware specifics. */
-#include "r_cg_iodefine.h"
+#include "iodefine.h"
 
 /*-----------------------------------------------------------*/
-#define USE_FULL_REGISTER_INITIALISATION
 
 /* Tasks should start with interrupts enabled and in Supervisor mode, therefore
 PSW is set with U and I set, and PM and IPL clear. */
@@ -324,7 +323,7 @@ static void prvYieldHandler( void )
 	/* Save the rest of the general registers (R15 has been saved already). */
 	PUSHM	R1-R14
 
-	/* Save the FPSW and accumulator. */
+	/* Save the FPSW and accumulators. */
 	MVFC	FPSW, R15
 	PUSH.L	R15
 	MVFACGU	#0, A1, R15

@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -66,8 +66,8 @@
 #ifndef FAST_GEN_Q_TEST_H
 #define FAST_GEN_Q_TEST_H
 
-void vStartAltGenericQueueTasks( unsigned portBASE_TYPE uxPriority );
-portBASE_TYPE xAreAltGenericQueueTasksStillRunning( void );
+void vStartAltGenericQueueTasks( UBaseType_t uxPriority );
+BaseType_t xAreAltGenericQueueTasksStillRunning( void );
 
 #endif /* GEN_Q_TEST_H */
 

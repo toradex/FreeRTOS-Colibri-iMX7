@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -67,7 +67,7 @@
 #define QUEUE_WAIT_MULTIPLE_H
 
 void vStartQueueSetTasks( void );
-portBASE_TYPE xAreQueueSetTasksStillRunning( void );
+BaseType_t xAreQueueSetTasksStillRunning( void );
 void vQueueSetAccessQueueSetFromISR( void );
 
 #endif /* QUEUE_WAIT_MULTIPLE_H */

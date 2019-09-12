@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -176,6 +176,15 @@ the CPU itself before modifying certain hardware registers. */
 #define portMAX_8_BIT_VALUE							( ( uint8_t ) 0xff )
 #define portBIT_0_SET								( ( uint8_t ) 0x01 )
 
+/* Let the user override the pre-loading of the initial LR with the address of
+prvTaskExitError() in case is messes up unwinding of the stack in the
+debugger. */
+#ifdef configTASK_RETURN_ADDRESS
+	#define portTASK_RETURN_ADDRESS	configTASK_RETURN_ADDRESS
+#else
+	#define portTASK_RETURN_ADDRESS	prvTaskExitError
+#endif
+
 /*-----------------------------------------------------------*/
 
 /*
@@ -183,6 +192,11 @@ the CPU itself before modifying certain hardware registers. */
  * assembly code so is implemented in portASM.s.
  */
 extern void vPortRestoreTaskContext( void );
+
+/*
+ * Used to catch tasks that attempt to return from their implementing function.
+ */
+static void prvTaskExitError( void );
 
 /*-----------------------------------------------------------*/
 
@@ -243,7 +257,7 @@ StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t px
 	pxTopOfStack--;
 
 	/* Next all the registers other than the stack pointer. */
-	*pxTopOfStack = ( StackType_t ) 0x00000000;	/* R14 */
+	*pxTopOfStack = ( StackType_t ) portTASK_RETURN_ADDRESS;	/* R14 */
 	pxTopOfStack--;
 	*pxTopOfStack = ( StackType_t ) 0x12121212;	/* R12 */
 	pxTopOfStack--;
@@ -283,6 +297,20 @@ StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t px
 	*pxTopOfStack = portNO_FLOATING_POINT_CONTEXT;
 
 	return pxTopOfStack;
+}
+/*-----------------------------------------------------------*/
+
+static void prvTaskExitError( void )
+{
+	/* A function that implements a task must not exit or attempt to return to
+	its caller as there is nothing to return to.  If a task wants to exit it
+	should instead call vTaskDelete( NULL ).
+
+	Artificially force an assert() to be triggered if configASSERT() is
+	defined, then stop here so application writers can catch the error. */
+	configASSERT( ulPortInterruptNesting == ~0UL );
+	portDISABLE_INTERRUPTS();
+	for( ;; );
 }
 /*-----------------------------------------------------------*/
 
@@ -356,7 +384,10 @@ uint32_t ulAPSR;
 
 	/* Will only get here if xTaskStartScheduler() was called with the CPU in
 	a non-privileged mode or the binary point register was not set to its lowest
-	possible value. */
+	possible value.  prvTaskExitError() is referenced to prevent a compiler
+	warning about it being defined but not referenced in the case that the user
+	defines their own exit address. */
+	( void ) prvTaskExitError;
 	return 0;
 }
 /*-----------------------------------------------------------*/
@@ -378,6 +409,16 @@ void vPortEnterCritical( void )
 	directly.  Increment ulCriticalNesting to keep a count of how many times
 	portENTER_CRITICAL() has been called. */
 	ulCriticalNesting++;
+
+	/* This is not the interrupt safe version of the enter critical function so
+	assert() if it is being called from an interrupt context.  Only API
+	functions that end in "FromISR" can be used in an interrupt.  Only assert if
+	the critical nesting count is 1 to protect against recursive calls if the
+	assert function also uses a critical section. */
+	if( ulCriticalNesting == 1 )
+	{
+		configASSERT( ulPortInterruptNesting == 0 );
+	}
 }
 /*-----------------------------------------------------------*/
 
@@ -410,8 +451,8 @@ void FreeRTOS_Tick_Handler( void )
 	updated. */
 	portCPU_IRQ_DISABLE();
 	portICCPMR_PRIORITY_MASK_REGISTER = ( uint32_t ) ( configMAX_API_CALL_INTERRUPT_PRIORITY << portPRIORITY_SHIFT );
-	__asm(	"dsb		\n"
-			"isb		\n" );
+	__asm volatile (	"dsb		\n"
+						"isb		\n" );
 	portCPU_IRQ_ENABLE();
 
 	/* Increment the RTOS tick. */
@@ -435,7 +476,7 @@ uint32_t ulInitialFPSCR = 0;
 	ulPortTaskHasFPUContext = pdTRUE;
 
 	/* Initialise the floating point status register. */
-	__asm( "FMXR 	FPSCR, %0" :: "r" (ulInitialFPSCR) );
+	__asm volatile ( "FMXR 	FPSCR, %0" :: "r" (ulInitialFPSCR) );
 }
 /*-----------------------------------------------------------*/
 
@@ -464,8 +505,8 @@ uint32_t ulReturn;
 	{
 		ulReturn = pdFALSE;
 		portICCPMR_PRIORITY_MASK_REGISTER = ( uint32_t ) ( configMAX_API_CALL_INTERRUPT_PRIORITY << portPRIORITY_SHIFT );
-		__asm(	"dsb		\n"
-				"isb		\n" );
+		__asm volatile (	"dsb		\n"
+							"isb		\n" );
 	}
 	portCPU_IRQ_ENABLE();
 
@@ -490,11 +531,8 @@ uint32_t ulReturn;
 		configMAX_SYSCALL_INTERRUPT_PRIORITY.
 
 		FreeRTOS maintains separate thread and ISR API functions to ensure
-		interrupt entry is as fast and simple as possible.
+		interrupt entry is as fast and simple as possible. */
 
-		The following links provide detailed information:
-		http://www.freertos.org/RTOS-Cortex-M3-M4.html
-		http://www.freertos.org/FAQHelp.html */
 		configASSERT( portICCRPR_RUNNING_PRIORITY_REGISTER >= ( uint32_t ) ( configMAX_API_CALL_INTERRUPT_PRIORITY << portPRIORITY_SHIFT ) );
 
 		/* Priority grouping:  The interrupt controller (GIC) allows the bits
@@ -512,4 +550,6 @@ uint32_t ulReturn;
 
 #endif /* configASSERT_DEFINED */
 /*-----------------------------------------------------------*/
+
+
 

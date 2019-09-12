@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -95,7 +95,7 @@ CYASSL* xCyaSSL_Object;
 WORD wVersionRequested;
 WSADATA xWSAData;
 char cString[ 50 ];
-portBASE_TYPE lReturned;
+BaseType_t lReturned;
 uint32_t ulCount = 0UL;
 
 	/* Remove compiler warning about unused parameters. */

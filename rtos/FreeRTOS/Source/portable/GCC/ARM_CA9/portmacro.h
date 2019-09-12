@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -119,7 +119,7 @@ extern uint32_t ulPortYieldRequired;			\
 }
 
 #define portYIELD_FROM_ISR( x ) portEND_SWITCHING_ISR( x )
-#define portYIELD() __asm( "SWI 0" );
+#define portYIELD() __asm volatile ( "SWI 0" );
 
 
 /*-----------------------------------------------------------

@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -66,8 +66,8 @@
 #ifndef QUEUE_OVERWRITE_H
 #define QUEUE_OVERWRITE_H
 
-void vStartQueueOverwriteTask( unsigned portBASE_TYPE uxPriority );
-portBASE_TYPE xIsQueueOverwriteTaskStillRunning( void );
+void vStartQueueOverwriteTask( UBaseType_t uxPriority );
+BaseType_t xIsQueueOverwriteTaskStillRunning( void );
 void vQueueOverwritePeriodicISRDemo( void );
 
 #endif /* QUEUE_OVERWRITE_H */

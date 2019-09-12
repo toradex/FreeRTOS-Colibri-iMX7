@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -66,6 +66,6 @@
 #ifndef SELECT_SERVER_H
 #define SELECT_SERVER_H
 
-void vStartSelectUDPServerTasks( uint16_t usStackSize, uint32_t ulFirstPortNumber, unsigned portBASE_TYPE uxPriority );
+void vStartSelectUDPServerTasks( uint16_t usStackSize, uint32_t ulFirstPortNumber, UBaseType_t uxPriority );
 
 #endif /* SELECT_SERVER_H */

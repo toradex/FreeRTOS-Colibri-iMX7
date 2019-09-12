@@ -221,16 +221,19 @@ proc ps7_peripherals_init_data_3_0 {} {
     mask_write 0XE000A000 0xFFFFFFFF 0xFF7F0080
     mask_write 0XE000A208 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xFF7F0000
+    mask_delay 0XF8F00200 1
     mask_write 0XE000A000 0xFFFFFFFF 0xFF7F0080
     mask_write 0XE000A204 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xF7FF0800
     mask_write 0XE000A208 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xF7FF0000
+    mask_delay 0XF8F00200 1
     mask_write 0XE000A000 0xFFFFFFFF 0xF7FF0800
     mask_write 0XE000A204 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xDFFF2000
     mask_write 0XE000A208 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xDFFF0000
+    mask_delay 0XF8F00200 1
     mask_write 0XE000A000 0xFFFFFFFF 0xDFFF2000
 }
 proc ps7_post_config_3_0 {} {
@@ -238,6 +241,11 @@ proc ps7_post_config_3_0 {} {
     mask_write 0XF8000900 0x0000000F 0x0000000F
     mask_write 0XF8000240 0xFFFFFFFF 0x00000000
     mask_write 0XF8000004 0x0000FFFF 0x0000767B
+}
+proc ps7_debug_3_0 {} {
+    mask_write 0XF8898FB0 0xFFFFFFFF 0xC5ACCE55
+    mask_write 0XF8899FB0 0xFFFFFFFF 0xC5ACCE55
+    mask_write 0XF8809FB0 0xFFFFFFFF 0xC5ACCE55
 }
 proc ps7_pll_init_data_2_0 {} {
     mask_write 0XF8000008 0x0000FFFF 0x0000DF0D
@@ -463,16 +471,19 @@ proc ps7_peripherals_init_data_2_0 {} {
     mask_write 0XE000A000 0xFFFFFFFF 0xFF7F0080
     mask_write 0XE000A208 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xFF7F0000
+    mask_delay 0XF8F00200 1
     mask_write 0XE000A000 0xFFFFFFFF 0xFF7F0080
     mask_write 0XE000A204 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xF7FF0800
     mask_write 0XE000A208 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xF7FF0000
+    mask_delay 0XF8F00200 1
     mask_write 0XE000A000 0xFFFFFFFF 0xF7FF0800
     mask_write 0XE000A204 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xDFFF2000
     mask_write 0XE000A208 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xDFFF0000
+    mask_delay 0XF8F00200 1
     mask_write 0XE000A000 0xFFFFFFFF 0xDFFF2000
 }
 proc ps7_post_config_2_0 {} {
@@ -480,6 +491,11 @@ proc ps7_post_config_2_0 {} {
     mask_write 0XF8000900 0x0000000F 0x0000000F
     mask_write 0XF8000240 0xFFFFFFFF 0x00000000
     mask_write 0XF8000004 0x0000FFFF 0x0000767B
+}
+proc ps7_debug_2_0 {} {
+    mask_write 0XF8898FB0 0xFFFFFFFF 0xC5ACCE55
+    mask_write 0XF8899FB0 0xFFFFFFFF 0xC5ACCE55
+    mask_write 0XF8809FB0 0xFFFFFFFF 0xC5ACCE55
 }
 proc ps7_pll_init_data_1_0 {} {
     mask_write 0XF8000008 0x0000FFFF 0x0000DF0D
@@ -703,16 +719,19 @@ proc ps7_peripherals_init_data_1_0 {} {
     mask_write 0XE000A000 0xFFFFFFFF 0xFF7F0080
     mask_write 0XE000A208 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xFF7F0000
+    mask_delay 0XF8F00200 1
     mask_write 0XE000A000 0xFFFFFFFF 0xFF7F0080
     mask_write 0XE000A204 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xF7FF0800
     mask_write 0XE000A208 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xF7FF0000
+    mask_delay 0XF8F00200 1
     mask_write 0XE000A000 0xFFFFFFFF 0xF7FF0800
     mask_write 0XE000A204 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xDFFF2000
     mask_write 0XE000A208 0xFFFFFFFF 0x00002880
     mask_write 0XE000A000 0xFFFFFFFF 0xDFFF0000
+    mask_delay 0XF8F00200 1
     mask_write 0XE000A000 0xFFFFFFFF 0xDFFF2000
 }
 proc ps7_post_config_1_0 {} {
@@ -721,9 +740,15 @@ proc ps7_post_config_1_0 {} {
     mask_write 0XF8000240 0xFFFFFFFF 0x00000000
     mask_write 0XF8000004 0x0000FFFF 0x0000767B
 }
+proc ps7_debug_1_0 {} {
+    mask_write 0XF8898FB0 0xFFFFFFFF 0xC5ACCE55
+    mask_write 0XF8899FB0 0xFFFFFFFF 0xC5ACCE55
+    mask_write 0XF8809FB0 0xFFFFFFFF 0xC5ACCE55
+}
 set PCW_SILICON_VER_1_0 "0x0"
 set PCW_SILICON_VER_2_0 "0x1"
 set PCW_SILICON_VER_3_0 "0x2"
+set APU_FREQ  666666666
 
 
 
@@ -740,6 +765,20 @@ proc mask_poll { addr mask } {
           break
         }
     }
+}
+
+
+
+proc mask_delay { addr val } {
+    set delay  [ get_number_of_cycles_for_delay $val ]
+    perf_reset_and_start_timer
+    set curval "0x[string range [mrd $addr] end-8 end]"
+    set maskedval [expr {$curval < $delay}]
+    while { $maskedval == 1 } {
+        set curval "0x[string range [mrd $addr] end-8 end]"
+        set maskedval [expr {$curval < $delay}]
+    }
+    perf_reset_clock 
 }
 
 proc ps_version { } {
@@ -760,6 +799,21 @@ proc ps7_post_config {} {
         ps7_post_config_2_0   
     } else {
         ps7_post_config_3_0   
+    }
+}
+
+proc ps7_debug {} {
+    variable PCW_SILICON_VER_1_0
+    variable PCW_SILICON_VER_2_0
+    variable PCW_SILICON_VER_3_0
+    set sil_ver [ps_version]
+
+    if { $sil_ver == $PCW_SILICON_VER_1_0} {
+        ps7_debug_1_0   
+    } elseif { $sil_ver == $PCW_SILICON_VER_2_0 } {
+        ps7_debug_2_0   
+    } else {
+        ps7_debug_3_0   
     }
 }
 
@@ -792,3 +846,42 @@ proc ps7_init {} {
             #puts "PCW Silicon Version : 3.0"
     }
 }
+
+
+# For delay calculation using global timer 
+
+# start timer 
+ proc perf_start_clock { } {
+
+    #writing SCU_GLOBAL_TIMER_CONTROL register
+
+    mask_write 0xF8F00208 0x00000109 0x00000009
+}
+
+# stop timer and reset timer count regs 
+ proc perf_reset_clock { } {
+	perf_disable_clock
+    mask_write 0xF8F00200 0xFFFFFFFF 0x00000000
+    mask_write 0xF8F00204 0xFFFFFFFF 0x00000000
+}
+
+# Compute mask for given delay in miliseconds
+proc get_number_of_cycles_for_delay { delay } {
+
+  # GTC is always clocked at 1/2 of the CPU frequency (CPU_3x2x)
+  variable APU_FREQ
+  return [ expr ($delay * $APU_FREQ /(2 * 1000))]
+}
+
+
+# stop timer 
+proc perf_disable_clock {} {
+    mask_write 0xF8F00208 0xFFFFFFFF 0x00000000 
+}
+
+proc perf_reset_and_start_timer {} {
+  	    perf_reset_clock 
+	    perf_start_clock 
+}
+
+

@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -217,7 +217,7 @@ const uint32_t ulLongTime_ms = 250UL;
 
 static void prvQueueSendTask( void *pvParameters )
 {
-portTickType xNextWakeTime;
+TickType_t xNextWakeTime;
 const unsigned long ulValueToSend = 100UL;
 
 	/* Remove warning about unused parameters. */

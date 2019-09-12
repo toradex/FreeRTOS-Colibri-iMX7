@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -71,6 +71,6 @@
  * to send to and receive from an echo server.  The other task uses the zero
  * copy interface to send to and receive from an echo server.
  */
-void vStartEchoClientTasks( uint16_t usTaskStackSize, unsigned portBASE_TYPE uxTaskPriority );
+void vStartEchoClientTasks( uint16_t usTaskStackSize, UBaseType_t uxTaskPriority );
 
 #endif /* TWO_ECHO_CLIENTS_H */

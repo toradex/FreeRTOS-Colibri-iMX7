@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.0.1 - Copyright (C) 2014 Real Time Engineers Ltd. 
+    FreeRTOS V8.1.0 - Copyright (C) 2014 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -66,8 +66,8 @@
 #ifndef INTEGER_TASKS_H
 #define INTEGER_TASKS_H
 
-void vStartIntegerMathTasks( unsigned portBASE_TYPE uxPriority );
-portBASE_TYPE xAreIntegerMathsTaskStillRunning( void );
+void vStartIntegerMathTasks( UBaseType_t uxPriority );
+BaseType_t xAreIntegerMathsTaskStillRunning( void );
 
 #endif
 
