@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -152,11 +152,9 @@ void vPortExitCritical( void );
 	/*-----------------------------------------------------------*/
 
 	#ifdef __GNUC__
-		#define portGET_HIGHEST_PRIORITY( uxTopPriority, uxReadyPriorities )	  \
-			__asm volatile(	"mov %0, %%eax									\n\t" \
-							"bsr %%eax, %%eax								\n\t" \
-							"mov %%eax, %1									\n\t" \
-							:"=r"(uxTopPriority) : "r"(uxReadyPriorities) : "eax" )
+		#define portGET_HIGHEST_PRIORITY( uxTopPriority, uxReadyPriorities )	\
+			__asm volatile(	"bsr %1, %0\n\t" 									\
+							:"=r"(uxTopPriority) : "rm"(uxReadyPriorities) : "cc" )
 	#else
 		/* BitScanReverse returns the bit position of the most significant '1'
 		in the word. */

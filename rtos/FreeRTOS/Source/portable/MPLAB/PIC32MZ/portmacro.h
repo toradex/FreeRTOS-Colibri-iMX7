@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -137,7 +137,7 @@ ensure API function and interrupt entry is as fast and as simple as possible. */
 #ifdef configASSERT
 	#define portDISABLE_INTERRUPTS()											\
 	{																			\
-	uint32_t ulStatus;														\
+	uint32_t ulStatus;															\
 																				\
 		/* Mask interrupts at and below the kernel interrupt priority. */		\
 		ulStatus = _CP0_GET_STATUS();											\
@@ -152,7 +152,7 @@ ensure API function and interrupt entry is as fast and as simple as possible. */
 #else /* configASSERT */
 	#define portDISABLE_INTERRUPTS()										\
 	{																		\
-	uint32_t ulStatus;													\
+	uint32_t ulStatus;														\
 																			\
 		/* Mask interrupts at and below the kernel interrupt priority. */	\
 		ulStatus = _CP0_GET_STATUS();										\
@@ -163,7 +163,7 @@ ensure API function and interrupt entry is as fast and as simple as possible. */
 
 #define portENABLE_INTERRUPTS()											\
 {																		\
-uint32_t ulStatus;													\
+uint32_t ulStatus;														\
 																		\
 	/* Unmask all interrupts. */										\
 	ulStatus = _CP0_GET_STATUS();										\
@@ -210,7 +210,7 @@ extern void vPortClearInterruptMaskFromISR( UBaseType_t );
 
 #define portYIELD()								\
 {												\
-uint32_t ulCause;							\
+uint32_t ulCause;								\
 												\
 	/* Trigger software interrupt. */			\
 	ulCause = _CP0_GET_CAUSE();					\

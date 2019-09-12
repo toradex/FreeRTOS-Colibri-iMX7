@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -122,7 +122,7 @@ will remove items as they are added, meaning the send task should always find
 the queue empty. */
 #define mainQUEUE_LENGTH					( 1 )
 
-/* The LED is used to show the demo status. */
+/* The LED is used to show the demo status. (not connected on Rev A hardware) */
 #define mainTOGGLE_LED()	HAL_GPIO_TogglePin( GPIOF, GPIO_PIN_10 )
 
 /*-----------------------------------------------------------*/

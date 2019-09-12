@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -94,6 +94,7 @@
 /* The stack type changes depending on the data model. */
 #if( __DATA_MODEL__ == __DATA_MODEL_SMALL__ )
 	#define portSTACK_TYPE uint16_t
+	#define portPOINTER_SIZE_TYPE uint16_t
 #else
 	#define portSTACK_TYPE uint32_t
 #endif
@@ -113,7 +114,7 @@ typedef unsigned short UBaseType_t;
 /*-----------------------------------------------------------*/
 
 /* Interrupt control macros. */
-#define portDISABLE_INTERRUPTS()	_DINT();_NOP()
+#define portDISABLE_INTERRUPTS()	_DINT(); _NOP()
 #define portENABLE_INTERRUPTS()		_EINT(); _NOP()
 /*-----------------------------------------------------------*/
 

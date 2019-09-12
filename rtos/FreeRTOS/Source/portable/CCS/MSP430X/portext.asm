@@ -1,6 +1,6 @@
 ;
 ;/*
-;    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
+;    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
 ;    All rights reserved
 ;
 ;
@@ -89,7 +89,9 @@ portRESTORE_CONTEXT .macro
 	pop_x	r15
 	mov.w	r15, &usCriticalNesting
 	popm_x	#12, r15
+	nop
 	pop.w	sr
+	nop
 	ret_x
 	.endm
 ;-----------------------------------------------------------

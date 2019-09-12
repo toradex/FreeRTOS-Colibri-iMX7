@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -426,8 +426,8 @@ TickType_t xPeriod;
 			xPeriod = xMinPeriod;
 		}
 
+		/* Change the timer period and start the timer. */
 		xTimerChangePeriod( xTimer, xPeriod, portMAX_DELAY );
-		xTimerStart( xTimer, portMAX_DELAY );
 
 		/* Block waiting for the notification again with a different period.
 		Sometimes the period will be higher than the tasks block time, sometimes
@@ -472,8 +472,10 @@ TickType_t xPeriod;
 
 void xNotifyTaskFromISR( void )
 {
-static BaseType_t xCallCount = 0;
+static BaseType_t xCallCount = 0, xAPIToUse = 0;
 const BaseType_t xCallInterval = pdMS_TO_TICKS( 50 );
+uint32_t ulPreviousValue;
+const uint32_t ulUnexpectedValue = 0xff;
 
 	/* The task performs some tests before starting the timer that gives the
 	notification from this interrupt.  If the timer has not been created yet
@@ -488,7 +490,28 @@ const BaseType_t xCallInterval = pdMS_TO_TICKS( 50 );
 			/* It is time to 'give' the notification again. */
 			xCallCount = 0;
 
-			vTaskNotifyGiveFromISR( xTaskToNotify, NULL );
+			/* Test using both vTaskNotifyGiveFromISR(), xTaskNotifyFromISR()
+			and xTaskNotifyAndQueryFromISR(). */
+			switch( xAPIToUse )
+			{
+				case 0:	vTaskNotifyGiveFromISR( xTaskToNotify, NULL );
+						xAPIToUse++;
+						break;
+
+				case 1:	xTaskNotifyFromISR( xTaskToNotify, 0, eIncrement, NULL );
+						xAPIToUse++;
+						break;
+
+				case 2: ulPreviousValue = ulUnexpectedValue;
+						xTaskNotifyAndQueryFromISR( xTaskToNotify, 0, eIncrement, &ulPreviousValue, NULL );
+						configASSERT( ulPreviousValue != ulUnexpectedValue );
+						xAPIToUse = 0;
+						break;
+
+				default:/* Should never get here!. */
+						break;						
+			}
+			
 			ulTimerNotificationsSent++;
 		}
 	}
@@ -515,7 +538,7 @@ const uint32_t ulMaxSendReceiveDeviation = 5UL;
 
 	/* Check the count of 'takes' from the software timer is keeping track with
 	the amount of 'gives'. */
-	if( ulTimerNotificationsSent > ulTimerNotificationsSent )
+	if( ulTimerNotificationsSent > ulTimerNotificationsReceived )
 	{
 		if( ( ulTimerNotificationsSent - ulTimerNotificationsReceived ) > ulMaxSendReceiveDeviation )
 		{

@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -185,7 +185,8 @@ int main( void )
 
 	/* Start the trace recording - the recording is written to a file if
 	configASSERT() is called. */
-	printf( "\r\nTrace started.  Hit a key to dump trace file to disk.\r\n" );
+	printf( "\r\nTrace started.\r\nThe trace will be dumped to disk if a call to configASSERT() fails.\r\n" );
+	printf( "Uncomment the call to kbhit() in this file to also dump trace with a key press.\r\n" );
 	uiTraceStart();
 
 	/* The mainCREATE_SIMPLE_BLINKY_DEMO_ONLY setting is described at the top
@@ -300,6 +301,8 @@ volatile uint32_t ulSetToNonZeroInDebuggerToContinue = 0;
 	/* Parameters are not used. */
 	( void ) ulLine;
 	( void ) pcFileName;
+
+	printf( "ASSERT! Line %d, file %s\r\n", ulLine, pcFileName );
 
  	taskENTER_CRITICAL();
 	{

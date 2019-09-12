@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -312,12 +312,13 @@ xThreadState *pxThreadState;
 		tick interrupts.  The priority is set below that of the simulated
 		interrupt handler so the interrupt event mutex is used for the
 		handshake / overrun protection. */
-		pvHandle = CreateThread( NULL, 0, prvSimulatedPeripheralTimer, NULL, 0, NULL );
+		pvHandle = CreateThread( NULL, 0, prvSimulatedPeripheralTimer, NULL, CREATE_SUSPENDED, NULL );
 		if( pvHandle != NULL )
 		{
 			SetThreadPriority( pvHandle, THREAD_PRIORITY_BELOW_NORMAL );
 			SetThreadPriorityBoost( pvHandle, TRUE );
 			SetThreadAffinityMask( pvHandle, 0x01 );
+			ResumeThread( pvHandle );
 		}
 
 		/* Start the highest priority task by obtaining its associated thread
@@ -364,6 +365,7 @@ static void prvProcessSimulatedInterrupts( void )
 uint32_t ulSwitchRequired, i;
 xThreadState *pxThreadState;
 void *pvObjectList[ 2 ];
+CONTEXT xContext;
 
 	/* Going to block on the mutex that ensured exclusive access to the simulated
 	interrupt objects, and the event that signals that a simulated interrupt
@@ -424,6 +426,13 @@ void *pvObjectList[ 2 ];
 				/* Suspend the old thread. */
 				pxThreadState = ( xThreadState *) *( ( size_t * ) pvOldCurrentTCB );
 				SuspendThread( pxThreadState->pvThread );
+
+				/* Ensure the thread is actually suspended by performing a 
+				synchronous operation that can only complete when the thread is 
+				actually suspended.  The below code asks for dummy register
+				data. */
+				xContext.ContextFlags = CONTEXT_INTEGER;
+				( void ) GetThreadContext( pxThreadState->pvThread, &xContext );
 
 				/* Obtain the state of the task now selected to enter the
 				Running state. */

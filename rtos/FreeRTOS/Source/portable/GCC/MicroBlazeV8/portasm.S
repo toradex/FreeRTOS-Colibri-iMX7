@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -76,7 +76,7 @@
 
 /* The context is oversized to allow functions called from the ISR to write
 back into the caller stack. */
-#if XPAR_MICROBLAZE_0_USE_FPU != 0
+#if( XPAR_MICROBLAZE_USE_FPU != 0 )
 	#define portCONTEXT_SIZE 136
 	#define portMINUS_CONTEXT_SIZE -136
 #else
@@ -179,7 +179,7 @@ back into the caller stack. */
 	mfs r18, rmsr
 	swi r18, r1, portMSR_OFFSET
 
-	#if XPAR_MICROBLAZE_0_USE_FPU != 0
+	#if( XPAR_MICROBLAZE_USE_FPU != 0 )
 		/* Stack FSR. */
 		mfs r18, rfsr
 		swi r18, r1, portFSR_OFFSET
@@ -232,7 +232,7 @@ back into the caller stack. */
 	lwi r18, r1, portMSR_OFFSET
 	mts rmsr, r18
 
-	#if XPAR_MICROBLAZE_0_USE_FPU != 0
+	#if( XPAR_MICROBLAZE_USE_FPU != 0 )
 		/* Reload the FSR from the stack. */
 		lwi r18, r1, portFSR_OFFSET
 		mts rfsr, r18

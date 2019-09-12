@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -124,8 +124,6 @@
 #include "recmutex.h"
 #include "death.h"
 #include "partest.h"
-#include "comtest2.h"
-#include "serial.h"
 #include "TimerDemo.h"
 #include "QueueOverwrite.h"
 #include "IntQueue.h"
@@ -168,7 +166,7 @@ purpose of ensuring parameters are passed into tasks correctly. */
 /* The base period used by the timer test tasks. */
 #define mainTIMER_TEST_PERIOD				( 50 )
 
-/* The LED is used to show the demo status. */
+/* The LED is used to show the demo status.  (not connected on Rev A hardware) */
 #define mainTOGGLE_LED()	HAL_GPIO_TogglePin( GPIOF, GPIO_PIN_10 )
 
 /*-----------------------------------------------------------*/
@@ -211,7 +209,7 @@ extern void vUSBCommandConsoleStart( uint16_t usStackSize, UBaseType_t uxPriorit
 
 /* The following two variables are used to communicate the status of the
 register check tasks to the check task.  If the variables keep incrementing,
-then the register check tasks has not discovered any errors.  If a variable
+then the register check tasks have not discovered any errors.  If a variable
 stops incrementing, then an error has been found. */
 volatile unsigned long ulRegTest1LoopCounter = 0UL, ulRegTest2LoopCounter = 0UL;
 
@@ -219,7 +217,7 @@ volatile unsigned long ulRegTest1LoopCounter = 0UL, ulRegTest2LoopCounter = 0UL;
 
 void main_full( void )
 {
-	/* Start all the other standard demo/test tasks.  They have not particular
+	/* Start all the other standard demo/test tasks.  They have no particular
 	functionality, but do demonstrate how to use the FreeRTOS API and test the
 	kernel port. */
 	vStartInterruptQueueTasks();
@@ -396,8 +394,7 @@ unsigned long ulErrorFound = pdFALSE;
 		{
 			/* An error has been detected in one of the tasks - flash the LED
 			at a higher frequency to give visible feedback that something has
-			gone wrong (it might just be that the loop back connector required
-			by the comtest tasks has not been fitted). */
+			gone wrong. */
 			xDelayPeriod = mainERROR_CHECK_TASK_PERIOD;
 		}
 	}

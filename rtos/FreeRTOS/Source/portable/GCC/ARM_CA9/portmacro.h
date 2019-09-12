@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -192,7 +192,7 @@ void vPortTaskUsesFPU( void );
 #endif /* configASSERT */
 
 #define portNOP() __asm volatile( "NOP" )
-
+#define portINLINE __inline
 
 #ifdef __cplusplus
 	} /* extern C */

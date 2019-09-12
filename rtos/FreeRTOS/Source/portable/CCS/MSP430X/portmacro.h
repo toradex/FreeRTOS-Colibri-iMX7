@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -96,6 +96,7 @@
 	#define portSTACK_TYPE uint32_t
 #else
 	#define portSTACK_TYPE uint16_t
+	#define portPOINTER_SIZE_TYPE uint16_t
 #endif
 
 typedef portSTACK_TYPE StackType_t;

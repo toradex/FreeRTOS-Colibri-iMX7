@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.1 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -252,7 +252,7 @@ static void prvOptionallyCreateComprehensveTestApplication( void );
 
 /* The following two variables are used to communicate the status of the
 register check tasks to the check software timer.  If the variables keep
-incrementing, then the register check tasks has not discovered any errors.  If
+incrementing, then the register check tasks have not discovered any errors.  If
 a variable stops incrementing, then an error has been found. */
 volatile unsigned long ulRegTest1LoopCounter = 0UL, ulRegTest2LoopCounter = 0UL;
 
