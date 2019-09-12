@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -8,7 +8,7 @@
 
     FreeRTOS is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License (version 2) as published by the
-    Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
+    Free Software Foundation >>>> AND MODIFIED BY <<<< the FreeRTOS exception.
 
     ***************************************************************************
     >>!   NOTE: The modification to the GPL is included to allow you to     !<<
@@ -356,7 +356,7 @@ const uint32_t ulBit0 = 0x01UL, ulBit1 = 0x02UL;
 
 
 	/*--------------------------------------------------------------------------
-	Now try querying the previus value while notifying a task. */
+	Now try querying the previous value while notifying a task. */
 	xTaskNotifyAndQuery( xTaskToNotify, 0x00, eSetBits, &ulPreviousValue );
 	configASSERT( ulNotifiedValue == ( ULONG_MAX & ~( ulBit0 | ulBit1 ) ) );
 
@@ -375,6 +375,28 @@ const uint32_t ulBit0 = 0x01UL, ulBit1 = 0x02UL;
 		configASSERT( ulExpectedValue == ulPreviousValue );
 		ulExpectedValue |= ulLoop;
 	}
+
+
+
+	/* -------------------------------------------------------------------------
+	Clear the previous notifications. */
+	xTaskNotifyWait( ULONG_MAX, 0, &ulNotifiedValue, 0 );
+
+	/* The task should not have any notifications pending, so an attempt to clear
+	the notification state should fail. */
+	configASSERT( xTaskNotifyStateClear( NULL ) == pdFALSE );
+
+	/* Get the task to notify itself.  This is not a normal thing to do, and is
+	only done here for test purposes. */
+	xTaskNotifyAndQuery( xTaskToNotify, ulFirstNotifiedConst, eSetValueWithoutOverwrite, &ulPreviousValue );
+
+	/* Now the notification state should be eNotified, so it should now be
+	possible to clear the notification state. */
+	configASSERT( xTaskNotifyStateClear( NULL ) == pdTRUE );
+	configASSERT( xTaskNotifyStateClear( NULL ) == pdFALSE );
+
+
+
 
 	/* Incremented to show the task is still running. */
 	ulNotifyCycleCount++;
@@ -509,9 +531,9 @@ const uint32_t ulUnexpectedValue = 0xff;
 						break;
 
 				default:/* Should never get here!. */
-						break;						
+						break;
 			}
-			
+
 			ulTimerNotificationsSent++;
 		}
 	}
@@ -556,6 +578,6 @@ const uint32_t ulMultiplier = 0x015a4e35UL, ulIncrement = 1UL;
 
 	/* Utility function to generate a pseudo random number. */
 	ulNextRand = ( ulMultiplier * ulNextRand ) + ulIncrement;
-	return( ( int ) ( ulNextRand >> 16UL ) & 0x7fffUL );
+	return( ( ulNextRand >> 16UL ) & 0x7fffUL );
 }
 /*-----------------------------------------------------------*/

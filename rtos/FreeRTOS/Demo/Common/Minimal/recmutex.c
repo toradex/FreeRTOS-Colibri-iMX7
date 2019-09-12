@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -8,7 +8,7 @@
 
     FreeRTOS is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License (version 2) as published by the
-    Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
+    Free Software Foundation >>>> AND MODIFIED BY <<<< the FreeRTOS exception.
 
     ***************************************************************************
     >>!   NOTE: The modification to the GPL is included to allow you to     !<<
@@ -123,7 +123,7 @@ be overridden by a definition in FreeRTOSConfig.h. */
 #define recmuMAX_COUNT					( 10 )
 
 /* Misc. */
-#define recmuSHORT_DELAY				( 20 / portTICK_PERIOD_MS )
+#define recmuSHORT_DELAY				( pdMS_TO_TICKS( 20 ) )
 #define recmuNO_DELAY					( ( TickType_t ) 0 )
 #define recmuEIGHT_TICK_DELAY			( ( TickType_t ) 8 )
 
@@ -227,6 +227,10 @@ UBaseType_t ux;
 			{
 				xErrorOccurred = pdTRUE;
 			}
+
+			#if( configUSE_PREEMPTION == 0 )
+				taskYIELD();
+			#endif
 		}
 
 		/* Having given it back the same number of times as it was taken, we
@@ -344,7 +348,14 @@ static void prvRecursiveMutexPollingTask( void *pvParameters )
 				error will be latched if the polling task has not returned the
 				mutex by the time this fixed period has expired. */
 				vTaskResume( xBlockingTaskHandle );
-                vTaskResume( xControllingTaskHandle );
+				#if( configUSE_PREEMPTION == 0 )
+					taskYIELD();
+				#endif
+
+				vTaskResume( xControllingTaskHandle );
+				#if( configUSE_PREEMPTION == 0 )
+					taskYIELD();
+				#endif
 
 				/* The other two tasks should now have executed and no longer
 				be suspended. */
@@ -433,7 +444,7 @@ static UBaseType_t uxLastControllingCycles = 0, uxLastBlockingCycles = 0, uxLast
 	}
 	else
 	{
-		xReturn = pdTRUE;
+		xReturn = pdPASS;
 	}
 
 	return xReturn;

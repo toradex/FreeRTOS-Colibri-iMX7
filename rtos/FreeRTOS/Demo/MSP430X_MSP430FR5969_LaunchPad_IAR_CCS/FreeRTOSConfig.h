@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -8,7 +8,7 @@
 
     FreeRTOS is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License (version 2) as published by the
-    Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
+    Free Software Foundation >>>> AND MODIFIED BY <<<< the FreeRTOS exception.
 
     ***************************************************************************
     >>!   NOTE: The modification to the GPL is included to allow you to     !<<
@@ -198,7 +198,7 @@ CLI. */
 #else
 	/* Using the CCS pre-processor constants. */
 	#ifdef __LARGE_DATA_MODEL__
-		#define configMINIMAL_STACK_SIZE		( ( unsigned short ) 80 )
+		#define configMINIMAL_STACK_SIZE		( ( unsigned short ) 85 )
 	#else
 		#define configMINIMAL_STACK_SIZE		( ( unsigned short ) 140 )
 	#endif

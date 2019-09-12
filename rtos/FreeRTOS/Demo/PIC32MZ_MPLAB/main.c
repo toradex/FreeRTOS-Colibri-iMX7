@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.2 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -8,7 +8,7 @@
 
     FreeRTOS is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License (version 2) as published by the
-    Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
+    Free Software Foundation >>>> AND MODIFIED BY <<<< the FreeRTOS exception.
 
     ***************************************************************************
     >>!   NOTE: The modification to the GPL is included to allow you to     !<<
@@ -93,18 +93,29 @@
 #include "ConfigPerformance.h"
 
 /* Core configuration fuse settings */
-#pragma config FMIIEN = OFF, FETHIO = OFF, PGL1WAY = OFF, PMDL1WAY = OFF, IOL1WAY = OFF, FUSBIDIO = OFF
-#pragma config FNOSC = SPLL, FSOSCEN = OFF, IESO = OFF, POSCMOD = EC
-#pragma config OSCIOFNC = OFF, FCKSM = CSECMD, FWDTEN = OFF, FDMTEN = OFF
-#pragma config DMTINTV = WIN_127_128, WDTSPGM = STOP, WINDIS= NORMAL
-#pragma config WDTPS = PS1048576, FWDTWINSZ = WINSZ_25, DMTCNT = DMT31
-#pragma config FPLLIDIV = DIV_3, FPLLRNG = RANGE_13_26_MHZ, FPLLICLK = PLL_POSC
-#pragma config FPLLMULT = MUL_50, FPLLODIV = DIV_2, UPLLFSEL = FREQ_12MHZ, UPLLEN = OFF
-#pragma config EJTAGBEN = NORMAL, DBGPER = PG_ALL, FSLEEP = OFF, FECCCON = OFF_UNLOCKED
-#pragma config BOOTISA = MIPS32, TRCEN = ON, ICESEL = ICS_PGx2, JTAGEN = OFF, DEBUG = ON
-#pragma config CP = OFF
-#pragma config_alt FWDTEN=OFF
-#pragma config_alt USERID = 0x1234u
+#if defined(__32MZ2048ECM144) || defined(__32MZ2048ECH144)
+	#pragma config FMIIEN = OFF, FETHIO = OFF, PGL1WAY = OFF, PMDL1WAY = OFF, IOL1WAY = OFF, FUSBIDIO = OFF
+	#pragma config FNOSC = SPLL, FSOSCEN = OFF, IESO = OFF, POSCMOD = EC
+	#pragma config OSCIOFNC = OFF, FCKSM = CSECMD, FWDTEN = OFF, FDMTEN = OFF
+	#pragma config DMTINTV = WIN_127_128, WDTSPGM = STOP, WINDIS= NORMAL
+	#pragma config WDTPS = PS1048576, FWDTWINSZ = WINSZ_25, DMTCNT = DMT31
+	#pragma config FPLLIDIV = DIV_3, FPLLRNG = RANGE_13_26_MHZ, FPLLICLK = PLL_POSC
+	#pragma config FPLLMULT = MUL_50, FPLLODIV = DIV_2, UPLLFSEL = FREQ_12MHZ, UPLLEN = OFF
+	#pragma config EJTAGBEN = NORMAL, DBGPER = PG_ALL, FSLEEP = OFF, FECCCON = OFF_UNLOCKED
+	#pragma config BOOTISA = MIPS32, TRCEN = ON, ICESEL = ICS_PGx2, JTAGEN = OFF, DEBUG = ON
+	#pragma config CP = OFF
+#elif defined(__32MZ2048EFM144) || defined(__32MZ2048EFH144)
+	#pragma config FMIIEN = OFF, FETHIO = OFF, PGL1WAY = OFF, PMDL1WAY = OFF, IOL1WAY = OFF, FUSBIDIO = OFF
+	#pragma config FNOSC = SPLL, FSOSCEN = OFF, IESO = OFF, POSCMOD = EC
+	#pragma config OSCIOFNC = OFF, FCKSM = CSECMD, FWDTEN = OFF, FDMTEN = OFF
+	#pragma config DMTINTV = WIN_127_128, WDTSPGM = STOP, WINDIS= NORMAL
+	#pragma config WDTPS = PS1048576, FWDTWINSZ = WINSZ_25, DMTCNT = DMT31
+	#pragma config FPLLIDIV = DIV_3, FPLLRNG = RANGE_13_26_MHZ, FPLLICLK = PLL_POSC
+	#pragma config FPLLMULT = MUL_50, FPLLODIV = DIV_2, UPLLFSEL = FREQ_12MHZ
+	#pragma config EJTAGBEN = NORMAL, DBGPER = PG_ALL, FSLEEP = OFF, FECCCON = OFF_UNLOCKED
+	#pragma config BOOTISA = MIPS32, TRCEN = ON, ICESEL = ICS_PGx2, JTAGEN = OFF, DEBUG = ON
+	#pragma config CP = OFF
+#endif
 
 /*-----------------------------------------------------------*/
 
@@ -274,27 +285,33 @@ static enum {
 	EXCEP_CpU, 		/* coprocessor unusable */
 	EXCEP_Overflow,	/* arithmetic overflow */
 	EXCEP_Trap, 	/* trap (possible divide by zero) */
+	EXCEP_FPE = 15, /* floating point exception */
 	EXCEP_IS1 = 16,	/* implementation specfic 1 */
 	EXCEP_CEU, 		/* CorExtend Unuseable */
-	EXCEP_C2E 		/* coprocessor 2 */
+	EXCEP_C2E, 		/* coprocessor 2 */
+	EXCEP_DSPDis = 26   /* DSP module disabled */
 } _excep_code;
 
 static unsigned long _epc_code;
 static unsigned long _excep_addr;
 
-    asm volatile( "mfc0 %0,$13" : "=r" (_epc_code) );
-    asm volatile( "mfc0 %0,$14" : "=r" (_excep_addr) );
+	asm volatile( "mfc0 %0,$13" : "=r" (_epc_code) );
+	asm volatile( "mfc0 %0,$14" : "=r" (_excep_addr) );
 
-    _excep_code = ( _epc_code & 0x0000007C ) >> 2;
+	_excep_code = ( _epc_code & 0x0000007C ) >> 2;
 
     for( ;; )
 	{
+		/* prevent compiler warning */
+		(void) _excep_code;
+
 		/* Examine _excep_code to identify the type of exception.  Examine
 		_excep_addr to find the address that caused the exception */
 		LATHSET = 0x0007;
 		Nop();
 		Nop();
 		Nop();
-    }
+	}
 }
+/*-----------------------------------------------------------*/
 
