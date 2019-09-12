@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.0rc1 - Copyright (C) 2014 Real Time Engineers Ltd.
+    FreeRTOS V8.2.0 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -10,26 +10,17 @@
     the terms of the GNU General Public License (version 2) as published by the
     Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
 
+	***************************************************************************
     >>!   NOTE: The modification to the GPL is included to allow you to     !<<
     >>!   distribute a combined work that includes FreeRTOS without being   !<<
     >>!   obliged to provide the source code for proprietary components     !<<
     >>!   outside of the FreeRTOS kernel.                                   !<<
+	***************************************************************************
 
     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
     FOR A PARTICULAR PURPOSE.  Full license text is available on the following
     link: http://www.freertos.org/a00114.html
-
-    1 tab == 4 spaces!
-
-    ***************************************************************************
-     *                                                                       *
-     *    Having a problem?  Start by reading the FAQ "My application does   *
-     *    not run, what could be wrong?".  Have you defined configASSERT()?  *
-     *                                                                       *
-     *    http://www.FreeRTOS.org/FAQHelp.html                               *
-     *                                                                       *
-    ***************************************************************************
 
     ***************************************************************************
      *                                                                       *
@@ -45,35 +36,18 @@
      *                                                                       *
     ***************************************************************************
 
-    ***************************************************************************
-     *                                                                       *
-     *   Investing in training allows your team to be as productive as       *
-     *   possible as early as possible, lowering your overall development    *
-     *   cost, and enabling you to bring a more robust product to market     *
-     *   earlier than would otherwise be possible.  Richard Barry is both    *
-     *   the architect and key author of FreeRTOS, and so also the world's   *
-     *   leading authority on what is the world's most popular real time     *
-     *   kernel for deeply embedded MCU designs.  Obtaining your training    *
-     *   from Richard ensures your team will gain directly from his in-depth *
-     *   product knowledge and years of usage experience.  Contact Real Time *
-     *   Engineers Ltd to enquire about the FreeRTOS Masterclass, presented  *
-     *   by Richard Barry:  http://www.FreeRTOS.org/contact
-     *                                                                       *
-    ***************************************************************************
+    http://www.FreeRTOS.org/FAQHelp.html - Having a problem?  Start by reading
+	the FAQ page "My application does not run, what could be wrong?".  Have you
+	defined configASSERT()?
 
-    ***************************************************************************
-     *                                                                       *
-     *    You are receiving this top quality software for free.  Please play *
-     *    fair and reciprocate by reporting any suspected issues and         *
-     *    participating in the community forum:                              *
-     *    http://www.FreeRTOS.org/support                                    *
-     *                                                                       *
-     *    Thank you!                                                         *
-     *                                                                       *
-    ***************************************************************************
+	http://www.FreeRTOS.org/support - In return for receiving this top quality
+	embedded software for free we request you assist our global community by
+	participating in the support forum.
 
-    http://www.FreeRTOS.org - Documentation, books, training, latest versions,
-    license and Real Time Engineers Ltd. contact details.
+	http://www.FreeRTOS.org/training - Investing in training allows your team to
+	be as productive as possible as early as possible.  Now you can receive
+	FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
+	Ltd, and the world's leading authority on the world's leading RTOS.
 
     http://www.FreeRTOS.org/plus - A selection of FreeRTOS ecosystem products,
     including FreeRTOS+Trace - an indispensable productivity tool, a DOS
@@ -82,7 +56,7 @@
     http://www.FreeRTOS.org/labs - Where new FreeRTOS products go to incubate.
     Come and try FreeRTOS+TCP, our new open source TCP/IP stack for FreeRTOS.
 
-    http://www.OpenRTOS.com - Real Time Engineers ltd license FreeRTOS to High
+    http://www.OpenRTOS.com - Real Time Engineers ltd. license FreeRTOS to High
     Integrity Systems ltd. to sell under the OpenRTOS brand.  Low cost OpenRTOS
     licenses offer ticketed support, indemnification and commercial middleware.
 
@@ -280,7 +254,8 @@ void vRegisterCLICommands( void )
 
 static BaseType_t prvTaskStatsCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
-const char *const pcHeader = "Task          State  Priority  Stack	#\r\n************************************************\r\n";
+const char *const pcHeader = "  State\tPriority\tStack\t#\r\n************************************************\r\n";
+BaseType_t xSpacePadding;
 
 	/* Remove compile time warnings about unused parameters, and check the
 	write buffer is not NULL.  NOTE - for simplicity, this example assumes the
@@ -290,6 +265,22 @@ const char *const pcHeader = "Task          State  Priority  Stack	#\r\n********
 	configASSERT( pcWriteBuffer );
 
 	/* Generate a table of task stats. */
+	strcpy( pcWriteBuffer, "Task" );
+	pcWriteBuffer += strlen( pcWriteBuffer );
+
+	/* Pad the string "task" with however many bytes necessary to make it the
+	length of a task name.  Minus three for the null terminator and half the 
+	number of characters in	"Task" so the column lines up with the centre of 
+	the heading. */
+	for( xSpacePadding = strlen( "Task" ); xSpacePadding < ( configMAX_TASK_NAME_LEN - 3 ); xSpacePadding++ )
+	{
+		/* Add a space to align columns after the task's name. */
+		*pcWriteBuffer = ' ';
+		pcWriteBuffer++;
+
+		/* Ensure always terminated. */
+		*pcWriteBuffer = 0x00;
+	}
 	strcpy( pcWriteBuffer, pcHeader );
 	vTaskList( pcWriteBuffer + strlen( pcHeader ) );
 
@@ -301,7 +292,8 @@ const char *const pcHeader = "Task          State  Priority  Stack	#\r\n********
 
 static BaseType_t prvRunTimeStatsCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
-const char * const pcHeader = "Task            Abs Time      % Time\r\n****************************************\r\n";
+const char * const pcHeader = "  Abs Time      % Time\r\n****************************************\r\n";
+BaseType_t xSpacePadding;
 
 	/* Remove compile time warnings about unused parameters, and check the
 	write buffer is not NULL.  NOTE - for simplicity, this example assumes the
@@ -311,6 +303,23 @@ const char * const pcHeader = "Task            Abs Time      % Time\r\n*********
 	configASSERT( pcWriteBuffer );
 
 	/* Generate a table of task stats. */
+	strcpy( pcWriteBuffer, "Task" );
+	pcWriteBuffer += strlen( pcWriteBuffer );
+
+	/* Pad the string "task" with however many bytes necessary to make it the
+	length of a task name.  Minus three for the null terminator and half the 
+	number of characters in	"Task" so the column lines up with the centre of 
+	the heading. */
+	for( xSpacePadding = strlen( "Task" ); xSpacePadding < ( configMAX_TASK_NAME_LEN - 3 ); xSpacePadding++ )
+	{
+		/* Add a space to align columns after the task's name. */
+		*pcWriteBuffer = ' ';
+		pcWriteBuffer++;
+
+		/* Ensure always terminated. */
+		*pcWriteBuffer = 0x00;
+	}
+
 	strcpy( pcWriteBuffer, pcHeader );
 	vTaskGetRunTimeStats( pcWriteBuffer + strlen( pcHeader ) );
 
