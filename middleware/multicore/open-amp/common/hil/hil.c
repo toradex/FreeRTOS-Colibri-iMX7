@@ -291,7 +291,7 @@ int hil_enable_vring_notifications(int vring_index, struct virtqueue *vq) {
     vring_hw->vq = vq;
 
     if (proc_hw->ops->enable_interrupt) {
-        proc_hw->ops->enable_interrupt(vring_hw);       /*_enable_interrupt*/
+        proc_hw->ops->enable_interrupt(vring_hw);
     }
 
     return 0;
@@ -312,7 +312,7 @@ void hil_vring_notify(struct virtqueue *vq) {
     struct proc_vring *vring_hw = &proc_hw->vdev.vring_info[vq->vq_queue_index];
 
     if (proc_hw->ops->notify) {
-        proc_hw->ops->notify(proc_hw->cpu_id, &vring_hw->intr_info);    /*_notify*/
+        proc_hw->ops->notify(proc_hw->cpu_id, &vring_hw->intr_info);
     }
 }
 

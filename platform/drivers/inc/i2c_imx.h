@@ -48,41 +48,35 @@
 /*! @brief I2C module initialize structure. */
 typedef struct _i2c_init_config
 {
-    uint32_t clockRate;       /*!< Current I2C module clock freq. */
-    uint32_t baudRate;        /*!< Desired I2C baud rate. */
-    uint8_t  slaveAddress;    /*!< I2C module's own address when addressed as slave device. */
+    uint32_t clockRate;    /*!< Current I2C module clock freq. */
+    uint32_t baudRate;     /*!< Desired I2C baud rate. */
+    uint8_t  slaveAddress; /*!< I2C module's own address when addressed as slave device. */
 } i2c_init_config_t;
 
-/*!
- * @brief Flag for I2C interrupt status check or polling status.
- */
+/*! @brief Flag for I2C interrupt status check or polling status. */
 enum _i2c_status_flag
 {
-    i2cStatusTransferComplete    = I2C_I2SR_ICF_MASK,
-    i2cStatusAddressedAsSlave    = I2C_I2SR_IAAS_MASK,
-    i2cStatusBusBusy             = I2C_I2SR_IBB_MASK,
-    i2cStatusArbitrationLost     = I2C_I2SR_IAL_MASK,
-    i2cStatusSlaveReadWrite      = I2C_I2SR_SRW_MASK,
-    i2cStatusInterrupt           = I2C_I2SR_IIF_MASK,
-    i2cStatusReceivedAck         = I2C_I2SR_RXAK_MASK
+    i2cStatusTransferComplete = I2C_I2SR_ICF_MASK,  /*!< Data Transfer complete flag. */
+    i2cStatusAddressedAsSlave = I2C_I2SR_IAAS_MASK, /*!< Addressed as a slave flag. */
+    i2cStatusBusBusy          = I2C_I2SR_IBB_MASK,  /*!< Bus is busy flag. */
+    i2cStatusArbitrationLost  = I2C_I2SR_IAL_MASK,  /*!< Arbitration is lost flag. */
+    i2cStatusSlaveReadWrite   = I2C_I2SR_SRW_MASK,  /*!< Master reading from slave flag(De-assert if master writing to slave). */
+    i2cStatusInterrupt        = I2C_I2SR_IIF_MASK,  /*!< An interrupt is pending flag. */
+    i2cStatusReceivedAck      = I2C_I2SR_RXAK_MASK, /*!< No acknowledge detected flag. */
 };
 
-/*!
- * @brief I2C Bus role of this module.
- */
+/*! @brief I2C Bus role of this module. */
 enum _i2c_work_mode
 {
-    i2cModeSlave  = 0x0,
-    i2cModeMaster = I2C_I2CR_MSTA_MASK
+    i2cModeSlave  = 0x0,                /*!< This module works as I2C Slave. */
+    i2cModeMaster = I2C_I2CR_MSTA_MASK, /*!< This module works as I2C Master. */
 };
 
-/*!
- * @brief Data transfer direction.
- */
+/*! @brief Data transfer direction. */
 enum _i2c_direction_mode
 {
-    i2cDirectionReceive  = 0x0,
-    i2cDirectionTransmit = I2C_I2CR_MTX_MASK
+    i2cDirectionReceive  = 0x0,               /*!< This module works at receive mode. */
+    i2cDirectionTransmit = I2C_I2CR_MTX_MASK, /*!< This module works at transmit mode. */
 };
 
 /*******************************************************************************
@@ -102,9 +96,9 @@ extern "C" {
  * @brief Initialize I2C module with given initialize structure.
  *
  * @param base I2C base pointer.
- * @param initConfig I2C initialize structure(see i2c_init_config_t above).
+ * @param initConfig I2C initialize structure (see @ref i2c_init_config_t).
  */
-void I2C_Init(I2C_Type* base, i2c_init_config_t* initConfig);
+void I2C_Init(I2C_Type* base, const i2c_init_config_t* initConfig);
 
 /*!
  * @brief This function reset I2C module register content to its default value.
@@ -151,6 +145,7 @@ void I2C_SetBaudRate(I2C_Type* base, uint32_t clockRate, uint32_t baudRate);
 static inline void I2C_SetSlaveAddress(I2C_Type* base, uint8_t slaveAddress)
 {
     assert(slaveAddress < 0x80);
+
     I2C_IADR_REG(base) = (I2C_IADR_REG(base) & ~I2C_IADR_ADR_MASK) | I2C_IADR_ADR(slaveAddress);
 }
 
@@ -174,11 +169,12 @@ static inline void I2C_SendRepeatStart(I2C_Type* base)
  *        both I2C Bus Master and Slave can be select.
  *
  * @param base I2C base pointer.
- * @param mode I2C Bus role to set (see _i2c_work_mode enumeration).
+ * @param mode I2C Bus role to set (see @ref _i2c_work_mode enumeration).
  */
 static inline void I2C_SetWorkMode(I2C_Type* base, uint32_t mode)
 {
     assert((mode == i2cModeMaster) || (mode == i2cModeSlave));
+
     I2C_I2CR_REG(base) = (I2C_I2CR_REG(base) & ~I2C_I2CR_MSTA_MASK) | mode;
 }
 
@@ -187,11 +183,12 @@ static inline void I2C_SetWorkMode(I2C_Type* base, uint32_t mode)
  *        both Transmit and Receive can be select.
  *
  * @param base I2C base pointer.
- * @param direction I2C Bus data transfer direction (see _i2c_direction_mode enumeration).
+ * @param direction I2C Bus data transfer direction (see @ref _i2c_direction_mode enumeration).
  */
 static inline void I2C_SetDirMode(I2C_Type* base, uint32_t direction)
 {
     assert((direction == i2cDirectionReceive) || (direction == i2cDirectionTransmit));
+
     I2C_I2CR_REG(base) = (I2C_I2CR_REG(base) & ~I2C_I2CR_MTX_MASK) | direction;
 }
 
@@ -200,8 +197,9 @@ static inline void I2C_SetDirMode(I2C_Type* base, uint32_t direction)
  *        data from other device.
  *
  * @param base I2C base pointer.
- * @param ack  true: An acknowledge signal is sent to the bus at the ninth clock bit
- *             false: No acknowledge signal response is sent
+ * @param ack The ACK value answerback to remote I2C device.
+ *            - true: An acknowledge signal is sent to the bus at the ninth clock bit.
+ *            - false: No acknowledge signal response is sent.
  */
 void I2C_SetAckBit(I2C_Type* base, bool ack);
 
@@ -213,7 +211,7 @@ void I2C_SetAckBit(I2C_Type* base, bool ack);
 /*!
  * @brief Writes one byte of data to the I2C bus.
  *
- * @param base The I2C peripheral base pointer.
+ * @param base I2C base pointer.
  * @param byte The byte of data to transmit.
  */
 static inline void I2C_WriteByte(I2C_Type* base, uint8_t byte)
@@ -226,9 +224,9 @@ static inline void I2C_WriteByte(I2C_Type* base, uint8_t byte)
  *
  * In a master receive mode, calling this function initiates receiving the next byte of data.
  *
- * @param base The I2C peripheral base pointer
+ * @param base I2C base pointer.
  * @return This function returns the last byte received while the I2C module is configured in master
- *     receive or slave receive mode.
+ *         receive or slave receive mode.
  */
 static inline uint8_t I2C_ReadByte(I2C_Type* base)
 {
@@ -241,10 +239,12 @@ static inline uint8_t I2C_ReadByte(I2C_Type* base)
  */
 
 /*!
- * @brief Enables or disables I2C interrupt requests.
+ * @brief Enable or disable I2C interrupt requests.
  *
- * @param base The I2C peripheral base pointer
- * @param enable   Pass true to enable interrupt, false to disable.
+ * @param base I2C base pointer.
+ * @param enable Enable/Disbale I2C interrupt.
+ *               - true: Enable I2C interrupt.
+ *               - false: Disable I2C interrupt.
  */
 void I2C_SetIntCmd(I2C_Type* base, bool enable);
 
@@ -252,7 +252,7 @@ void I2C_SetIntCmd(I2C_Type* base, bool enable);
  * @brief Gets the I2C status flag state.
  *
  * @param base I2C base pointer.
- * @param flags I2C status flag mask defined in _i2c_status_flag enumeration.
+ * @param flags I2C status flag mask (see @ref _i2c_status_flag enumeration.)
  * @return I2C status, each bit represents one status flag
  */
 static inline uint32_t I2C_GetStatusFlag(I2C_Type* base, uint32_t flags)
@@ -264,7 +264,7 @@ static inline uint32_t I2C_GetStatusFlag(I2C_Type* base, uint32_t flags)
  * @brief Clear one or more I2C status flag state.
  *
  * @param base I2C base pointer.
- * @param flags I2C status flag mask defined in _i2c_status_flag enumeration.
+ * @param flags I2C status flag mask (see @ref _i2c_status_flag enumeration.)
  */
 static inline void I2C_ClearStatusFlag(I2C_Type* base, uint32_t flags)
 {

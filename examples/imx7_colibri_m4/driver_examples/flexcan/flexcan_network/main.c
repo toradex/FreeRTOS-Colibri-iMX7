@@ -122,7 +122,7 @@ void init_flexcan(void)
 void init_gpt(void)
 {
     uint32_t freq;
-    gpt_mode_config_t config = {
+    gpt_init_config_t config = {
         .freeRun     = false,
         .waitEnable  = true,
         .stopEnable  = true,

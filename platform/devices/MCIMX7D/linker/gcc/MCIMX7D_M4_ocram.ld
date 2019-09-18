@@ -1,28 +1,79 @@
 /*
+** ###################################################################
+**     Processors:          MCIMX7D7DVK10SA
+**                          MCIMX7D7DVM10SA
+**                          MCIMX7D3DVK10SA
+**                          MCIMX7D3EVM10SA
+**
+**     Compiler:            GNU C Compiler
+**     Reference manual:    IMX7DRM, Rev.A, February 2015
+**     Version:             rev. 1.0, 2015-05-19
+**
+**     Abstract:
+**         Linker file for the GNU C Compiler
+**
+**     Copyright (c) 2015 Freescale Semiconductor, Inc.
+**     All rights reserved.
+**
+**     Redistribution and use in source and binary forms, with or without modification,
+**     are permitted provided that the following conditions are met:
+**
+**     o Redistributions of source code must retain the above copyright notice, this list
+**       of conditions and the following disclaimer.
+**
+**     o Redistributions in binary form must reproduce the above copyright notice, this
+**       list of conditions and the following disclaimer in the documentation and/or
+**       other materials provided with the distribution.
+**
+**     o Neither the name of Freescale Semiconductor, Inc. nor the names of its
+**       contributors may be used to endorse or promote products derived from this
+**       software without specific prior written permission.
+**
+**     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+**     ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+**     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+**     DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+**     ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+**     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+**     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+**     ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+**     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+**     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+**
+**     http:                 www.freescale.com
+**     mail:                 support@freescale.com
+**
+** ###################################################################
+*/
+/*
  Linker file for Colibri i.MX7S and Colibri i.MX7D
  Storing code and data in the TCML / TCMU sections
 
-      __etext +-------------+
-              |             |  ^
-              |    code     |  |m_text_size
-              |             |  v
- m_text_start +-------------+
+   __FLASH_END +-------------+
+               |             |  ^
+               |   m_text    |  |LENGTH(m_text)
+               |             |  v
+               +-------------+  
+               |             |  ^
+               |m_interrupts |  |LENGTH(m_interrupts)
+               |             |  v
+ __FLASH_START +-------------+
 
 
-   __StackTop +-------------+
-              |             |  ^  ^
-              |    stack    |  |  |STACK_SIZE
-              |             |  |  v
- __StackLimit +-------------+  |
-  __HeapLimit +-------------+  |
-              |             |  |  ^
-              |    heap     |  |  |HEAP_SIZE
-              |             |  |  v
-   __HeapBase +-------------+  |
-              |             |  |m_data_size
-              | normal data |  |
-              |             |  v
- m_data_start +-------------+
+    __StackTop +-------------+
+               |             |  ^  ^
+               |    stack    |  |  |STACK_SIZE
+               |             |  |  v
+  __StackLimit +-------------+  |
+   __HeapLimit +-------------+  |
+               |             |  |  ^
+               |    heap     |  |  |HEAP_SIZE
+               |             |  |  v
+    __HeapBase +-------------+  |
+               |             |  |LENGTH(m_data)
+               | normal data |  |
+               |             |  v
+  m_data_start +-------------+
 */
 
 TCML_code         = 0x1fff8000;
@@ -31,43 +82,49 @@ OCRAM_code        = 0x00900000;
 OCRAM_system      = 0x20200000;
 OCRAM_EPDC_code   = 0x00920000;
 OCRAM_EPDC_system = 0x20220000;
+DDR_code          = 0x10000000;
+DDR_system        = 0x80000000;
 
 
 /* Code execution after reset starts here: */
 ENTRY(Reset_Handler)
 
-STACK_SIZE = 0x400;
-HEAP_SIZE  = 0x200;
+HEAP_SIZE  = DEFINED(__heap_size__)  ? __heap_size__  : 0x0400;
+STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x0400;
+
 /* Specify the memory areas */
 MEMORY
 {
-  m_text    (RX)  : ORIGIN = OCRAM_EPDC_code, LENGTH = 0x00020000
-  m_data    (RW)  : ORIGIN = TCMU_system,     LENGTH = 0x00007FFF
+  m_interrupts  (RX)  : ORIGIN = OCRAM_system + 0x10000,         LENGTH = 0x00000240
+  m_text        (RX)  : ORIGIN = OCRAM_system + 0x10000 + 0x240, LENGTH = 0x00008000 - 0x240
+  m_data        (RW)  : ORIGIN = TCMU_system,                    LENGTH = 0x00008000
 }
 
+__FLASH_START = ORIGIN(m_interrupts);
+__FLASH_END   = ORIGIN(m_text) + LENGTH(m_text);
+
+/* Define output sections */
 SECTIONS
 {
+  /* The startup code goes first into Flash */
   .interrupts :
   {
     __VECTOR_TABLE = .;
     . = ALIGN(4);
     KEEP(*(.isr_vector))     /* Startup code */
     . = ALIGN(4);
-  } > m_text
+  } > m_interrupts
 
-  __VECTOR_RAM = __VECTOR_TABLE;
-  __RAM_VECTOR_TABLE_SIZE_BYTES = 0x0;
-
-
+  /* The program code and other data goes into Flash */
   .text :
   {
     . = ALIGN(4);
-    *(.text)                 /* code */
-    *(.text*)
-    *(.rodata)               /* strings and constants */
-    *(.rodata*)
-    *(.glue_7)               /* thumb <-> arm32 code */
-    *(.glue_7t)
+    *(.text)                 /* .text sections (code) */
+    *(.text*)                /* .text* sections (code) */
+    *(.rodata)               /* .rodata sections (constants, strings, etc.) */
+    *(.rodata*)              /* .rodata* sections (constants, strings, etc.) */
+    *(.glue_7)               /* glue arm to thumb code */
+    *(.glue_7t)              /* glue thumb to arm code */
     *(.eh_frame)
     KEEP (*(.init))
     KEEP (*(.fini))
@@ -89,16 +146,21 @@ SECTIONS
  .ctors :
   {
     __CTOR_LIST__ = .;
-    /* gcc uses crtbegin.o to find the start of the constructors, so we make
-       sure it is first.  Because this is a wildcard, it doesn't matter if
-       the user does not actually link against crtbegin.o; the linker won't
-       look for a file to match a wildcard.  The wildcard also means that it
-       doesn't matter which directory crtbegin.o is in.  */
+    /* gcc uses crtbegin.o to find the start of
+       the constructors, so we make sure it is
+       first.  Because this is a wildcard, it
+       doesn't matter if the user does not
+       actually link against crtbegin.o; the
+       linker won't look for a file to match a
+       wildcard.  The wildcard also means that it
+       doesn't matter which directory crtbegin.o
+       is in.  */
     KEEP (*crtbegin.o(.ctors))
     KEEP (*crtbegin?.o(.ctors))
-    /* We don't want to include the .ctor section from the crtend.o file
-       until after the sorted ctors. The .ctor section from the crtend file
-       contains the end of ctors marker and it must be last */
+    /* We don't want to include the .ctor section from
+       from the crtend.o file until after the sorted ctors.
+       The .ctor section from the crtend file contains the
+       end of ctors marker and it must be last */
     KEEP (*(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors))
     KEEP (*(SORT(.ctors.*)))
     KEEP (*(.ctors))
@@ -139,22 +201,24 @@ SECTIONS
     PROVIDE_HIDDEN (__fini_array_end = .);
   } > m_text
 
-  __etext = .;              /* create a global symbol at end of code */
-  __DATA_ROM = .;           /* Used by startup for data initialization */
+  __etext = .;    /* define a global symbol at end of code */
+  __DATA_ROM = .; /* Symbol is used by startup for data initialization */
 
   .data : AT(__DATA_ROM)
   {
     . = ALIGN(4);
     __DATA_RAM = .;
     __data_start__ = .;      /* create a global symbol at data start */
-    *(.data)                 /* regular data */
-    *(.data*)
+    *(.data)                 /* .data sections */
+    *(.data*)                /* .data* sections */
     KEEP(*(.jcr*))
     . = ALIGN(4);
     __data_end__ = .;        /* define a global symbol at data end */
   } > m_data
 
   __DATA_END = __DATA_ROM + (__data_end__ - __data_start__);
+  text_end = ORIGIN(m_text) + LENGTH(m_text);
+  ASSERT(__DATA_END <= text_end, "region m_text overflowed with text and data")
 
   /* Uninitialized data section */
   .bss :
@@ -171,7 +235,6 @@ SECTIONS
     __END_BSS = .;
   } > m_data
 
-  /* Heap follows right behind the regular data */
   .heap :
   {
     . = ALIGN(8);
@@ -181,19 +244,19 @@ SECTIONS
     . += HEAP_SIZE;
     __HeapLimit = .;
   } > m_data
+
   .stack :
   {
     . = ALIGN(8);
     . += STACK_SIZE;
   } > m_data
+
   /* Initializes stack on the end of block */
   __StackTop   = ORIGIN(m_data) + LENGTH(m_data);
   __StackLimit = __StackTop - STACK_SIZE;
   PROVIDE(__stack = __StackTop);
+
   .ARM.attributes 0 : { *(.ARM.attributes) }
 
-  ASSERT(__StackLimit >= __HeapLimit, "stack and heap overflow")
- }
-
-
-
+  ASSERT(__StackLimit >= __HeapLimit, "region m_data overflowed with stack and heap")
+}

@@ -65,7 +65,7 @@ void hardware_init(void)
     CCM_ControlGate(CCM, ccmCcgrGateSema1, ccmClockNeededRunWait);
 
     /* Enable gpio clock gate, led and key share same CCGR on this board */
-    CCM_ControlGate(CCM, BOARD_GPIO_CCM_CCGR, ccmClockNeededRunWait);
+    CCM_ControlGate(CCM, BOARD_GPIO_KEY_CCM_CCGR, ccmClockNeededRunWait);
 
     /* Configure gpio pin IOMUX */
     configure_gpio_pin(BOARD_GPIO_KEY_CONFIG);

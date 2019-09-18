@@ -2,6 +2,7 @@
  * Copyright (c) 2014, Mentor Graphics Corporation
  * All rights reserved.
  * Copyright (c) 2015 Xilinx, Inc. All rights reserved.
+ * Copyright (c) 2015 Freescale Semiconductor, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -46,6 +47,7 @@
  *
  **************************************************************************/
 #include "rpmsg.h"
+#include <assert.h>
 
 /* Internal functions */
 static void rpmsg_rx_callback(struct virtqueue *vq);
@@ -75,12 +77,6 @@ int rpmsg_start_ipc(struct remote_device *rdev) {
     virt_dev = &rdev->virt_dev;
 
     /* Initialize names and callbacks based on the device role */
-    /*
-     *                  virtqueue[0]                            virtqueue[1]
-     *      MASTER      "tx_vq", "rpmsg_tx_callback"            "rx_vq", "rpmsg_rx_callback"
-     *
-     *      REMOTE      "rx_vq", "rpmsg_rx_callback"            "tx_vq", "rpmsg_tx_callback"
-     */
     if (rdev->role == RPMSG_MASTER) {
         vq_names[0] = "tx_vq";
         vq_names[1] = "rx_vq";
@@ -94,30 +90,21 @@ int rpmsg_start_ipc(struct remote_device *rdev) {
     }
 
     /* Create virtqueues for remote device */
-    /*
-     * the 2 created virtqueues are assigned to rdev's tvq and rvq respectively
-     * regarding on the MATER/REMOTE role
-     *
-     * REMOTE:  proc_table.vring_info[0]   "tx_vq"     "rpmsg_tx_callback"     "rdev->tvq" -> "vqs[0]"
-     *          proc_table.vring_info[1]   "rx_vq"     "rpmsg_rx_callback"     "rdev->rvq" -> "vqs[1]"
-     * MASTER:  proc_table.vring_info[0]   "rx_vq"     "rpmsg_rx_callback"     "rdev->rvq" -> "vqs[0]"
-     *          proc_table.vring_info[1]   "tx_vq"     "rpmsg_tx_callback"     "rdev->tvq" -> "vqs[1]"
-     */
-    status = virt_dev->func->create_virtqueues(virt_dev, 0,                 /*rpmsg_rdev_create_virtqueues*/
+    status = virt_dev->func->create_virtqueues(virt_dev, 0,
                     RPMSG_MAX_VQ_PER_RDEV, vq_names, callback, RPMSG_NULL);
     if (status != RPMSG_SUCCESS) {
         return status;
     }
 
-    dev_features = virt_dev->func->get_features(virt_dev);                  /*rpmsg_rdev_get_feature*/
+    dev_features = virt_dev->func->get_features(virt_dev);
 
     /*
      * Create name service announcement endpoint if device supports name
      * service announcement feature.
      */
-    if ((dev_features & (1<<VIRTIO_RPMSG_F_NS))) {
-        rdev->support_ns = RPMSG_TRUE;
-        ns_ept = _create_endpoint(rdev, rpmsg_ns_callback, rdev,            /* Is this necessary for a remote? */
+    if ((dev_features & (1 << VIRTIO_RPMSG_F_NS))) {
+        rdev->support_ns =  RPMSG_TRUE;
+        ns_ept = _create_endpoint(rdev, rpmsg_ns_callback, rdev,
                         RPMSG_NS_EPT_ADDR);
         if (!ns_ept) {
             return RPMSG_ERR_NO_MEM;
@@ -177,7 +164,7 @@ struct rpmsg_channel *_rpmsg_create_channel(struct remote_device *rdev,
         }
         node->data = rp_chnl;
         env_lock_mutex(rdev->lock);
-        add_to_list(&rdev->rp_channels , node);
+        add_to_list(&rdev->rp_channels, node);
         env_unlock_mutex(rdev->lock);
     }
 
@@ -231,6 +218,7 @@ struct rpmsg_endpoint *_create_endpoint(struct remote_device *rdev,
     if (!rp_ept) {
         return RPMSG_NULL ;
     }
+    env_memset(rp_ept, 0x00, sizeof(struct rpmsg_endpoint));
 
     node = env_allocate_memory(sizeof(struct llist));
     if (!node) {
@@ -325,7 +313,10 @@ void rpmsg_send_ns_message(struct remote_device *rdev,
     /* Get Tx buffer. */
     rp_hdr = (struct rpmsg_hdr *) rpmsg_get_tx_buffer(rdev, &len, &idx);
     if (!rp_hdr)
+    {
+        env_unlock_mutex(rdev->lock);
         return;
+    }
 
     /* Fill out name service data. */
     rp_hdr->dst = RPMSG_NS_EPT_ADDR;
@@ -369,10 +360,8 @@ int rpmsg_enqueue_buffer(struct remote_device *rdev, void *buffer,
     node.prev = RPMSG_NULL;
 
     if (rdev->role == RPMSG_REMOTE) {
-        /*MASTER*/
         status = virtqueue_add_buffer(rdev->tvq, &node, 0, 1, buffer);
     } else {
-        /*REMOTE*/
         status = virtqueue_add_consumed_buffer(rdev->tvq, idx, len);
     }
 
@@ -401,10 +390,8 @@ void rpmsg_return_buffer(struct remote_device *rdev, void *buffer,
     node.prev = RPMSG_NULL;
 
     if (rdev->role == RPMSG_REMOTE) {
-        /*master*/
         virtqueue_add_buffer(rdev->rvq, &node, 0, 1, buffer);
     } else {
-        /*remote*/
         virtqueue_add_consumed_buffer(rdev->rvq, idx, len);
     }
 }
@@ -425,19 +412,16 @@ void *rpmsg_get_tx_buffer(struct remote_device *rdev, int *len,
     void *data;
 
     if (rdev->role == RPMSG_REMOTE) {
-        /* MASTER */
         data = virtqueue_get_buffer(rdev->tvq, (uint32_t *) len);
         if (data == RPMSG_NULL) {
-            /*Here is why Master don't need to pre link memory to vring*/
             data = sh_mem_get_buffer(rdev->mem_pool);
             *len = RPMSG_BUFFER_SIZE;
         }
     } else {
-        /* REMOTE */
         data = virtqueue_get_available_buffer(rdev->tvq, idx,
                         (uint32_t *) len);
     }
-    return ((void *) env_map_vatopa(data));
+    return ((void*) env_map_vatopa(data));
 }
 
 /**
@@ -457,11 +441,9 @@ void *rpmsg_get_rx_buffer(struct remote_device *rdev, unsigned long *len,
 
     void *data;
     if (rdev->role == RPMSG_REMOTE) {
-        /*MASTER*/
-        data = virtqueue_get_buffer(rdev->rvq, (uint32_t *)len);
+        data = virtqueue_get_buffer(rdev->rvq, (uint32_t*)len);
     } else {
-        /*REMOTE*/
-        data = virtqueue_get_available_buffer(rdev->rvq, idx, (uint32_t *)len);
+        data = virtqueue_get_available_buffer(rdev->rvq, idx, (uint32_t*)len);
     }
     return ((void *) env_map_vatopa(data));
 }
@@ -477,7 +459,7 @@ void *rpmsg_get_rx_buffer(struct remote_device *rdev, unsigned long *len,
  */
 void rpmsg_free_buffer(struct remote_device *rdev, void *buffer) {
     if (rdev->role == RPMSG_REMOTE) {
-        sh_mem_free_buffer(rdev->mem_pool, buffer);
+        sh_mem_free_buffer(buffer, rdev->mem_pool);
     }
 }
 
@@ -512,20 +494,16 @@ static void rpmsg_tx_callback(struct virtqueue *vq) {
          */
         while (chnl_hd != RPMSG_NULL) {
             rp_chnl = (struct rpmsg_channel *) chnl_hd->data;
-
             if (rp_chnl->state == RPMSG_CHNL_STATE_IDLE) {
-
                 if (rdev->support_ns) {
                     rp_chnl->state = RPMSG_CHNL_STATE_NS;
                 } else {
                     rp_chnl->state = RPMSG_CHNL_STATE_ACTIVE;
                 }
-
                 if (rp_chnl->state == RPMSG_CHNL_STATE_NS) {
                     rpmsg_send_ns_message(rdev, rp_chnl, RPMSG_NS_CREATE);
                 }
             }
-
             chnl_hd = chnl_hd->next;
         }
     }
@@ -555,16 +533,16 @@ void rpmsg_rx_callback(struct virtqueue *vq) {
 
     chnl_hd = rdev->rp_channels;
     if ((chnl_hd != RPMSG_NULL) && (rdev->role == RPMSG_MASTER)) {
-		rp_chnl = (struct rpmsg_channel *) chnl_hd->data;
-		if (rp_chnl->state == RPMSG_CHNL_STATE_IDLE) {
-			if (rdev->support_ns) {
-				rp_chnl->state = RPMSG_CHNL_STATE_NS;
-				rpmsg_send_ns_message(rdev, rp_chnl, RPMSG_NS_CREATE);
-			} else {
-				rp_chnl->state = RPMSG_CHNL_STATE_ACTIVE;
-			}
-			return;
-		}
+        rp_chnl = (struct rpmsg_channel *) chnl_hd->data;
+        if (rp_chnl->state == RPMSG_CHNL_STATE_IDLE) {
+            if (rdev->support_ns) {
+                rp_chnl->state = RPMSG_CHNL_STATE_NS;
+                rpmsg_send_ns_message(rdev, rp_chnl, RPMSG_NS_CREATE);
+            } else {
+                rp_chnl->state = RPMSG_CHNL_STATE_ACTIVE;
+            }
+            return;
+        }
     }
 
     env_lock_mutex(rdev->lock);
@@ -574,10 +552,12 @@ void rpmsg_rx_callback(struct virtqueue *vq) {
 
     env_unlock_mutex(rdev->lock);
 
-    while(rp_hdr) {
-
+     while(rp_hdr) {
+        /* Clear 'rp_hdr->reserved' field that is used as 'callback' output */
+        rp_hdr->reserved = 0;
+       
         /* Get the channel node from the remote device channels list. */
-        node = rpmsg_rdev_get_endpoint_from_addr(rdev, rp_hdr->dst);        /*in the "rp_endpoints" list, find the node whose addr equal"rp_hdr->dst"*/
+        node = rpmsg_rdev_get_endpoint_from_addr(rdev, rp_hdr->dst);
 
         if (!node)
             /* Fatal error no endpoint for the given dst addr. */
@@ -587,10 +567,6 @@ void rpmsg_rx_callback(struct virtqueue *vq) {
 
         rp_chnl = rp_ept->rp_chnl;
 
-        /*
-         * Linux will not send the null message, so the first message not only
-         * update the state machine, and the callback is called as well
-         */
         if ((rp_chnl) && (rp_chnl->state == RPMSG_CHNL_STATE_NS)) {
             /* First message from RPMSG Master, update channel
              * destination address and state */
@@ -602,18 +578,32 @@ void rpmsg_rx_callback(struct virtqueue *vq) {
 
             /* Notify channel creation to application */
             if (rdev->channel_created) {
-                rdev->channel_created(rp_chnl);     /* assigned by rpmsg_rdev_init*/
+                rdev->channel_created(rp_chnl);
             }
+        } else if(len <= 0xFFFF) {
+            if (!(rp_hdr->flags & RPMSG_DROP_HDR_FLAG))
+            {
+                rp_ept->cb(rp_chnl, rp_hdr->data, rp_hdr->len,
+                    rp_ept->priv, rp_hdr->src);
+            }
+        } else {
+            /* Any message with totlen > 65535 are dropped, no way to notify the user about it */
         }
 
-        rp_ept->cb(rp_chnl, rp_hdr->data, rp_hdr->len, rp_ept->priv,        // for NS message, this will triggle rpmsg_ns_callback /*not the case*/
-                        rp_hdr->src);                                       // for none NS message, this will triggle APP registered callback "rpmsg_read_cb"
- 
         env_lock_mutex(rdev->lock);
-
-        /* Return used buffers. */
-        rpmsg_return_buffer(rdev, rp_hdr, len, idx);
-
+        /* Check whether callback wants to hold buffer */
+        if (rp_hdr->reserved & RPMSG_BUF_HELD)
+        {
+            /* 'rp_hdr->reserved' field is now used as storage for
+             * 'idx' and 'len' to release buffer later */
+            ((struct rpmsg_hdr_reserved*)&rp_hdr->reserved)->idx = idx;
+            ((struct rpmsg_hdr_reserved*)&rp_hdr->reserved)->totlen = len;
+        }
+        else
+        {
+            /* Return used buffers. */
+            rpmsg_return_buffer(rdev, rp_hdr, len, idx);
+        }
         rp_hdr = (struct rpmsg_hdr *) rpmsg_get_rx_buffer(rdev, &len, &idx);
         env_unlock_mutex(rdev->lock);
     }
@@ -631,7 +621,7 @@ void rpmsg_rx_callback(struct virtqueue *vq) {
  * @param priv        - any private data
  * @param src         - source address
  *
- * @return - none
+ * @return void
  */
 void rpmsg_ns_callback(struct rpmsg_channel *server_chnl, void *data, int len,
                 void *priv, unsigned long src) {
@@ -656,17 +646,18 @@ void rpmsg_ns_callback(struct rpmsg_channel *server_chnl, void *data, int len,
             if (rdev->channel_destroyed) {
                 rdev->channel_destroyed(rp_chnl);
             }
+
             rpmsg_destroy_ept(rp_chnl->rp_ept);
             _rpmsg_delete_channel(rp_chnl);
         }
     } else {
-        /*RPMSG_NS_CREATE*/
         rp_chnl = _rpmsg_create_channel(rdev, ns_msg->name, 0x00, ns_msg->addr);
         if (rp_chnl) {
             rp_chnl->state = RPMSG_CHNL_STATE_ACTIVE;
             /* Create default endpoint for channel */
             rp_chnl->rp_ept = rpmsg_create_ept(rp_chnl, rdev->default_cb, rdev,
                             RPMSG_ADDR_ANY);
+            
             if (rp_chnl->rp_ept) {
                 rp_chnl->src = rp_chnl->rp_ept->addr;
                 /*
@@ -676,7 +667,7 @@ void rpmsg_ns_callback(struct rpmsg_channel *server_chnl, void *data, int len,
                  * message without waiting for any application level message from
                  * master.
                  */
-                rpmsg_send(rp_chnl,data,len);       /*Is this necessary? Infinite Echo Back ? */
+                rpmsg_send(rp_chnl,data,len);
                 if (rdev->channel_created) {
                     rdev->channel_created(rp_chnl);
                 }
@@ -704,7 +695,7 @@ int rpmsg_get_address(unsigned long *bitmap, int size) {
         tmp32 = get_first_zero_bit(bitmap[i]);
 
         if (tmp32 < 32) {
-            addr = tmp32 + i + 1;       /*This is strange*/
+            addr = tmp32 + (i*32);
             bitmap[i] |= (1 << tmp32);
             break;
         }

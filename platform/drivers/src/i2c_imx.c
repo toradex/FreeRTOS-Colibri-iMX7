@@ -57,7 +57,7 @@ static const uint32_t i2cClkDivTab[][2] =
  * Description   : Initialize I2C module with given initialize structure.
  *
  *END**************************************************************************/
-void I2C_Init(I2C_Type* base, i2c_init_config_t* initConfig)
+void I2C_Init(I2C_Type* base, const i2c_init_config_t* initConfig)
 {
     assert(initConfig);
 

@@ -43,15 +43,13 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#define RDC_SEMAPHORE_MASTER_NONE           (0xFF)
+#define RDC_SEMAPHORE_MASTER_NONE (0xFF)
 
-/*!
- * @brief RDC SEMAPHORE status return codes.
- */
+/*! @brief RDC Semaphore status return codes. */
 typedef enum _rdc_semaphore_status
 {
-    statusRdcSemaphoreSuccess  = 0U, /*!< Success.                                          */
-    statusRdcSemaphoreBusy     = 1U  /*!< RDC semaphore has been locked by other processor. */
+    statusRdcSemaphoreSuccess = 0U, /*!< Success.                                          */
+    statusRdcSemaphoreBusy    = 1U, /*!< RDC semaphore has been locked by other processor. */
 } rdc_semaphore_status_t;
 
 /*******************************************************************************
@@ -70,7 +68,7 @@ extern "C" {
 /*!
  * @brief Lock RDC semaphore for shared peripheral access
  *
- * @param pdap RDC peripheral assignment (see _rdc_pdap in rdc_defs_<device>.h)
+ * @param pdap RDC peripheral assignment (see @ref _rdc_pdap in rdc_defs_<device>.h)
  * @retval statusRdcSemaphoreSuccess Lock the semaphore successfully.
  * @retval statusRdcSemaphoreBusy    Semaphore has been locked by other processor.
  */
@@ -79,21 +77,21 @@ rdc_semaphore_status_t RDC_SEMAPHORE_TryLock(uint32_t pdap);
 /*!
  * @brief Lock RDC semaphore for shared peripheral access, polling until success.
  *
- * @param pdap RDC peripheral assignment (see _rdc_pdap in rdc_defs_<device>.h)
+ * @param pdap RDC peripheral assignment (see @ref _rdc_pdap in rdc_defs_<device>.h)
  */
 void RDC_SEMAPHORE_Lock(uint32_t pdap);
 
 /*!
  * @brief Unlock RDC semaphore
  *
- * @param pdap RDC peripheral assignment (see _rdc_pdap in rdc_defs_<device>.h)
+ * @param pdap RDC peripheral assignment (see @ref _rdc_pdap in rdc_defs_<device>.h)
  */
 void RDC_SEMAPHORE_Unlock(uint32_t pdap);
 
 /*!
  * @brief Get domain ID which locks the semaphore
  *
- * @param pdap RDC peripheral assignment (see _rdc_pdap in rdc_defs_<device>.h)
+ * @param pdap RDC peripheral assignment (see @ref _rdc_pdap in rdc_defs_<device>.h)
  * @return domain ID which locks the RDC semaphore
  */
 uint32_t RDC_SEMAPHORE_GetLockDomainID(uint32_t pdap);
@@ -101,7 +99,7 @@ uint32_t RDC_SEMAPHORE_GetLockDomainID(uint32_t pdap);
 /*!
  * @brief Get master index which locks the semaphore
  *
- * @param pdap RDC peripheral assignment (see _rdc_pdap in rdc_defs_<device>.h)
+ * @param pdap RDC peripheral assignment (see @ref _rdc_pdap in rdc_defs_<device>.h)
  * @return master index which locks the RDC semaphore, or RDC_SEMAPHORE_MASTER_NONE
  *         to indicate it is not locked.
  */
@@ -117,12 +115,12 @@ uint32_t RDC_SEMAPHORE_GetLockMaster(uint32_t pdap);
 /*!
  * @brief Reset RDC semaphore to unlocked status
  *
- * @param pdap RDC peripheral assignment (see _rdc_pdap in rdc_defs_<device>.h)
+ * @param pdap RDC peripheral assignment (see @ref _rdc_pdap in rdc_defs_<device>.h)
  */
 void RDC_SEMAPHORE_Reset(uint32_t pdap);
 
 /*!
- * @brief Reset all RDC semaphors to unlocked status for certain RDC_SEMAPHORE instance
+ * @brief Reset all RDC semaphore to unlocked status for certain RDC_SEMAPHORE instance
  *
  * @param base RDC semaphore base pointer.
  */

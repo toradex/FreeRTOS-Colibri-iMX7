@@ -4,6 +4,7 @@
  * Copyright (C) 2011 Texas Instruments, Inc.
  * Copyright (C) 2011 Google, Inc.
  * All rights reserved.
+ * Copyright (c) 2015 Freescale Semiconductor, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -41,6 +42,9 @@
 #define VIRTIO_RPMSG_F_NS	0 /* RP supports name service notifications */
 #define RPMSG_NAME_SIZE     32
 
+#if defined(__IAR_SYSTEMS_ICC__)
+__packed
+#endif
 /**
  * struct rpmsg_hdr - common header for all rpmsg messages
  * @src: source address
@@ -53,14 +57,33 @@
  * Every message sent(/received) on the rpmsg bus begins with this header.
  */
 struct rpmsg_hdr {
-	unsigned long src;
-	unsigned long dst;
-	unsigned long reserved;
-	unsigned short len;
-	unsigned short flags;
-	unsigned char data[0];
-} /*__attribute__((packed))*/;
+    unsigned long src;
+    unsigned long dst;
+    unsigned long reserved;
+    unsigned short len;
+    unsigned short flags;
+    unsigned char data[1];
+#if defined(__IAR_SYSTEMS_ICC__)
+};
+#else
+}__attribute__((packed));
+#endif
 
+#define RPMSG_DROP_HDR_FLAG 1
+
+
+struct rpmsg_hdr_reserved
+{
+    short int idx;
+    short int totlen;
+};
+
+
+#define RPMSG_BUF_HELD (1U << 31)
+
+#if defined(__IAR_SYSTEMS_ICC__)
+__packed
+#endif
 /**
  * struct rpmsg_ns_msg - dynamic name service announcement message
  * @name: name of remote service that is published
@@ -77,7 +100,11 @@ struct rpmsg_ns_msg {
 	char name[RPMSG_NAME_SIZE];
 	unsigned long addr;
 	unsigned long flags;
-} /*__attribute__((packed))*/;
+#if defined(__IAR_SYSTEMS_ICC__)
+};
+#else
+}__attribute__((packed));
+#endif
 
 /**
  * enum rpmsg_ns_flags - dynamic name service announcement flags
@@ -398,14 +425,5 @@ struct rpmsg_channel *rpmsg_create_channel(struct remote_device *rdev, char *nam
  *
  */
 void rpmsg_delete_channel(struct rpmsg_channel *rp_chnl);
-
-/**
- *
- * rpmsg_handler
- *
- * Provide platform specific interrupt handler to application layer
- *
- */
-void rpmsg_handler(void);
 
 #endif /* _RPMSG_H_ */

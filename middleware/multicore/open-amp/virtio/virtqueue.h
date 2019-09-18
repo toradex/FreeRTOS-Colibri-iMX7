@@ -95,7 +95,7 @@ struct virtqueue {
     uint16_t vq_nentries;
     uint32_t vq_flags;
     int vq_alignment;
-    int vq_ring_size;       /*Seems not used at all*/
+    int vq_ring_size;
     boolean vq_inuse;
     void *vq_ring_mem;
     void (*callback)(struct virtqueue *vq);
@@ -138,7 +138,7 @@ struct virtqueue {
         struct vring_desc *indirect;
         uint32_t indirect_paddr;
         uint16_t ndescs;
-    } vq_descx[0];
+    } vq_descx[1];
 };
 
 /* struct to hold vring specific information */

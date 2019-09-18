@@ -2,6 +2,7 @@
  * Copyright (c) 2014, Mentor Graphics Corporation
  * All rights reserved.
  * Copyright (c) 2015 Xilinx, Inc. All rights reserved.
+ * Copyright (c) 2015 Freescale Semiconductor, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -132,18 +133,15 @@ int rpmsg_rdev_init(struct remote_device **rdev, int dev_id, int role,
     virt_dev->device = proc;
     virt_dev->func = &rpmsg_rdev_config_ops;
     if (virt_dev->func->set_features != RPMSG_NULL) {
-        virt_dev->func->set_features(virt_dev, proc->vdev.dfeatures);   /* rpmsg_rdev_set_feature */
+        virt_dev->func->set_features(virt_dev, proc->vdev.dfeatures);
     }
 
-    /*
-     * Linux don't use this way to manage memory pool
-     */
     if (rdev_loc->role == RPMSG_REMOTE) {
         /*
          * Since device is RPMSG Remote so we need to manage the
          * shared buffers. Create shared memory pool to handle buffers.
          */
-        shm = hil_get_shm_info(proc);       /*proc_table*/
+        shm = hil_get_shm_info(proc);
         rdev_loc->mem_pool = sh_mem_create_pool(shm->start_addr, shm->size,
                         RPMSG_BUFFER_SIZE);
 
@@ -195,7 +193,7 @@ void rpmsg_rdev_deinit(struct remote_device *rdev) {
 
         /* Delete default endpoint for channel */
         if (rp_chnl->rp_ept) {
-            rpmsg_destroy_ept(rp_chnl->rp_ept);
+          rpmsg_destroy_ept(rp_chnl->rp_ept);
         }
 
         _rpmsg_delete_channel(rp_chnl);
@@ -342,7 +340,7 @@ int rpmsg_rdev_notify(struct remote_device *rdev) {
          * communication.
          */
         if (!status)
-            virtqueue_kick(rdev->rvq);      /*will triggle rpmsg_tx_callback in the REMOTE side*/
+            virtqueue_kick(rdev->rvq);
 
     } else {
             status = hil_set_status(rdev->proc);
@@ -372,24 +370,22 @@ int rpmsg_rdev_init_channels(struct remote_device *rdev) {
 
     if (rdev->role == RPMSG_MASTER) {
 
-        chnl_info = hil_get_chnl_info(rdev->proc, &num_chnls);      /*proc_table*/
+        chnl_info = hil_get_chnl_info(rdev->proc, &num_chnls);
         for (idx = 0; idx < num_chnls; idx++) {
 
             rp_chnl = _rpmsg_create_channel(rdev, chnl_info[idx].name, 0x00,
-                           RPMSG_NS_EPT_ADDR);      /*the channel is put to "rp_channels" field of remote_device data structure*/
+                           RPMSG_NS_EPT_ADDR);
             if (!rp_chnl) {
                 return RPMSG_ERR_NO_MEM;
             }
 
-            rp_chnl->rp_ept = rpmsg_create_ept(rp_chnl, rdev->default_cb, rdev,
-                            RPMSG_ADDR_ANY);        /*the endpoint is put ot "rp_endpoints" field of remote_device data structure*/
+            rp_chnl->rp_ept = rpmsg_create_ept(rp_chnl, rdev->default_cb, rdev, RPMSG_ADDR_ANY);
 
             if (!rp_chnl->rp_ept) {
                 return RPMSG_ERR_NO_MEM;
             }
 
-            rp_chnl->src = rp_chnl->rp_ept->addr;       /*channel source is the default endpoint address, destination is NS endpoint address*/
-
+            rp_chnl->src = rp_chnl->rp_ept->addr;
         }
     }
 
@@ -402,7 +398,7 @@ int rpmsg_rdev_init_channels(struct remote_device *rdev) {
  * by the virtio.h file.
  *------------------------------------------------------------------------
  */
-int rpmsg_rdev_create_virtqueues(struct virtio_device *dev, int flags, int nvqs,        // invoked by virtio_device->create_virtqueues
+int rpmsg_rdev_create_virtqueues(struct virtio_device *dev, int flags, int nvqs,
                 const char *names[], vq_callback *callbacks[],
                 struct virtqueue *vqs_[]) {
     struct remote_device *rdev;
@@ -419,7 +415,6 @@ int rpmsg_rdev_create_virtqueues(struct virtio_device *dev, int flags, int nvqs,
     vring_table = hil_get_vring_info(&rdev->proc->vdev,
                     &num_vrings);
 
-
     if (num_vrings > nvqs) {
         return RPMSG_ERR_MAX_VQ;
     }
@@ -427,13 +422,7 @@ int rpmsg_rdev_create_virtqueues(struct virtio_device *dev, int flags, int nvqs,
     /* Create virtqueue for each vring. */
     for (idx = 0; idx < num_vrings; idx++) {
 
-        INIT_VRING_ALLOC_INFO( ring_info, vring_table[idx]);    /*ring_info comes from proc_table*/
-
-                                                                    /*    
-                                                                     *    - phy_addr
-                                                                     *    - align
-                                                                     *    - num_descs
-                                                                     */
+        INIT_VRING_ALLOC_INFO( ring_info, vring_table[idx]);
 
         if (rdev->role == RPMSG_REMOTE) {
             env_memset((void*) ring_info.phy_addr, 0x00,
@@ -441,9 +430,6 @@ int rpmsg_rdev_create_virtqueues(struct virtio_device *dev, int flags, int nvqs,
                                             vring_table[idx].align));
         }
 
-        /*
-         * created virtqueue should be in vqs[0], vqs[1]
-         */
         status = virtqueue_create(dev, idx, (char *) names[idx], &ring_info,
                         callbacks[idx], hil_vring_notify,
                         &vqs[idx]);
@@ -454,11 +440,6 @@ int rpmsg_rdev_create_virtqueues(struct virtio_device *dev, int flags, int nvqs,
     }
 
     //FIXME - a better way to handle this , tx for master is rx for remote and vice versa.
-    /*
-     *              MASTER              REMOTE
-     * vqs[0]       RX                  TX
-     * vqs[1]       TX                  RX
-     */
     if (rdev->role == RPMSG_MASTER) {
         rdev->tvq = vqs[0];
         rdev->rvq = vqs[1];
@@ -472,7 +453,6 @@ int rpmsg_rdev_create_virtqueues(struct virtio_device *dev, int flags, int nvqs,
                         && (idx < rdev->mem_pool->total_buffs / 2));
                         idx++) {
 
-
             /* Initialize TX virtqueue buffers for remote device */
             buffer = sh_mem_get_buffer(rdev->mem_pool);
 
@@ -485,7 +465,7 @@ int rpmsg_rdev_create_virtqueues(struct virtio_device *dev, int flags, int nvqs,
             node.next = RPMSG_NULL;
 
             env_memset(buffer, 0x00, RPMSG_BUFFER_SIZE);
-            status = virtqueue_add_buffer(rdev->rvq, &node, 0, 1, buffer);      /* this is where vq_ring.avial.idx is updated by "vq_ring_update_avail"*/
+            status = virtqueue_add_buffer(rdev->rvq, &node, 0, 1, buffer);
 
             if (status != RPMSG_SUCCESS) {
                 return status;
@@ -509,7 +489,7 @@ uint32_t rpmsg_rdev_get_feature(struct virtio_device *dev) {
 }
 
 void rpmsg_rdev_set_feature(struct virtio_device *dev, uint32_t feature) {
-    dev->features |= feature;        /*refer to name service endpoint creation logic in the caller rpmsg_start_ipc*/
+    dev->features |= feature;
 }
 
 uint32_t rpmsg_rdev_negotiate_feature(struct virtio_device *dev,

@@ -40,20 +40,20 @@
  * Description   : Initialize GPT to reset state and initialize running mode
  *
  *END**************************************************************************/
-void GPT_Init(GPT_Type * base, gpt_mode_config_t *config)
+void GPT_Init(GPT_Type* base, const gpt_init_config_t* initConfig)
 {
-    assert(config);
+    assert(initConfig);
 
     base->CR = 0;
 
     GPT_SoftReset(base);
 
-    base->CR = (config->freeRun ? GPT_CR_FRR_MASK : 0)       |
-               (config->waitEnable ? GPT_CR_WAITEN_MASK : 0) |
-               (config->stopEnable ? GPT_CR_STOPEN_MASK : 0) |
-               (config->dozeEnable ? GPT_CR_DOZEEN_MASK : 0) |
-               (config->dbgEnable ? GPT_CR_DBGEN_MASK : 0)   |
-               (config->enableMode ? GPT_CR_ENMOD_MASK : 0);
+    base->CR = (initConfig->freeRun ? GPT_CR_FRR_MASK : 0)       |
+               (initConfig->waitEnable ? GPT_CR_WAITEN_MASK : 0) |
+               (initConfig->stopEnable ? GPT_CR_STOPEN_MASK : 0) |
+               (initConfig->dozeEnable ? GPT_CR_DOZEEN_MASK : 0) |
+               (initConfig->dbgEnable ? GPT_CR_DBGEN_MASK : 0)   |
+               (initConfig->enableMode ? GPT_CR_ENMOD_MASK : 0);
 }
 
 /*FUNCTION**********************************************************************
@@ -62,14 +62,14 @@ void GPT_Init(GPT_Type * base, gpt_mode_config_t *config)
  * Description   : Set clock source of GPT
  *
  *END**************************************************************************/
-void GPT_SetClockSource(GPT_Type * base, uint32_t source)
+void GPT_SetClockSource(GPT_Type* base, uint32_t source)
 {
     assert(source <= gptClockSourceOsc);
 
     if (source == gptClockSourceOsc)
-        base->CR = (base->CR & ~GPT_CR_CLKSRC_MASK) | GPT_CR_ENABLE_24MHZ_MASK | GPT_CR_CLKSRC(source);
+        base->CR = (base->CR & ~GPT_CR_CLKSRC_MASK) | GPT_CR_EN_24M_MASK | GPT_CR_CLKSRC(source);
     else
-        base->CR = (base->CR & ~(GPT_CR_CLKSRC_MASK | GPT_CR_ENABLE_24MHZ_MASK)) | GPT_CR_CLKSRC(source);
+        base->CR = (base->CR & ~(GPT_CR_CLKSRC_MASK | GPT_CR_EN_24M_MASK)) | GPT_CR_CLKSRC(source);
 }
 
 /*FUNCTION**********************************************************************
@@ -78,7 +78,7 @@ void GPT_SetClockSource(GPT_Type * base, uint32_t source)
  * Description   : Enable or disable GPT interrupts
  *
  *END**************************************************************************/
-void GPT_SetIntCmd(GPT_Type * base, uint32_t flags, bool enable)
+void GPT_SetIntCmd(GPT_Type* base, uint32_t flags, bool enable)
 {
     if (enable)
         base->IR |= flags;

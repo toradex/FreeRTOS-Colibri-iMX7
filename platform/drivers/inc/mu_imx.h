@@ -66,24 +66,20 @@
 /* Mask for MU_CR_GIRN. When read-modify-write to MU_CR, should
    pay attention to these bits in case of trigger interrupts by mistake.*/
 
-/*!
- * @brief MU status return codes.
- */
+/*! @brief MU status return codes. */
 typedef enum _mu_status
 {
-    kStatus_MU_Success       = 0U, /*!< Success.                              */
-    kStatus_MU_TxNotEmpty    = 1U, /*!< TX register is not empty.             */
-    kStatus_MU_RxNotFull     = 2U, /*!< RX register is not full.              */
-    kStatus_MU_FlagPending   = 3U, /*!< Previous flags update pending.        */
-    kStatus_MU_EventPending  = 4U, /*!< MU event is pending.                  */
-    kStatus_MU_Initialized   = 5U, /*!< MU driver has initialized previously. */
-    kStatus_MU_IntPending    = 6U, /*!< Previous general interrupt still pending. */
-    kStatus_MU_Failed        = 7U  /*!< Execution failed.                     */
+    kStatus_MU_Success      = 0U, /*!< Success.                              */
+    kStatus_MU_TxNotEmpty   = 1U, /*!< TX register is not empty.             */
+    kStatus_MU_RxNotFull    = 2U, /*!< RX register is not full.              */
+    kStatus_MU_FlagPending  = 3U, /*!< Previous flags update pending.        */
+    kStatus_MU_EventPending = 4U, /*!< MU event is pending.                  */
+    kStatus_MU_Initialized  = 5U, /*!< MU driver has initialized previously. */
+    kStatus_MU_IntPending   = 6U, /*!< Previous general interrupt still pending. */
+    kStatus_MU_Failed       = 7U  /*!< Execution failed.                     */
 } mu_status_t;
 
-/*!
- * @brief MU message status.
- */
+/*! @brief MU message status. */
 typedef enum _mu_msg_status
 {
     kMuTxEmpty0 = MU_SR_TE0_MASK,        /*!< TX0 empty status.                          */
@@ -119,15 +115,13 @@ typedef enum _mu_msg_status
 
 } mu_msg_status_t;
 
-/*!
- * @brief Power mode definition.
- */
+/*! @brief Power mode definition. */
 typedef enum _mu_power_mode
 {
-    kMuPowerModeRun       = 0x00U,   /*!< Run mode.    */
-    kMuPowerModeWait      = 0x01U,   /*!< WAIT mode.   */
-    kMuPowerModeStop      = 0x02U,   /*!< STOP mode.   */
-    kMuPowerModeDsm       = 0x03U,   /*!< DSM mode.    */
+    kMuPowerModeRun  = 0x00U, /*!< Run mode.  */
+    kMuPowerModeWait = 0x01U, /*!< WAIT mode. */
+    kMuPowerModeStop = 0x02U, /*!< STOP mode. */
+    kMuPowerModeDsm  = 0x03U, /*!< DSM mode.  */
 } mu_power_mode_t;
 
 /*******************************************************************************
@@ -144,8 +138,7 @@ extern "C" {
  */
 /*!
  * @brief Initializes the MU module to reset state.
- *
- * This function sets the MU module control register to its default reset value.
+ *        This function sets the MU module control register to its default reset value.
  *
  * @param base Register base address for the module.
  */
@@ -190,12 +183,12 @@ void MU_SendMsg(MU_Type * base, uint32_t regIndex, uint32_t msg);
 /*!
  * @brief Check TX empty status.
  *
- * This function checks the specific tramsmit register empty status.
+ * This function checks the specific transmit register empty status.
  *
  * @param base Register base address for the module.
- * @param index    TX register index to check.
- * @retval true    TX register is empty.
- * @retval false   TX register is not empty.
+ * @param index TX register index to check.
+ * @retval true TX register is empty.
+ * @retval false TX register is not empty.
  */
 static inline bool MU_IsTxEmpty(MU_Type * base, uint32_t index)
 {
@@ -207,8 +200,8 @@ static inline bool MU_IsTxEmpty(MU_Type * base, uint32_t index)
  *
  * This function enables specific TX empty interrupt.
  *
- * @param base   Register base address for the module.
- * @param index  TX interrupt index to enable.
+ * @param base Register base address for the module.
+ * @param index TX interrupt index to enable.
  *
  * Example:
    @code
@@ -227,7 +220,7 @@ static inline void MU_EnableTxEmptyInt(MU_Type * base, uint32_t index)
  *
  * This function disables specific TX empty interrupt.
  *
- * @param base   Register base address for the module.
+ * @param base Register base address for the module.
  * @param disableMask Bitmap of the interrupts to disable.
  *
  * Example:
@@ -255,8 +248,8 @@ static inline void MU_DisableTxEmptyInt(MU_Type * base, uint32_t index)
  * this function returns kStatus_MU_RxNotFull.
  *
  * @param base Register base address for the module.
- * @param regIdex  Rx register index.
- * @param msg      Message to receive.
+ * @param regIdex Rx register index.
+ * @param msg Message to receive.
  * @retval kStatus_MU_Success    Message receive successfully.
  * @retval kStatus_MU_RxNotFull  Message not received because RX is not full.
  */
@@ -268,8 +261,8 @@ mu_status_t MU_TryReceiveMsg(MU_Type * base, uint32_t regIndex, uint32_t *msg);
  * This function waits until RX register is full and receive the message.
  *
  * @param base Register base address for the module.
- * @param regIdex  Rx register index.
- * @param msg      Message to receive.
+ * @param regIdex Rx register index.
+ * @param msg Message to receive.
  */
 void MU_ReceiveMsg(MU_Type * base, uint32_t regIndex, uint32_t *msg);
 
@@ -279,9 +272,9 @@ void MU_ReceiveMsg(MU_Type * base, uint32_t regIndex, uint32_t *msg);
  * This function checks the specific receive register full status.
  *
  * @param base Register base address for the module.
- * @param index    RX register index to check.
- * @retval true    RX register is full.
- * @retval false   RX register is not full.
+ * @param index RX register index to check.
+ * @retval true RX register is full.
+ * @retval false RX register is not full.
  */
 static inline bool MU_IsRxFull(MU_Type * base, uint32_t index)
 {
@@ -293,8 +286,8 @@ static inline bool MU_IsRxFull(MU_Type * base, uint32_t index)
  *
  * This function enables specific RX full interrupt.
  *
- * @param base   Register base address for the module.
- * @param index      RX interrupt index to enable.
+ * @param base Register base address for the module.
+ * @param index RX interrupt index to enable.
  *
  * Example:
    @code
@@ -313,7 +306,7 @@ static inline void MU_EnableRxFullInt(MU_Type * base, uint32_t index)
  *
  * This function disables specific RX full interrupt.
  *
- * @param base   Register base address for the module.
+ * @param base Register base address for the module.
  * @param disableMask Bitmap of the interrupts to disable.
  *
  * Example:
@@ -339,8 +332,8 @@ static inline void MU_DisableRxFullInt(MU_Type * base, uint32_t index)
  *
  * This function enables specific general purpose interrupt.
  *
- * @param base   Register base address for the module.
- * @param index      General purpose interrupt index to enable.
+ * @param base Register base address for the module.
+ * @param index General purpose interrupt index to enable.
  *
  * Example:
    @code
@@ -359,8 +352,8 @@ static inline void MU_EnableGeneralInt(MU_Type * base, uint32_t index)
  *
  * This function disables specific general purpose interrupt.
  *
- * @param base   Register base address for the module.
- * @param index      General purpose interrupt index to disable.
+ * @param base Register base address for the module.
+ * @param index General purpose interrupt index to disable.
  *
  * Example:
    @code
@@ -379,9 +372,9 @@ static inline void MU_DisableGeneralInt(MU_Type * base, uint32_t index)
  * This function checks the specific general purpose interrupt pending status.
  *
  * @param base Register base address for the module.
- * @param index    Index of the general purpose interrupt flag to check.
- * @retval true    General purpose interrupt is pending.
- * @retval false   General purpose interrupt is not pending.
+ * @param index Index of the general purpose interrupt flag to check.
+ * @retval true General purpose interrupt is pending.
+ * @retval false General purpose interrupt is not pending.
  */
 static inline bool MU_IsGeneralIntPending(MU_Type * base, uint32_t index)
 {
@@ -394,7 +387,7 @@ static inline bool MU_IsGeneralIntPending(MU_Type * base, uint32_t index)
  * This function clears the specific general purpose interrupt pending status.
  *
  * @param base Register base address for the module.
- * @param index    Index of the general purpose interrupt flag to clear.
+ * @param index Index of the general purpose interrupt flag to clear.
  */
 static inline void MU_ClearGeneralIntPending(MU_Type * base, uint32_t index)
 {
@@ -406,14 +399,14 @@ static inline void MU_ClearGeneralIntPending(MU_Type * base, uint32_t index)
  *
  * This function triggers specific general purpose interrupt to other core.
  *
- * To ensure proper operations, please make sure the correspond general purpose
- * interrupt triggerd previously has been accepted by the other core. The
- * function MU_IsGeneralIntAccepted could be used for this check. If the
+ * To ensure proper operations, make sure the correspond general purpose
+ * interrupt triggered previously has been accepted by the other core. The
+ * function MU_IsGeneralIntAccepted can be used for this check. If the
  * previous general interrupt has not been accepted by the other core, this
- * function does not trigger interrupt acctually and returns error.
+ * function does not trigger interrupt actually and returns an error.
  *
  * @param base Register base address for the module.
- * @param index    Index of general purpose interrupt to trigger.
+ * @param index Index of general purpose interrupt to trigger.
  * @retval kStatus_MU_Success    Interrupt has been triggered successfully.
  * @retval kStatus_MU_IntPending Previous interrupt has not been accepted.
  */
@@ -426,9 +419,9 @@ mu_status_t MU_TriggerGeneralInt(MU_Type * base, uint32_t index);
  * been accepted by the other core or not.
  *
  * @param base Register base address for the module.
- * @param index    Index of the general purpose interrupt to check.
- * @retval true    General purpose interrupt is accepted.
- * @retval false   General purpose interrupt is not accepted.
+ * @param index Index of the general purpose interrupt to check.
+ * @retval true  General purpose interrupt is accepted.
+ * @retval false General purpose interrupt is not accepted.
  */
 static inline bool MU_IsGeneralIntAccepted(MU_Type * base, uint32_t index)
 {
@@ -458,7 +451,7 @@ mu_status_t MU_TrySetFlags(MU_Type * base, uint32_t flags);
  * @brief Set some bits of the 3-bit flag reflect on the other MU side.
  *
  * This functions set some bits of the 3-bit flag. If previous flags update is
- * still pending, this function will block and poll to set the flag.
+ * still pending, this function  blocks and polls to set the flag.
  *
  * @param base Register base address for the module.
  */
@@ -467,13 +460,13 @@ void MU_SetFlags(MU_Type * base, uint32_t flags);
 /*!
  * @brief Checks whether the previous flag update is pending.
  *
- * After setting flags, the flags update request is pending untill internally
+ * After setting flags, the flags update request is pending until internally
  * acknowledged. During the pending period, it is not allowed to set flags again.
- * This function is used to check the pending status, it could be used together
+ * This function is used to check the pending status, it can be used together
  * with function MU_TrySetFlags.
  *
  * @param base Register base address for the module.
- * @return True if pending, faulse if not.
+ * @return True if pending, false if not.
  */
 static inline bool MU_IsFlagPending(MU_Type * base)
 {
@@ -486,7 +479,7 @@ static inline bool MU_IsFlagPending(MU_Type * base)
  * This functions gets the current value of the 3-bit flag.
  *
  * @param base Register base address for the module.
- * @return flags   Current value of the 3-bit flag.
+ * @return flags Current value of the 3-bit flag.
  */
 static inline uint32_t MU_GetFlags(MU_Type * base)
 {
@@ -517,12 +510,12 @@ static inline mu_power_mode_t MU_GetOtherCorePowerMode(MU_Type * base)
  * @brief Get the event pending status.
  *
  * This functions gets the event pending status. To ensure events have been
- * posted to the other side before entering STOP mode, please verify the
+ * posted to the other side before entering STOP mode, verify the
  * event pending status using this function.
  *
  * @param base Register base address for the module.
- * @retval true    Event is pending.
- * @retval false   Event is not pending.
+ * @retval true  Event is pending.
+ * @retval false Event is not pending.
  */
 static inline bool MU_IsEventPending(MU_Type * base)
 {

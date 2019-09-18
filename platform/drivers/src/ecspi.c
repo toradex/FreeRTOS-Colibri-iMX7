@@ -35,41 +35,41 @@
  ******************************************************************************/
 
 /*******************************************************************************
- * ECSPI Initialization and Configuration functions
+ * eCSPI Initialization and Configuration functions
  ******************************************************************************/
 /*FUNCTION**********************************************************************
  *
  * Function Name : ECSPI_Init
- * Description   : Initializes the ECSPI module according to the specified
- *                 parameters in the initStruct.
+ * Description   : Initializes the eCSPI module according to the specified
+ *                 parameters in the initConfig.
  *
  *END**************************************************************************/
-void ECSPI_Init(ECSPI_Type* base, ecspi_init_t* initStruct)
+void ECSPI_Init(ECSPI_Type* base, const ecspi_init_config_t* initConfig)
 {
-    /* Disable ECSPI module */
+    /* Disable eCSPI module */
     ECSPI_CONREG_REG(base) = 0;
 
-    /* Enable the ECSPI module before write to other registers */
+    /* Enable the eCSPI module before write to other registers */
     ECSPI_Enable(base);
 
-    /* ECSPI CONREG Configuration */
-    ECSPI_CONREG_REG(base) |= ECSPI_CONREG_BURST_LENGTH(initStruct->burstLength) |
-                              ECSPI_CONREG_CHANNEL_SELECT(initStruct->channelSelect);
-    ECSPI_CONREG_REG(base) |= initStruct->ecspiAutoStart ? ECSPI_CONREG_SMC_MASK : 0;
+    /* eCSPI CONREG Configuration */
+    ECSPI_CONREG_REG(base) |= ECSPI_CONREG_BURST_LENGTH(initConfig->burstLength) |
+                              ECSPI_CONREG_CHANNEL_SELECT(initConfig->channelSelect);
+    ECSPI_CONREG_REG(base) |= initConfig->ecspiAutoStart ? ECSPI_CONREG_SMC_MASK : 0;
 
-    /* ECSPI CONFIGREG Configuration */
-    ECSPI_CONFIGREG_REG(base) = ECSPI_CONFIGREG_SCLK_PHA(((initStruct->clockPhase) & 1) << (initStruct->channelSelect)) |
-                                ECSPI_CONFIGREG_SCLK_POL(((initStruct->clockPolarity) & 1) << (initStruct->channelSelect));
+    /* eCSPI CONFIGREG Configuration */
+    ECSPI_CONFIGREG_REG(base) = ECSPI_CONFIGREG_SCLK_PHA(((initConfig->clockPhase) & 1) << (initConfig->channelSelect)) |
+                                ECSPI_CONFIGREG_SCLK_POL(((initConfig->clockPolarity) & 1) << (initConfig->channelSelect));
 
     /* Master or Slave mode Configuration */
-    if(initStruct->mode == ecspiMasterMode)
+    if(initConfig->mode == ecspiMasterMode)
     {
         /* Set baud rate in bits per second */
-        ECSPI_CONREG_REG(base) |= ECSPI_CONREG_CHANNEL_MODE(1 << (initStruct->channelSelect));
-        ECSPI_SetBaudRate(base, initStruct->clockRate, initStruct->baudRate);
+        ECSPI_CONREG_REG(base) |= ECSPI_CONREG_CHANNEL_MODE(1 << (initConfig->channelSelect));
+        ECSPI_SetBaudRate(base, initConfig->clockRate, initConfig->baudRate);
     }
     else
-        ECSPI_CONREG_REG(base) &= ~ECSPI_CONREG_CHANNEL_MODE(1 << (initStruct->channelSelect));
+        ECSPI_CONREG_REG(base) &= ~ECSPI_CONREG_CHANNEL_MODE(1 << (initConfig->channelSelect));
 }
 
 /*FUNCTION**********************************************************************
@@ -90,7 +90,7 @@ void ECSPI_SetSampClockSource(ECSPI_Type* base, uint32_t source)
 /*FUNCTION**********************************************************************
  *
  * Function Name : ECSPI_SetBaudRate
- * Description   : Calculated the ECSPI baud rate in bits per second.
+ * Description   : Calculated the eCSPI baud rate in bits per second.
  *
  *END**************************************************************************/
 uint32_t ECSPI_SetBaudRate(ECSPI_Type* base, uint32_t sourceClockInHz, uint32_t bitsPerSec)
@@ -188,7 +188,7 @@ void ECSPI_SetFIFOThreshold(ECSPI_Type* base, uint32_t fifo, uint32_t threshold)
 /*FUNCTION**********************************************************************
  *
  * Function Name : ECSPI_SetIntCmd
- * Description   : Enable or disable ECSPI interrupts.
+ * Description   : Enable or disable eCSPI interrupts.
  *
  *END**************************************************************************/
 void ECSPI_SetIntCmd(ECSPI_Type* base, uint32_t flags, bool enable)

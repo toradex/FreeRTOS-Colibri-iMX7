@@ -42,13 +42,19 @@ void BOARD_ClockInit(void)
 {
     /* OSC/PLL is already initialized by Cortex-A7 (u-boot) */
 
-    /* Disable WDOG3 */
+    /* 
+     * Disable WDOG3 
+     *  Note : The WDOG clock Root is shared by all the 4 WDOGs, so FreeROTS
+     *  code should avoid closing it
+     */
     CCM_UpdateRoot(CCM, ccmRootWdog, ccmRootmuxWdogOsc24m, 0, 0);
     CCM_EnableRoot(CCM, ccmRootWdog);
     CCM_ControlGate(CCM, ccmCcgrGateWdog3, ccmClockNeededRun);
+
+    RDC_SetPdapAccess(RDC, BOARD_WDOG_RDC_PDAP, 3 << (BOARD_DOMAIN_ID * 2), false, false);
     WDOG_DisablePowerdown(BOARD_WDOG_BASEADDR);
+
     CCM_ControlGate(CCM, ccmCcgrGateWdog3, ccmClockNotNeeded);
-    CCM_DisableRoot(CCM, ccmRootWdog);
 
     /* We need system PLL Div2 to run M4 core */
     CCM_ControlGate(CCM, ccmPllGateSys, ccmClockNeededRun);
@@ -75,7 +81,12 @@ void dbg_uart_init(void)
     CCM_UpdateRoot(CCM, BOARD_DEBUG_UART_CCM_ROOT, ccmRootmuxUartOsc24m, 0, 0);
     /* Enable debug uart clock */
     CCM_EnableRoot(CCM, BOARD_DEBUG_UART_CCM_ROOT);
-    CCM_ControlGate(CCM, BOARD_DEBUG_UART_CCM_CCGR, ccmClockNeededRunWait);
+    /*
+     * IC Limitation
+     * M4 stop will cause A7 UART lose functionality
+     * So we need UART clock all the time
+     */
+    CCM_ControlGate(CCM, BOARD_DEBUG_UART_CCM_CCGR, ccmClockNeededAll);
 
     /* Config debug uart pins */
     configure_uart_pins(BOARD_DEBUG_UART_BASEADDR);

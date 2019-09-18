@@ -76,11 +76,11 @@ extern "C" {
  */
 
 /*!
- * @brief Init the UART_IMX used for debug messages.
+ * @brief Initialize the UART_IMX used for debug messages.
  *
  * Call this function to enable debug log messages to be output via the specified UART_IMX
  * base address and at the specified baud rate. Just initializes the UART_IMX to the given baud
- * rate and 8N1. After this function has returned, stdout and stdin will be connected to the
+ * rate and 8N1. After this function has returned, stdout and stdin are connected to the
  * selected UART_IMX. The debug_printf() function also uses this UART_IMX.
  *
  * @param base Which UART_IMX instance is used to send debug messages.
@@ -95,7 +95,7 @@ debug_console_status_t DbgConsole_Init(UART_Type* base,
                                        uint32_t mode);
 
 /*!
- * @brief Deinit the UART/LPUART used for debug messages.
+ * @brief Deinitialize the UART/LPUART used for debug messages.
  *
  * Call this function to disable debug log messages to be output via the specified UART/LPUART
  * base address and at the specified baud rate.

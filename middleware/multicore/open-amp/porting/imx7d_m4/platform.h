@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2014, Mentor Graphics Corporation
- * All rights reserved.
+ * Copyright (c) 2015 Freescale Semiconductor, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -10,7 +9,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 3. Neither the name of Mentor Graphics Corporation nor the names of its
+ * 3. Neither the name of Freescale Semiconductor nor the names of its
  *    contributors may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
  *
@@ -27,15 +26,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**************************************************************************
+ * FILE NAME
+ *
+ *       platform.h
+ *
+ * COMPONENT
+ *
+ *       OpenAMP
+ *
+ * DESCRIPTION
+ *
+ * This file provides function prototypes of platform.c.
+ *
+ **************************************************************************/
+
 #ifndef PLATFORM_H_
 #define PLATFORM_H_
 
-#include "../../common/hil/hil.h"
+/*
+ * 32 MSG (16 rx, 16 tx), 512 bytes each, it is only used when RPMSG driver is working in master mode, otherwise
+ * the share memory is managed by the other side.
+ * When working with Linux, SHM_ADDR and SHM_SIZE is not used
+ */
+#define SHM_ADDR                    (0)
+#define SHM_SIZE                    (0)
 
-int _enable_interrupt(struct proc_vring *vring_hw);
-void _notify(int cpu_id, struct proc_intr *intr_info);
-int _boot_cpu(int cpu_id, unsigned int load_addr);
-void _shutdown_cpu(int cpu_id);
+void platform_time_delay(int num_msec);
+int  platform_in_isr(void);
+int  platform_interrupt_enable(unsigned int vector_id, unsigned int trigger_type, unsigned int priority);
+int  platform_interrupt_disable(unsigned int vector_id);
+void platform_interrupt_enable_all(void);
+void platform_interrupt_disable_all(void);
+void platform_map_mem_region(unsigned int va,unsigned int pa, unsigned int size, unsigned int flags);
+void platform_cache_all_flush_invalidate(void);
+void platform_cache_disable(void);
+unsigned long platform_vatopa(void *addr);
+void *platform_patova(unsigned long addr);
 void platform_isr(int vect_id, void *data);
+int  platform_init(void);
+int  platform_deinit(void);
 
 #endif /* PLATFORM_H_ */

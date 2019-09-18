@@ -44,7 +44,7 @@
  *                 structure.
  *
  *END**************************************************************************/
-void ADC_Init(ADC_Type* base, adc_init_config_t* initConfig)
+void ADC_Init(ADC_Type* base, const adc_init_config_t* initConfig)
 {
     assert(initConfig);
 
@@ -81,20 +81,20 @@ void ADC_Deinit(ADC_Type* base)
 
     /* Reset ADC Module Register content to default value */
     ADC_CH_A_CFG1_REG(base)     = 0x0;
-    ADC_CH_A_CFG2_REG(base)     = 0x8000;
+    ADC_CH_A_CFG2_REG(base)     = ADC_CH_A_CFG2_CHA_AUTO_DIS_MASK;
     ADC_CH_B_CFG1_REG(base)     = 0x0;
-    ADC_CH_B_CFG2_REG(base)     = 0x8000;
+    ADC_CH_B_CFG2_REG(base)     = ADC_CH_B_CFG2_CHB_AUTO_DIS_MASK;
     ADC_CH_C_CFG1_REG(base)     = 0x0;
-    ADC_CH_C_CFG2_REG(base)     = 0x8000;
+    ADC_CH_C_CFG2_REG(base)     = ADC_CH_C_CFG2_CHC_AUTO_DIS_MASK;
     ADC_CH_D_CFG1_REG(base)     = 0x0;
-    ADC_CH_D_CFG2_REG(base)     = 0x8000;
+    ADC_CH_D_CFG2_REG(base)     = ADC_CH_D_CFG2_CHD_AUTO_DIS_MASK;
     ADC_CH_SW_CFG_REG(base)     = 0x0;
     ADC_TIMER_UNIT_REG(base)    = 0x0;
-    ADC_DMA_FIFO_REG(base)      = 0xF;
+    ADC_DMA_FIFO_REG(base)      = ADC_DMA_FIFO_DMA_WM_LVL(0xF);
     ADC_INT_SIG_EN_REG(base)    = 0x0;
     ADC_INT_EN_REG(base)        = 0x0;
     ADC_INT_STATUS_REG(base)    = 0x0;
-    ADC_ADC_CFG_REG(base)       = 0x1;
+    ADC_ADC_CFG_REG(base)       = ADC_ADC_CFG_ADC_EN_MASK;
 }
 
 /*FUNCTION**********************************************************************
@@ -177,10 +177,10 @@ void ADC_SetPowerDownCmd(ADC_Type* base, bool powerDown)
 /*FUNCTION**********************************************************************
  *
  * Function Name : ADC_LogicChInit
- * Description   : Initialize ADC Logic channel with initialize structure.
+ * Description   : Initialize ADC Logic channel with initialization structure.
  *
  *END**************************************************************************/
-void ADC_LogicChInit(ADC_Type* base, uint8_t logicCh, adc_logic_ch_init_config_t* chInitConfig)
+void ADC_LogicChInit(ADC_Type* base, uint8_t logicCh, const adc_logic_ch_init_config_t* chInitConfig)
 {
     assert(chInitConfig);
 
@@ -427,16 +427,20 @@ void ADC_SetConvertCmd(ADC_Type* base, uint8_t logicCh, bool enable)
         switch (logicCh)
         {
             case adcLogicChA:
-                ADC_CH_A_CFG1_REG(base) |= ADC_CH_A_CFG1_CHA_EN_MASK;
+                ADC_CH_A_CFG1_REG(base) = (ADC_CH_A_CFG1_REG(base) & ~ADC_CH_A_CFG1_CHA_SINGLE_MASK) |
+                                          ADC_CH_A_CFG1_CHA_EN_MASK;
                 break;
             case adcLogicChB:
-                ADC_CH_B_CFG1_REG(base) |= ADC_CH_B_CFG1_CHB_EN_MASK;
+                ADC_CH_B_CFG1_REG(base) = (ADC_CH_B_CFG1_REG(base) & ~ADC_CH_B_CFG1_CHB_SINGLE_MASK) |
+                                          ADC_CH_B_CFG1_CHB_EN_MASK;
                 break;
             case adcLogicChC:
-                ADC_CH_C_CFG1_REG(base) |= ADC_CH_C_CFG1_CHC_EN_MASK;
+                ADC_CH_C_CFG1_REG(base) = (ADC_CH_C_CFG1_REG(base) & ~ADC_CH_C_CFG1_CHC_SINGLE_MASK) |
+                                          ADC_CH_C_CFG1_CHC_EN_MASK;
                 break;
             case adcLogicChD:
-                ADC_CH_D_CFG1_REG(base) |= ADC_CH_D_CFG1_CHD_EN_MASK;
+                ADC_CH_D_CFG1_REG(base) = (ADC_CH_D_CFG1_REG(base) & ~ADC_CH_D_CFG1_CHD_SINGLE_MASK) |
+                                          ADC_CH_D_CFG1_CHD_EN_MASK;
                 break;
             default:
                 break;
@@ -467,7 +471,7 @@ void ADC_SetConvertCmd(ADC_Type* base, uint8_t logicCh, bool enable)
 /*FUNCTION**********************************************************************
  *
  * Function Name : ADC_TriggerSingleConvert
- * Description   : Trigger single time convert on target logic channel.
+ * Description   : Trigger single time convert on the target logic channel.
  *
  *END**************************************************************************/
 void ADC_TriggerSingleConvert(ADC_Type* base, uint8_t logicCh)
@@ -477,19 +481,52 @@ void ADC_TriggerSingleConvert(ADC_Type* base, uint8_t logicCh)
     switch (logicCh)
     {
         case adcLogicChA:
-            ADC_CH_A_CFG1_REG(base) |= ADC_CH_A_CFG1_CHA_SINGLE_MASK;
+            ADC_CH_A_CFG1_REG(base) |= ADC_CH_A_CFG1_CHA_SINGLE_MASK | ADC_CH_A_CFG1_CHA_EN_MASK;
             break;
         case adcLogicChB:
-            ADC_CH_B_CFG1_REG(base) |= ADC_CH_B_CFG1_CHB_SINGLE_MASK;
+            ADC_CH_B_CFG1_REG(base) |= ADC_CH_B_CFG1_CHB_SINGLE_MASK | ADC_CH_B_CFG1_CHB_EN_MASK;
             break;
         case adcLogicChC:
-            ADC_CH_C_CFG1_REG(base) |= ADC_CH_C_CFG1_CHC_SINGLE_MASK;
+            ADC_CH_C_CFG1_REG(base) |= ADC_CH_C_CFG1_CHC_SINGLE_MASK | ADC_CH_C_CFG1_CHC_EN_MASK;
             break;
         case adcLogicChD:
-            ADC_CH_D_CFG1_REG(base) |= ADC_CH_D_CFG1_CHD_SINGLE_MASK;
+            ADC_CH_D_CFG1_REG(base) |= ADC_CH_D_CFG1_CHD_SINGLE_MASK | ADC_CH_D_CFG1_CHD_EN_MASK;
             break;
         case adcLogicChSW:
             ADC_CH_SW_CFG_REG(base) |= ADC_CH_SW_CFG_START_CONV_MASK;
+            break;
+        default:
+            break;
+    }
+}
+
+/*FUNCTION**********************************************************************
+ *
+ * Function Name : ADC_StopConvert
+ * Description   : Stop current convert on the target logic channel.
+ *
+ *END**************************************************************************/
+void ADC_StopConvert(ADC_Type* base, uint8_t logicCh)
+{
+    assert(logicCh <= adcLogicChSW);
+
+    switch (logicCh)
+    {
+        case adcLogicChA:
+            ADC_CH_A_CFG1_REG(base) &= ~ADC_CH_A_CFG1_CHA_EN_MASK;
+            break;
+        case adcLogicChB:
+            ADC_CH_B_CFG1_REG(base) &= ~ADC_CH_B_CFG1_CHB_EN_MASK;
+            break;
+        case adcLogicChC:
+            ADC_CH_C_CFG1_REG(base) &= ~ADC_CH_C_CFG1_CHC_EN_MASK;
+            break;
+        case adcLogicChD:
+            ADC_CH_D_CFG1_REG(base) &= ~ADC_CH_D_CFG1_CHD_EN_MASK;
+            break;
+        case adcLogicChSW:
+            /* Wait until ADC conversion finish. */
+            while (ADC_CH_SW_CFG_REG(base) & ADC_CH_SW_CFG_START_CONV_MASK);
             break;
         default:
             break;

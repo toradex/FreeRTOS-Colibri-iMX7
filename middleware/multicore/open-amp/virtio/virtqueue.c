@@ -74,22 +74,20 @@ int virtqueue_create(struct virtio_device *virt_dev, unsigned short id, char *na
                 + (ring->num_descs) * sizeof(struct vq_desc_extra);
         vq = (struct virtqueue *) env_allocate_memory(vq_size);
 
-
         if (vq == VQ_NULL) {
             return (ERROR_NO_MEM);
         }
 
         env_memset(vq, 0x00, vq_size);
 
-
         vq->vq_dev = virt_dev;
         env_strncpy(vq->vq_name, name, VIRTQUEUE_MAX_NAME_SZ);
         vq->vq_queue_index = id;
-        vq->vq_alignment = ring->align;         /*ring info comes from proc_table*/
+        vq->vq_alignment = ring->align;
         vq->vq_nentries = ring->num_descs;
         vq->vq_free_cnt = vq->vq_nentries;
-        vq->callback = callback;            /*rpmsg_tx_callback, rpmsg_rx_callback*/
-        vq->notify = notify;                /*hil_vring_notify*/
+        vq->callback = callback;
+        vq->notify = notify;
 
         //TODO : Whether we want to support indirect addition or not.
         vq->vq_ring_size = vring_size(ring->num_descs, ring->align);
@@ -134,7 +132,7 @@ int virtqueue_add_buffer(struct virtqueue *vq, struct llist *buffer,
     uint16_t idx;
     int needed;
 
-    needed = readable + writable;   /*only one can be set to 1*/
+    needed = readable + writable;
 
     VQ_PARAM_CHK(vq == VQ_NULL, status, ERROR_VQUEUE_INVLD_PARAM);
     VQ_PARAM_CHK(needed < 1, status, ERROR_VQUEUE_INVLD_PARAM);
@@ -160,7 +158,7 @@ int virtqueue_add_buffer(struct virtqueue *vq, struct llist *buffer,
         dxp->ndescs = needed;
 
         /* Enqueue buffer onto the ring. */
-        idx = vq_ring_add_buffer(vq, vq->vq_ring.desc, head_idx, buffer,        /*idx now "desc.next"*/
+        idx = vq_ring_add_buffer(vq, vq->vq_ring.desc, head_idx, buffer,
                 readable, writable);
 
         vq->vq_desc_head_idx = idx;
@@ -196,7 +194,7 @@ int virtqueue_add_buffer(struct virtqueue *vq, struct llist *buffer,
  *
  * @return                      - Function status
  */
-int virtqueue_add_single_buffer(struct virtqueue *vq, void *cookie,             /*this function is not used at all*/
+int virtqueue_add_single_buffer(struct virtqueue *vq, void *cookie,
         void *buffer_addr, uint_t len, int writable, boolean has_next) {
 
     struct vq_desc_extra *dxp;
@@ -326,7 +324,8 @@ void *virtqueue_get_available_buffer(struct virtqueue *vq, uint16_t *avail_idx,
     uint16_t head_idx = 0;
     void *buffer;
 
-    if (vq->vq_available_idx == vq->vq_ring.avail->idx) {       /*vq->vq_ring.avial->idx is updated in "rpmsg_rdev_create_virtqueues" "virtqueue_add_buffer" */
+    /*vq->vq_ring.avial->idx is updated in "rpmsg_rdev_create_virtqueues" "virtqueue_add_buffer" */
+    if (vq->vq_available_idx == vq->vq_ring.avail->idx) {
         return (VQ_NULL);
     }
 
@@ -673,7 +672,7 @@ static int vq_ring_must_notify_host(struct virtqueue *vq) {
 static void vq_ring_notify_host(struct virtqueue *vq) {
 
     if (vq->notify != VQ_NULL)
-        vq->notify(vq);     /*hil_vring_notify*/
+        vq->notify(vq);
 }
 
 /**

@@ -44,7 +44,7 @@
  *                 initialize structure.
  *
  *END**************************************************************************/
-void UART_Init(UART_Type* base, uart_init_config_t* initConfig)
+void UART_Init(UART_Type* base, const uart_init_config_t* initConfig)
 {
     assert(initConfig);
 
@@ -85,16 +85,18 @@ void UART_Deinit(UART_Type* base)
     UART_UCR1_REG(base) &= ~UART_UCR1_UARTEN_MASK;
 
     /* Reset UART Module Register content to default value */
-    UART_UCR1_REG(base)  = 0x00000000;
-    UART_UCR2_REG(base)  = 0x00000001;
-    UART_UCR3_REG(base)  = 0x00000700;
-    UART_UCR4_REG(base)  = 0x00008000;
-    UART_UFCR_REG(base)  = 0x00000801;
-    UART_UESC_REG(base)  = 0x0000002B;
-    UART_UTIM_REG(base)  = 0x00000000;
-    UART_ONEMS_REG(base) = 0x00000000;
-    UART_UTS_REG(base)   = 0x00000060;
-    UART_UMCR_REG(base)  = 0x00000000;
+    UART_UCR1_REG(base)  = 0x0;
+    UART_UCR2_REG(base)  = UART_UCR2_SRST_MASK;
+    UART_UCR3_REG(base)  = UART_UCR3_DSR_MASK |
+                           UART_UCR3_DCD_MASK |
+                           UART_UCR3_RI_MASK;
+    UART_UCR4_REG(base)  = UART_UCR4_CTSTL(32);
+    UART_UFCR_REG(base)  = UART_UFCR_TXTL(2) | UART_UFCR_RXTL(1);
+    UART_UESC_REG(base)  = UART_UESC_ESC_CHAR(0x2B);
+    UART_UTIM_REG(base)  = 0x0;
+    UART_ONEMS_REG(base) = 0x0;
+    UART_UTS_REG(base)   = UART_UTS_TXEMPTY_MASK | UART_UTS_RXEMPTY_MASK;
+    UART_UMCR_REG(base)  = 0x0;
 
     /* Reset the transmit and receive state machines, all FIFOs and register
      * USR1, USR2, UBIR, UBMR, UBRC, URXD, UTXD and UTS[6-3]. */
@@ -179,7 +181,7 @@ void UART_SetBaudRate(UART_Type* base, uint32_t clockRate, uint32_t baudRate)
     UART_UFCR_REG(base) |= UART_UFCR_RFDIV(refFreqDiv);
     UART_UBIR_REG(base) = UART_UBIR_INC(denominator - 1);
     UART_UBMR_REG(base) = UART_UBMR_MOD(numerator / divider - 1);
-    UART_ONEMS_REG(base) = UART_ONEMS_ONEMS(clockRate/(1000 * refFreqDiv));
+    UART_ONEMS_REG(base) = UART_ONEMS_ONEMS(clockRate/(1000 * divider));
 }
 
 /*FUNCTION**********************************************************************
@@ -301,7 +303,7 @@ void UART_ClearStatusFlag(UART_Type* base, uint32_t flag)
     uart_mask = (1 << (flag & 0x0000FFFF));
 
     /* write 1 to clear. */
-    *uart_reg |= uart_mask;
+    *uart_reg = uart_mask;
 }
 
 /*******************************************************************************
@@ -443,7 +445,7 @@ void UART_SetRiPinLevel(UART_Type* base, bool active)
 }
 
 /*******************************************************************************
- * Multi-processor and RS-485 functions
+ * Multiprocessor and RS-485 functions
  ******************************************************************************/
 /*FUNCTION**********************************************************************
  *
@@ -472,11 +474,17 @@ void UAER_Putchar9(UART_Type* base, uint16_t data)
  *END**************************************************************************/
 uint16_t UAER_Getchar9(UART_Type* base)
 {
-    uint16_t rxData = 0;
+    uint16_t rxData = UART_URXD_REG(base);
 
-    if (UART_URXD_REG(base) & UART_URXD_PRERR_MASK)
-        rxData |= 0x0100;
-    rxData |= (UART_URXD_REG(base) & UART_URXD_RX_DATA_MASK);
+    if (rxData & UART_URXD_PRERR_MASK)
+    {
+        rxData = (rxData & 0x00FF) | 0x0100;
+    }
+    else
+    {
+        rxData &= 0x00FF;
+    }
+
     return rxData;
 }
 

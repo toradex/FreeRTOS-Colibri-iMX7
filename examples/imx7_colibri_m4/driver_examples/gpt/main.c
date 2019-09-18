@@ -40,7 +40,7 @@ static uint32_t counterA, counterB;
 int main(void)
 {
     uint32_t freqA, freqB;
-    gpt_mode_config_t config = {
+    gpt_init_config_t config = {
         .freeRun     = false,
         .waitEnable  = true,
         .stopEnable  = true,

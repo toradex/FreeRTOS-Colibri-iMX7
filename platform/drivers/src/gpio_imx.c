@@ -41,10 +41,10 @@
  *
  * Function Name : GPIO_Init
  * Description   : Initializes the GPIO module according to the specified
- *                 parameters in the initStruct.
+ *                 parameters in the initConfig.
  *
  *END**************************************************************************/
-void GPIO_Init(GPIO_Type* base, gpio_init_t* initStruct)
+void GPIO_Init(GPIO_Type* base, const gpio_init_config_t* initConfig)
 {
     uint32_t pin;
     volatile uint32_t *icr;
@@ -54,10 +54,10 @@ void GPIO_Init(GPIO_Type* base, gpio_init_t* initStruct)
 	GPIO_EDGE_SEL_REG(base) = 0;
 
     /* Get pin number */
-    pin = initStruct->pin;
+    pin = initConfig->pin;
 
     /* Configure GPIO pin direction */
-    if (initStruct->direction == gpioDigitalOutput)
+    if (initConfig->direction == gpioDigitalOutput)
         GPIO_GDIR_REG(base) |= (1U << pin);
     else
         GPIO_GDIR_REG(base) &= ~(1U << pin);
@@ -70,7 +70,7 @@ void GPIO_Init(GPIO_Type* base, gpio_init_t* initStruct)
         icr = &GPIO_ICR2_REG(base);
         pin -= 16;
     }
-    switch(initStruct->interruptMode)
+    switch(initConfig->interruptMode)
     {
         case(gpioIntLowLevel):
         {
@@ -127,12 +127,13 @@ void GPIO_WritePinOutput(GPIO_Type* base, uint32_t pin, gpio_pin_action_t pinVal
 /*FUNCTION**********************************************************************
  *
  * Function Name : GPIO_SetPinIntMode
- * Description   : Disable or enable the specific pin interrupt.
+ * Description   : Enable or Disable the specific pin interrupt.
  *
  *END**************************************************************************/
 void GPIO_SetPinIntMode(GPIO_Type* base, uint32_t pin, bool enable)
 {
     assert(pin < 32);
+
     if(enable)
         GPIO_IMR_REG(base) |= (1U << pin);
     else
@@ -142,13 +143,14 @@ void GPIO_SetPinIntMode(GPIO_Type* base, uint32_t pin, bool enable)
 /*FUNCTION**********************************************************************
  *
  * Function Name : GPIO_SetIntEdgeSelect
- * Description   : Disable or enable the specific pin interrupt.
+ * Description   : Enable or Disable the specific pin interrupt.
  *
  *END**************************************************************************/
 
 void GPIO_SetIntEdgeSelect(GPIO_Type* base, uint32_t pin, bool enable)
 {
     assert(pin < 32);
+
     if(enable)
         GPIO_EDGE_SEL_REG(base) |= (1U << pin);
     else

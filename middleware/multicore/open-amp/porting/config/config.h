@@ -33,8 +33,10 @@
 #include "../env/env.h"
 
 /* Max supprted ISR counts */
-#define ISR_COUNT                       2
+#define ISR_COUNT                       4
 
+/* Max supported firmwares */
+#define FW_COUNT                        4
 /**
  * Structure to keep track of registered ISR's.
  */
@@ -44,6 +46,12 @@ struct isr_info {
     int type;
     void *data;
     void (*isr)(int vector, void *data);
+};
+
+struct firmware_info {
+    char name[32];
+    unsigned int start_addr;
+    unsigned int end_addr;
 };
 
 int config_get_firmware(char *fw_name, unsigned int *start_addr, unsigned int *size);

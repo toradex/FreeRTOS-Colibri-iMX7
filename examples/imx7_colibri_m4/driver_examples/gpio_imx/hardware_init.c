@@ -44,7 +44,7 @@ void hardware_init(void)
     RDC_SetPdapAccess(RDC, BOARD_GPIO_KEY_RDC_PDAP, 0xFF, false, false);
 
     /* Enable gpio clock gate */
-    CCM_ControlGate(CCM, BOARD_GPIO_CCM_CCGR, ccmClockNeededRunWait);
+    CCM_ControlGate(CCM, BOARD_GPIO_KEY_CCM_CCGR, ccmClockNeededRunWait);
     /* Configure gpio pin IOMUX */
     configure_gpio_pin(BOARD_GPIO_KEY_CONFIG);
 }

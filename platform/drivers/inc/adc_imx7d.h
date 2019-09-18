@@ -45,113 +45,98 @@
  * Definitions
  ******************************************************************************/
 
-/*!
- *  @brief ADC module initialize structure.
- */
+/*! @brief ADC module initialize structure. */
 typedef struct _adc_init_config
 {
-    uint32_t sampleRate;            /*!< The desired ADC sample rate.*/
-    bool     levelShifterEnable;    /*!< The level shifter module configuration(Enable to power on ADC module).*/
+    uint32_t sampleRate;         /*!< The desired ADC sample rate.*/
+    bool     levelShifterEnable; /*!< The level shifter module configuration(Enable to power on ADC module).*/
 } adc_init_config_t;
 
-/*!
- * @brief ADC logic channel initialize structure.
- */
+/*! @brief ADC logic channel initialize structure. */
 typedef struct _adc_logic_ch_init_config
 {
-    uint8_t  inputChannel;          /*!< The logic channel to be set.*/
-    bool     coutinuousEnable;      /*!< Continuous sample mode enable configuration.*/
-    uint32_t convertRate;           /*!< The continuous rate when continuous sample enabled.*/
-    bool     averageEnable;         /*!< Hardware average enable configuration.*/
-    uint8_t  averageNumber;         /*!< The average number for hardware average function.*/
+    uint32_t convertRate;      /*!< The continuous rate when continuous sample enabled.*/
+    uint8_t  inputChannel;     /*!< The logic channel to be set.*/
+    uint8_t  averageNumber;    /*!< The average number for hardware average function.*/
+    bool     coutinuousEnable; /*!< Continuous sample mode enable configuration.*/
+    bool     averageEnable;    /*!< Hardware average enable configuration.*/
 } adc_logic_ch_init_config_t;
 
-/*!
- * @brief ADC logic channel selection enumeration.
- */
+/*! @brief ADC logic channel selection enumeration. */
 enum _adc_logic_ch_selection
 {
-    adcLogicChA     = 0x0,          /*!< ADC Logic Channel A.*/
-    adcLogicChB     = 0x1,          /*!< ADC Logic Channel B.*/
-    adcLogicChC     = 0x2,          /*!< ADC Logic Channel C.*/
-    adcLogicChD     = 0x3,          /*!< ADC Logic Channel D.*/
-    adcLogicChSW    = 0x4           /*!< ADC Logic Channel Software.*/
+    adcLogicChA  = 0x0, /*!< ADC Logic Channel A.*/
+    adcLogicChB  = 0x1, /*!< ADC Logic Channel B.*/
+    adcLogicChC  = 0x2, /*!< ADC Logic Channel C.*/
+    adcLogicChD  = 0x3, /*!< ADC Logic Channel D.*/
+    adcLogicChSW = 0x4, /*!< ADC Logic Channel Software.*/
 };
 
-/*!
- * @brief ADC hardware average number enumeration.
- */
+/*! @brief ADC hardware average number enumeration. */
 enum _adc_average_number
 {
-    adcAvgNum4      = 0x0,          /*!< ADC Hardware Average Number is set to 4.*/
-    adcAvgNum8      = 0x1,          /*!< ADC Hardware Average Number is set to 8.*/
-    adcAvgNum16     = 0x2,          /*!< ADC Hardware Average Number is set to 16.*/
-    adcAvgNum32     = 0x3           /*!< ADC Hardware Average Number is set to 32.*/
+    adcAvgNum4  = 0x0, /*!< ADC Hardware Average Number is set to 4.*/
+    adcAvgNum8  = 0x1, /*!< ADC Hardware Average Number is set to 8.*/
+    adcAvgNum16 = 0x2, /*!< ADC Hardware Average Number is set to 16.*/
+    adcAvgNum32 = 0x3, /*!< ADC Hardware Average Number is set to 32.*/
 };
 
-/*!
- * @brief ADC build-in comparer work mode configuration enumeration.
- */
+/*! @brief ADC build-in comparer work mode configuration enumeration. */
 enum _adc_compare_mode
 {
-    adcCmpModeDisable             = 0x0,    /*!< ADC build-in comparator is disabled.*/
-    adcCmpModeGreaterThanLow      = 0x1,    /*!< ADC build-in comparator will be triggered when sample value greater than low threshold.*/
-    adcCmpModeLessThanLow         = 0x2,    /*!< ADC build-in comparator will be triggered when sample value less than low threshold.*/
-    adcCmpModeInInterval          = 0x3,    /*!< ADC build-in comparator will be triggered when sample value in interval between low and high threshold.*/
-    adcCmpModeGreaterThanHigh     = 0x5,    /*!< ADC build-in comparator will be triggered when sample value greater than high threshold.*/
-    adcCmpModeLessThanHigh        = 0x6,    /*!< ADC build-in comparator will be triggered when sample value less than high threshold.*/
-    adcCmpModeOutOffInterval      = 0x7     /*!< ADC build-in comparator will be triggered when sample value out of interval between low and high threshold.*/
+    adcCmpModeDisable         = 0x0, /*!< ADC build-in comparator is disabled.*/
+    adcCmpModeGreaterThanLow  = 0x1, /*!< ADC build-in comparator is triggered when sample value greater than low threshold.*/
+    adcCmpModeLessThanLow     = 0x2, /*!< ADC build-in comparator is triggered when sample value less than low threshold.*/
+    adcCmpModeInInterval      = 0x3, /*!< ADC build-in comparator is triggered when sample value in interval between low and high threshold.*/
+    adcCmpModeGreaterThanHigh = 0x5, /*!< ADC build-in comparator is triggered when sample value greater than high threshold.*/
+    adcCmpModeLessThanHigh    = 0x6, /*!< ADC build-in comparator is triggered when sample value less than high threshold.*/
+    adcCmpModeOutOffInterval  = 0x7, /*!< ADC build-in comparator is triggered when sample value out of interval between low and high threshold.*/
 };
 
-/*!
- * @brief This enumeration contains the settings for all of the ADC
- *        interrupt configurations.
- */
+/*! @brief This enumeration contains the settings for all of the ADC interrupt configurations. */
 enum _adc_interrupt
 {
-    adcIntLastFifoDataRead         = ADC_INT_EN_LAST_FIFO_DATA_READ_EN_MASK,
-    adcIntConvertTimeoutChSw       = ADC_INT_EN_SW_CH_COV_TO_INT_EN_MASK,
-    adcIntConvertTimeoutChD        = ADC_INT_EN_CHD_COV_TO_INT_EN_MASK,
-    adcIntConvertTimeoutChC        = ADC_INT_EN_CHC_COV_TO_INT_EN_MASK,
-    adcIntConvertTimeoutChB        = ADC_INT_EN_CHB_COV_TO_INT_EN_MASK,
-    adcIntConvertTimeoutChA        = ADC_INT_EN_CHA_COV_TO_INT_EN_MASK,
-    adcIntConvertChSw              = ADC_INT_EN_SW_CH_COV_INT_EN_MASK,
-    adcIntConvertChD               = ADC_INT_EN_CHD_COV_INT_EN_MASK,
-    adcIntConvertChC               = ADC_INT_EN_CHC_COV_INT_EN_MASK,
-    adcIntConvertChB               = ADC_INT_EN_CHB_COV_INT_EN_MASK,
-    adcIntConvertChA               = ADC_INT_EN_CHA_COV_INT_EN_MASK,
-    adcIntFifoOverrun              = ADC_INT_EN_FIFO_OVERRUN_INT_EN_MASK,
-    adcIntFifoUnderrun             = ADC_INT_EN_FIFO_UNDERRUN_INT_EN_MASK,
-    adcIntDmaReachWatermark        = ADC_INT_EN_DMA_REACH_WM_INT_EN_MASK,
-    adcIntCmpChD                   = ADC_INT_EN_CHD_CMP_INT_EN_MASK,
-    adcIntCmpChC                   = ADC_INT_EN_CHC_CMP_INT_EN_MASK,
-    adcIntCmpChB                   = ADC_INT_EN_CHB_CMP_INT_EN_MASK,
-    adcIntCmpChA                   = ADC_INT_EN_CHA_CMP_INT_EN_MASK
+    adcIntLastFifoDataRead   = ADC_INT_EN_LAST_FIFO_DATA_READ_EN_MASK, /*!< Last FIFO Data Read Interrupt Enable.*/
+    adcIntConvertTimeoutChSw = ADC_INT_EN_SW_CH_COV_TO_INT_EN_MASK,    /*!< Software Channel Conversion Time Out Interrupt Enable.*/
+    adcIntConvertTimeoutChD  = ADC_INT_EN_CHD_COV_TO_INT_EN_MASK,      /*!< Channel D Conversion Time Out Interrupt Enable.*/
+    adcIntConvertTimeoutChC  = ADC_INT_EN_CHC_COV_TO_INT_EN_MASK,      /*!< Channel C Conversion Time Out Interrupt Enable.*/
+    adcIntConvertTimeoutChB  = ADC_INT_EN_CHB_COV_TO_INT_EN_MASK,      /*!< Channel B Conversion Time Out Interrupt Enable.*/
+    adcIntConvertTimeoutChA  = ADC_INT_EN_CHA_COV_TO_INT_EN_MASK,      /*!< Channel A Conversion Time Out Interrupt Enable.*/
+    adcIntConvertChSw        = ADC_INT_EN_SW_CH_COV_INT_EN_MASK,       /*!< Software Channel Conversion Interrupt Enable.*/
+    adcIntConvertChD         = ADC_INT_EN_CHD_COV_INT_EN_MASK,         /*!< Channel D Conversion Interrupt Enable.*/
+    adcIntConvertChC         = ADC_INT_EN_CHC_COV_INT_EN_MASK,         /*!< Channel C Conversion Interrupt Enable.*/
+    adcIntConvertChB         = ADC_INT_EN_CHB_COV_INT_EN_MASK,         /*!< Channel B Conversion Interrupt Enable.*/
+    adcIntConvertChA         = ADC_INT_EN_CHA_COV_INT_EN_MASK,         /*!< Channel A Conversion Interrupt Enable.*/
+    adcIntFifoOverrun        = ADC_INT_EN_FIFO_OVERRUN_INT_EN_MASK,    /*!< FIFO overrun Interrupt Enable.*/
+    adcIntFifoUnderrun       = ADC_INT_EN_FIFO_UNDERRUN_INT_EN_MASK,   /*!< FIFO underrun Interrupt Enable.*/
+    adcIntDmaReachWatermark  = ADC_INT_EN_DMA_REACH_WM_INT_EN_MASK,    /*!< DMA Reach Watermark Level Interrupt Enable.*/
+    adcIntCmpChD             = ADC_INT_EN_CHD_CMP_INT_EN_MASK,         /*!< Channel D Compare Interrupt Enable.*/
+    adcIntCmpChC             = ADC_INT_EN_CHC_CMP_INT_EN_MASK,         /*!< Channel C Compare Interrupt Enable.*/
+    adcIntCmpChB             = ADC_INT_EN_CHB_CMP_INT_EN_MASK,         /*!< Channel B Compare Interrupt Enable.*/
+    adcIntCmpChA             = ADC_INT_EN_CHA_CMP_INT_EN_MASK,         /*!< Channel A Compare Interrupt Enable.*/
 };
 
-/*!
- * @brief Flag for ADC interrupt/DMA status check or polling status.
- */
+/*! @brief Flag for ADC interrupt/DMA status check or polling status. */
 enum _adc_status_flag
 {
-    adcStatusLastFifoDataRead      = ADC_INT_STATUS_LAST_FIFO_DATA_READ_MASK,
-    adcStatusConvertTimeoutChSw    = ADC_INT_STATUS_SW_CH_COV_TO_MASK,
-    adcStatusConvertTimeoutChD     = ADC_INT_STATUS_CHD_COV_TO_MASK,
-    adcStatusConvertTimeoutChC     = ADC_INT_STATUS_CHC_COV_TO_MASK,
-    adcStatusConvertTimeoutChB     = ADC_INT_STATUS_CHB_COV_TO_MASK,
-    adcStatusConvertTimeoutChA     = ADC_INT_STATUS_CHA_COV_TO_MASK,
-    adcStatusConvertChSw           = ADC_INT_STATUS_SW_CH_COV_MASK,
-    adcStatusConvertChD            = ADC_INT_STATUS_CHD_COV_MASK,
-    adcStatusConvertChC            = ADC_INT_STATUS_CHC_COV_MASK,
-    adcStatusConvertChB            = ADC_INT_STATUS_CHB_COV_MASK,
-    adcStatusConvertChA            = ADC_INT_STATUS_CHA_COV_MASK,
-    adcStatusFifoOverrun           = ADC_INT_STATUS_FIFO_OVERRUN_MASK,
-    adcStatusFifoUnderrun          = ADC_INT_STATUS_FIFO_UNDERRUN_MASK,
-    adcStatusDmaReachWatermark     = ADC_INT_STATUS_DMA_REACH_WM_MASK,
-    adcStatusCmpChD                = ADC_INT_STATUS_CHD_CMP_MASK,
-    adcStatusCmpChC                = ADC_INT_STATUS_CHC_CMP_MASK,
-    adcStatusCmpChB                = ADC_INT_STATUS_CHB_CMP_MASK,
-    adcStatusCmpChA                = ADC_INT_STATUS_CHA_CMP_MASK
+    adcStatusLastFifoDataRead   = ADC_INT_STATUS_LAST_FIFO_DATA_READ_MASK, /*!< Last FIFO Data Read status flag.*/
+    adcStatusConvertTimeoutChSw = ADC_INT_STATUS_SW_CH_COV_TO_MASK,        /*!< Software Channel Conversion Time Out status flag.*/
+    adcStatusConvertTimeoutChD  = ADC_INT_STATUS_CHD_COV_TO_MASK,          /*!< Channel D Conversion Time Out status flag.*/
+    adcStatusConvertTimeoutChC  = ADC_INT_STATUS_CHC_COV_TO_MASK,          /*!< Channel C Conversion Time Out status flag.*/
+    adcStatusConvertTimeoutChB  = ADC_INT_STATUS_CHB_COV_TO_MASK,          /*!< Channel B Conversion Time Out status flag.*/
+    adcStatusConvertTimeoutChA  = ADC_INT_STATUS_CHA_COV_TO_MASK,          /*!< Channel A Conversion Time Out status flag.*/
+    adcStatusConvertChSw        = ADC_INT_STATUS_SW_CH_COV_MASK,           /*!< Software Channel Conversion status flag.*/
+    adcStatusConvertChD         = ADC_INT_STATUS_CHD_COV_MASK,             /*!< Channel D Conversion status flag.*/
+    adcStatusConvertChC         = ADC_INT_STATUS_CHC_COV_MASK,             /*!< Channel C Conversion status flag.*/
+    adcStatusConvertChB         = ADC_INT_STATUS_CHB_COV_MASK,             /*!< Channel B Conversion status flag.*/
+    adcStatusConvertChA         = ADC_INT_STATUS_CHA_COV_MASK,             /*!< Channel A Conversion status flag.*/
+    adcStatusFifoOverrun        = ADC_INT_STATUS_FIFO_OVERRUN_MASK,        /*!< FIFO Overrun status flag.*/
+    adcStatusFifoUnderrun       = ADC_INT_STATUS_FIFO_UNDERRUN_MASK,       /*!< FIFO Underrun status flag.*/
+    adcStatusDmaReachWatermark  = ADC_INT_STATUS_DMA_REACH_WM_MASK,        /*!< DMA Reach Watermark Level status flag.*/
+    adcStatusCmpChD             = ADC_INT_STATUS_CHD_CMP_MASK,             /*!< Channel D Compare status flag.*/
+    adcStatusCmpChC             = ADC_INT_STATUS_CHC_CMP_MASK,             /*!< Channel C Compare status flag.*/
+    adcStatusCmpChB             = ADC_INT_STATUS_CHB_CMP_MASK,             /*!< Channel B Compare status flag.*/
+    adcStatusCmpChA             = ADC_INT_STATUS_CHA_CMP_MASK,             /*!< Channel A Compare status flag.*/
 };
 
 /*******************************************************************************
@@ -173,7 +158,7 @@ extern "C" {
  * @param base ADC base pointer.
  * @param initConfig ADC initialize structure.
  */
-void ADC_Init(ADC_Type* base, adc_init_config_t* initConfig);
+void ADC_Init(ADC_Type* base, const adc_init_config_t* initConfig);
 
 /*!
  * @brief This function reset ADC module register content to its default value.
@@ -184,7 +169,7 @@ void ADC_Deinit(ADC_Type* base);
 
 /*!
  * @brief This function Enable ADC module build-in Level Shifter.
- *        For iMX7D, Level Shifter should always be enabled.
+ *        For i.MX 7Dual, Level Shifter should always be enabled.
  *        User can disable Level Shifter to save power.
  *
  * @param base ADC base pointer.
@@ -224,7 +209,8 @@ void ADC_SetSampleRate(ADC_Type* base, uint32_t sampleRate);
  * @brief This function is used to stop all digital part power.
  *
  * @param base ADC base pointer.
- * @param clockDown - true:  Clock down.
+ * @param clockDown Stop all ADC digital part or not.
+ *                  - true: Clock down.
  *                  - false: Clock running.
  */
 void ADC_SetClockDownCmd(ADC_Type* base, bool clockDown);
@@ -233,7 +219,8 @@ void ADC_SetClockDownCmd(ADC_Type* base, bool clockDown);
  * @brief This function is used to power down ADC analogue core.
  *        Before entering into stop-mode, power down ADC analogue core first.
  * @param base ADC base pointer.
- * @param powerDown - true:  Power down the ADC analogue core.
+ * @param powerDown Power down ADC analogue core or not.
+ *                  - true: Power down the ADC analogue core.
  *                  - false: Do not power down the ADC analogue core.
  */
 void ADC_SetPowerDownCmd(ADC_Type* base, bool powerDown);
@@ -249,16 +236,16 @@ void ADC_SetPowerDownCmd(ADC_Type* base, bool powerDown);
  * @brief Initialize ADC Logic channel with initialize structure.
  *
  * @param base ADC base pointer.
- * @param logicCh ADC module logic channel selection(refer to _adc_logic_ch_selection enumeration).
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
  * @param chInitConfig ADC logic channel initialize structure.
  */
-void ADC_LogicChInit(ADC_Type* base, uint8_t logicCh, adc_logic_ch_init_config_t* chInitConfig);
+void ADC_LogicChInit(ADC_Type* base, uint8_t logicCh, const adc_logic_ch_init_config_t* chInitConfig);
 
 /*!
  * @brief Reset target ADC logic channel registers to default value.
  *
  * @param base ADC base pointer.
- * @param logicCh ADC module logic channel selection(refer to _adc_logic_ch_selection enumeration).
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
  */
 void ADC_LogicChDeinit(ADC_Type* base, uint8_t logicCh);
 
@@ -266,7 +253,7 @@ void ADC_LogicChDeinit(ADC_Type* base, uint8_t logicCh);
  * @brief Select input channel for target logic channel.
  *
  * @param base ADC base pointer.
- * @param logicCh ADC module logic channel selection(refer to _adc_logic_ch_selection enumeration).
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
  * @param inputCh Input channel selection for target logic channel(vary from 0 to 15).
  */
 void ADC_SelectInputCh(ADC_Type* base, uint8_t logicCh, uint8_t inputCh);
@@ -275,7 +262,7 @@ void ADC_SelectInputCh(ADC_Type* base, uint8_t logicCh, uint8_t inputCh);
  * @brief Set ADC conversion rate of target logic channel.
  *
  * @param base ADC base pointer.
- * @param logicCh ADC module logic channel selection(refer to _adc_logic_ch_selection enumeration).
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
  * @param convertRate ADC conversion rate in Hz.
  */
 void ADC_SetConvertRate(ADC_Type* base, uint8_t logicCh, uint32_t convertRate);
@@ -284,9 +271,10 @@ void ADC_SetConvertRate(ADC_Type* base, uint8_t logicCh, uint32_t convertRate);
  * @brief Set work state of hardware average feature of target logic channel.
  *
  * @param base ADC base pointer.
- * @param logicCh ADC module logic channel selection(refer to _adc_logic_ch_selection enumeration).
- * @param enable - true: Enable hardware average.
- *               - faluse: Disable hardware average.
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
+ * @param enable Enable/Disable hardware average
+ *               - true: Enable hardware average of given logic channel.
+ *               - false: Disable hardware average of given logic channel.
  */
 void ADC_SetAverageCmd(ADC_Type* base, uint8_t logicCh, bool enable);
 
@@ -294,8 +282,8 @@ void ADC_SetAverageCmd(ADC_Type* base, uint8_t logicCh, bool enable);
  * @brief Set hardware average number of target logic channel.
  *
  * @param base ADC base pointer.
- * @param logicCh ADC module logic channel selection(refer to _adc_logic_ch_selection enumeration).
- * @param avgNum hardware average number(should select from _adc_average_number enumeration).
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
+ * @param avgNum hardware average number(should select from @ref _adc_average_number enumeration).
  */
 void ADC_SetAverageNum(ADC_Type* base, uint8_t logicCh, uint8_t avgNum);
 
@@ -310,9 +298,10 @@ void ADC_SetAverageNum(ADC_Type* base, uint8_t logicCh, uint8_t avgNum);
  * @brief Set continuous convert work mode of target logic channel.
  *
  * @param base ADC base pointer.
- * @param logicCh ADC module logic channel selection(refer to _adc_logic_ch_selection enumeration).
- * @param enable - true:  Enable continuous convert.
- *               - false: Disable continuous convert.
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
+ * @param enable Enable/Disable continuous convertion.
+ *               - true:  Enable continuous convertion.
+ *               - false: Disable continuous convertion.
  */
 void ADC_SetConvertCmd(ADC_Type* base, uint8_t logicCh, bool enable);
 
@@ -320,15 +309,24 @@ void ADC_SetConvertCmd(ADC_Type* base, uint8_t logicCh, bool enable);
  * @brief Trigger single time convert on target logic channel.
  *
  * @param base ADC base pointer.
- * @param logicCh ADC module logic channel selection(refer to _adc_logic_ch_selection enumeration).
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
  */
 void ADC_TriggerSingleConvert(ADC_Type* base, uint8_t logicCh);
+
+/*!
+ * @brief Stop current convert on target logic channel.
+ *        For logic channel A ~ D, current conversion will stop immediately.
+ *        For Software channel, this function will be waited until current conversion finished.
+ * @param base ADC base pointer.
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
+ */
+void ADC_StopConvert(ADC_Type* base, uint8_t logicCh);
 
 /*!
  * @brief Get 12-bit length right aligned convert result.
  *
  * @param base ADC base pointer.
- * @param logicCh ADC module logic channel selection(refer to _adc_logic_ch_selection enumeration).
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
  * @return convert result on target logic channel.
  */
 uint16_t ADC_GetConvertResult(ADC_Type* base, uint8_t logicCh);
@@ -344,8 +342,8 @@ uint16_t ADC_GetConvertResult(ADC_Type* base, uint8_t logicCh);
  * @brief Set the work mode of ADC module build-in comparer on target logic channel.
  *
  * @param base ADC base pointer.
- * @param logicCh ADC module logic channel selection(refer to _adc_logic_ch_selection enumeration).
- * @param cmpMode Comparer work mode selected from _adc_compare_mode enumeration.
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
+ * @param cmpMode Comparer work mode selected from @ref _adc_compare_mode enumeration.
  */
 void ADC_SetCmpMode(ADC_Type* base, uint8_t logicCh, uint8_t cmpMode);
 
@@ -353,7 +351,7 @@ void ADC_SetCmpMode(ADC_Type* base, uint8_t logicCh, uint8_t cmpMode);
  * @brief Set ADC module build-in comparer high threshold on target logic channel.
  *
  * @param base ADC base pointer.
- * @param logicCh ADC module logic channel selection(refer to _adc_logic_ch_selection enumeration).
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
  * @param threshold Comparer threshold in 12-bit unsigned int formate.
  */
 void ADC_SetCmpHighThres(ADC_Type* base, uint8_t logicCh, uint16_t threshold);
@@ -362,7 +360,7 @@ void ADC_SetCmpHighThres(ADC_Type* base, uint8_t logicCh, uint16_t threshold);
  * @brief Set ADC module build-in comparer low threshold on target logic channel.
  *
  * @param base ADC base pointer.
- * @param logicCh ADC module logic channel selection(refer to _adc_logic_ch_selection enumeration).
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
  * @param threshold Comparer threshold in 12-bit unsigned int formate.
  */
 void ADC_SetCmpLowThres(ADC_Type* base, uint8_t logicCh, uint16_t threshold);
@@ -372,9 +370,10 @@ void ADC_SetCmpLowThres(ADC_Type* base, uint8_t logicCh, uint16_t threshold);
  *        This feature can disable continuous conversion when CMP condition matched.
  *
  * @param base ADC base pointer.
- * @param logicCh ADC module logic channel selection(refer to _adc_logic_ch_selection enumeration).
- * @param enable  - true:  Enable Auto Disable feature.
- *                - false: Disable Auto Disable feature.
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
+ * @param enable Enable/Disable Auto Disable feature.
+ *               - true:  Enable Auto Disable feature.
+ *               - false: Disable Auto Disable feature.
  */
 void ADC_SetAutoDisableCmd(ADC_Type* base, uint8_t logicCh, bool enable);
 
@@ -389,8 +388,10 @@ void ADC_SetAutoDisableCmd(ADC_Type* base, uint8_t logicCh, bool enable);
  * @brief Enables or disables ADC interrupt requests.
  *
  * @param base ADC base pointer.
- * @param intSource ADC interrupt sources to config.
- * @param enable   Pass true to enable interrupt, false to disable.
+ * @param intSource ADC interrupt sources to configuration.
+ * @param enable Enable/Disable given ADC interrupt.
+ *               - true: Enable given ADC interrupt.
+ *               - false: Disable given ADC interrupt.
  */
 void ADC_SetIntCmd(ADC_Type* base, uint32_t intSource, bool enable);
 
@@ -398,8 +399,10 @@ void ADC_SetIntCmd(ADC_Type* base, uint32_t intSource, bool enable);
  * @brief Enables or disables ADC interrupt flag when interrupt condition met.
  *
  * @param base ADC base pointer.
- * @param intSignal ADC interrupt signals to config.
- * @param intSignal Should be select from _adc_interrupt enumeration.
+ * @param intSignal ADC interrupt signals to configuration (see @ref _adc_interrupt enumeration).
+ * @param enable Enable/Disable given ADC interrupt flags.
+ *               - true: Enable given ADC interrupt flags.
+ *               - false: Disable given ADC interrupt flags.
  */
 void ADC_SetIntSigCmd(ADC_Type* base, uint32_t intSignal, bool enable);
 
@@ -407,7 +410,7 @@ void ADC_SetIntSigCmd(ADC_Type* base, uint32_t intSignal, bool enable);
  * @brief Gets the ADC status flag state.
  *
  * @param base ADC base pointer.
- * @param flags ADC status flag mask defined in _adc_status_flag enumeration.
+ * @param flags ADC status flag mask defined in @ref _adc_status_flag enumeration.
  * @return ADC status, each bit represents one status flag
  */
 static inline uint32_t ADC_GetStatusFlag(ADC_Type* base, uint32_t flags)
@@ -419,7 +422,7 @@ static inline uint32_t ADC_GetStatusFlag(ADC_Type* base, uint32_t flags)
  * @brief Clear one or more ADC status flag state.
  *
  * @param base ADC base pointer.
- * @param flags ADC status flag mask defined in _adc_status_flag enumeration.
+ * @param flags ADC status flag mask defined in @ref _adc_status_flag enumeration.
  */
 static inline void ADC_ClearStatusFlag(ADC_Type* base, uint32_t flags)
 {
@@ -437,8 +440,9 @@ static inline void ADC_ClearStatusFlag(ADC_Type* base, uint32_t flags)
  * @brief Set the reset state of ADC internal DMA part.
  *
  * @param base ADC base pointer.
- * @param active - true  :Reset the DMA and DMA FIFO return to its reset value.
- *               - false :de-active DMA reset. 
+ * @param active Reset DMA & DMA FIFO or not.
+ *               - true: Reset the DMA and DMA FIFO return to its reset value.
+ *               - false: Do not reset DMA and DMA FIFO.
  */
 void ADC_SetDmaReset(ADC_Type* base, bool active);
 
@@ -446,8 +450,9 @@ void ADC_SetDmaReset(ADC_Type* base, bool active);
  * @brief Set the work mode of ADC DMA part.
  *
  * @param base ADC base pointer.
- * @param enable - true  :Enable DMA, the data in DMA FIFO should move by SDMA.
- *               - false :Disable DMA, the data in DMA FIFO can only move by CPU.
+ * @param enable Enable/Disable ADC DMA part.
+ *               - true: Enable DMA, the data in DMA FIFO should move by SDMA.
+ *               - false: Disable DMA, the data in DMA FIFO can only move by CPU.
  */
 void ADC_SetDmaCmd(ADC_Type* base, bool enable);
 
@@ -455,16 +460,17 @@ void ADC_SetDmaCmd(ADC_Type* base, bool enable);
  * @brief Set the work mode of ADC DMA FIFO part.
  *
  * @param base ADC base pointer.
- * @param enable - true  :Enable DMA FIFO.
- *               - false :Disable DMA FIFO.
+ * @param enable Enable/Disable DMA FIFO.
+ *               - true: Enable DMA FIFO.
+ *               - false: Disable DMA FIFO.
  */
 void ADC_SetDmaFifoCmd(ADC_Type* base, bool enable);
 
 /*!
- * @brief Select the logic channel that will use DMA transfer.
+ * @brief Select the logic channel that uses the DMA transfer.
  *
  * @param base ADC base pointer.
- * @param logicCh ADC module logic channel selection(refer to _adc_logic_ch_selection enumeration).
+ * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
  */
 static inline void ADC_SetDmaCh(ADC_Type* base, uint32_t logicCh)
 {
@@ -504,8 +510,8 @@ static inline uint32_t ADC_GetFifoData(ADC_Type* base)
  * @brief Get the DMA FIFO full status
  *
  * @param base ADC base pointer.
- * @return - true:  DMA FIFO full
- *         - false: DMA FIFO not full
+ * @retval true: DMA FIFO full.
+ * @retval false: DMA FIFO not full.
  */
 static inline bool ADC_IsFifoFull(ADC_Type* base)
 {
@@ -516,8 +522,8 @@ static inline bool ADC_IsFifoFull(ADC_Type* base)
  * @brief Get the DMA FIFO empty status
  *
  * @param base ADC base pointer.
- * @return - true:  DMA FIFO empty
- *         - false: DMA FIFO not empty
+ * @retval true: DMA FIFO is empty.
+ * @retval false: DMA FIFO is not empty.
  */
 static inline bool ADC_IsFifoEmpty(ADC_Type* base)
 {

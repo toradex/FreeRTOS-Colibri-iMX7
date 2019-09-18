@@ -1,10 +1,10 @@
 /* ---------------------------------------------------------------------------------------*/
-/*  @file:    startup_MCIMX7D_M4.s                                                        */
+/*  @file:    startup_MCIMX7D_M4.S                                                        */
 /*  @purpose: CMSIS Cortex-M4 Core Device Startup File                                    */
-/*            IMX7D_M4                                                                    */
-/*  @version: 0.1                                                                         */
+/*            MCIMX7D_M4                                                                  */
+/*  @version: 1.0                                                                         */
 /*  @date:    2015-04-06                                                                  */
-/*  @build:   b54573                                                                      */
+/*  @build:   b150406                                                                     */
 /* ---------------------------------------------------------------------------------------*/
 /*                                                                                        */
 /* Copyright (c) 2015 , Freescale Semiconductor, Inc.                                     */
@@ -37,16 +37,6 @@
 /*****************************************************************************/
 /* Version: GCC for ARM Embedded Processors                                  */
 /*****************************************************************************/
-
-
-    .word __etext
-    .word __data_start__
-    .word __data_end__
-    .word __bss_end__
-
-
-
-
     .syntax unified
     .arch armv7-m
 
@@ -72,138 +62,136 @@ __isr_vector:
     .long   SysTick_Handler                                 /* SysTick Handler*/
 
                                                             /* External Interrupts*/
-    .long   DefaultISR                                      /* 16*/
-    .long   DefaultISR                                      /* 17*/
-    .long   DefaultISR                                      /* 18*/
-    .long   DefaultISR                                      /* 19*/
-    .long   DefaultISR                                      /* 20*/
-    .long   DefaultISR                                      /* 21*/
-    .long   DefaultISR                                      /* 22*/
-    .long   DefaultISR                                      /* 23*/
-    .long   DefaultISR                                      /* 24*/
-    .long   DefaultISR                                      /* 25*/
-    .long   WDOG3_Handler                                   /* WDOG3 Handler*/
-    .long   SEMA4_Handler                                   /* SEMA4_Handler*/
-    .long   DefaultISR                                      /* 28*/
-    .long   DefaultISR                                      /* 29*/
-    .long   DefaultISR                                      /* 30*/
-    .long   DefaultISR                                      /* 31*/
-    .long   UART6_Handler                                   /* UART6 Handler*/
-    .long   DefaultISR                                      /* 33*/
-    .long   DefaultISR                                      /* 34*/
-    .long   DefaultISR                                      /* 35*/
-    .long   DefaultISR                                      /* 36*/
-    .long   DefaultISR                                      /* 37*/
-    .long   DefaultISR                                      /* 38*/
-    .long   DefaultISR                                      /* 39*/
-    .long   DefaultISR                                      /* 40*/
-    .long   DefaultISR                                      /* 41*/
-    .long   UART1_Handler                                   /* UART1 Handler*/
-    .long   UART2_Handler                                   /* UART2 Handler*/
-    .long   UART3_Handler                                   /* UART3 Handler*/
-    .long   UART4_Handler                                   /* UART4 Handler*/
-    .long   UART5_Handler                                   /* UART5 Handler*/
-    .long   eCSPI1_Handler                                  /* eCSPI1 Handler*/
-    .long   eCSPI2_Handler                                  /* eCSPI2 Handler*/
-    .long   eCSPI3_Handler                                  /* eCSPI3 Handler*/
-    .long   eCSPI4_Handler                                  /* eCSPI4 Handler*/
-    .long   I2C1_Handler                                    /* I2C1 Handler*/
-    .long   I2C2_Handler                                    /* I2C2 Handler*/
-    .long   I2C3_Handler                                    /* I2C3 Handler*/
-    .long   I2C4_Handler                                    /* I2C4 Handler*/
-    .long   DefaultISR                                      /* 55*/
-    .long   DefaultISR                                      /* 56*/
-    .long   DefaultISR                                      /* 57*/
-    .long   DefaultISR                                      /* 58*/
-    .long   DefaultISR                                      /* 59*/
-    .long   DefaultISR                                      /* 60*/
-    .long   DefaultISR                                      /* 61*/
-    .long   DefaultISR                                      /* 62*/
-    .long   DefaultISR                                      /* 63*/
-    .long   DefaultISR                                      /* 64*/
-    .long   DefaultISR                                      /* 65*/
-    .long   DefaultISR                                      /* 66*/
-    .long   DefaultISR                                      /* 67*/
-    .long   GPT4_Handler                                    /* GPT4 handler*/
-    .long   GPT3_Handler                                    /* GPT3 handler*/
-    .long   GPT2_Handler                                    /* GPT2 handler*/
-    .long   GPT1_Handler                                    /* GPT1 handler*/
-    .long   GPIO1_INT7_Handler                              /* Active HIGH Interrupt from INT7 from GPIO*/
-    .long   GPIO1_INT6_Handler                              /* Active HIGH Interrupt from INT6 from GPIO*/
-    .long   GPIO1_INT5_Handler                              /* Active HIGH Interrupt from INT5 from GPIO*/
-    .long   GPIO1_INT4_Handler                              /* Active HIGH Interrupt from INT4 from GPIO*/
-    .long   GPIO1_INT3_Handler                              /* Active HIGH Interrupt from INT3 from GPIO*/
-    .long   GPIO1_INT2_Handler                              /* Active HIGH Interrupt from INT2 from GPIO*/
-    .long   GPIO1_INT1_Handler                              /* Active HIGH Interrupt from INT1 from GPIO*/
-    .long   GPIO1_INT0_Handler                              /* Active HIGH Interrupt from INT0 from GPIO*/
-    .long   GPIO1_INT15_0_Handler                           /* Combined interrupt indication for GPIO1 signal 0 throughout 15*/
-    .long   GPIO1_INT31_16_Handler                          /* Combined interrupt indication for GPIO1 signal 16 throughout 31*/
-    .long   GPIO2_INT15_0_Handler                           /* Combined interrupt indication for GPIO2 signal 0 throughout 15*/
-    .long   GPIO2_INT31_16_Handler                          /* Combined interrupt indication for GPIO2 signal 16 throughout 31*/
-    .long   GPIO3_INT15_0_Handler                           /* Combined interrupt indication for GPIO3 signal 0 throughout 15*/
-    .long   GPIO3_INT31_16_Handler                          /* Combined interrupt indication for GPIO3 signal 16 throughout 31*/
-    .long   GPIO4_INT15_0_Handler                           /* Combined interrupt indication for GPIO4 signal 0 throughout 15*/
-    .long   GPIO4_INT31_16_Handler                          /* Combined interrupt indication for GPIO4 signal 16 throughout 31*/
-    .long   GPIO5_INT15_0_Handler                           /* Combined interrupt indication for GPIO5 signal 0 throughout 15*/
-    .long   GPIO5_INT31_16_Handler                          /* Combined interrupt indication for GPIO5 signal 16 throughout 31*/
-    .long   GPIO6_INT15_0_Handler                           /* Combined interrupt indication for GPIO6 signal 0 throughout 15*/
-    .long   GPIO6_INT31_16_Handler                          /* Combined interrupt indication for GPIO6 signal 16 throughout 31*/
-    .long   GPIO7_INT15_0_Handler                           /* Combined interrupt indication for GPIO7 signal 0 throughout 15*/
-    .long   GPIO7_INT31_16_Handler                          /* Combined interrupt indication for GPIO7 signal 16 throughout 31*/
-    .long   DefaultISR                                      /* 94*/
-    .long   DefaultISR                                      /* 95*/
-    .long   DefaultISR                                      /* 96*/
-    .long   DefaultISR                                      /* 97*/
-    .long   DefaultISR                                      /* 98*/
-    .long   DefaultISR                                      /* 99*/
-    .long   DefaultISR                                      /* 100*/
-    .long   DefaultISR                                      /* 101*/
-    .long   DefaultISR                                      /* 102*/
-    .long   DefaultISR                                      /* 103*/
-    .long   DefaultISR                                      /* 104*/
-    .long   DefaultISR                                      /* 105*/
-    .long   DefaultISR                                      /* 106*/
-    .long   DefaultISR                                      /* 107*/
-    .long   DefaultISR                                      /* 108*/
-    .long   DefaultISR                                      /* 109*/
-    .long   DefaultISR                                      /* 110*/
-    .long   DefaultISR                                      /* 111*/
-    .long   DefaultISR                                      /* 112*/
-    .long   MU_Handler                                      /* MU Handler*/
-    .long   ADC1_Handler                                    /* ADC1 Handler*/
-    .long   ADC2_Handler                                    /* ADC2 Handler*/
-    .long   DefaultISR                                      /* 116*/
-    .long   DefaultISR                                      /* 117*/
-    .long   DefaultISR                                      /* 118*/
-    .long   DefaultISR                                      /* 119*/
-    .long   DefaultISR                                      /* 120*/
-    .long   DefaultISR                                      /* 121*/
-    .long   DefaultISR                                      /* 122*/
-    .long   DefaultISR                                      /* 123*/
-    .long   DefaultISR                                      /* 124*/
-    .long   DefaultISR                                      /* 125*/
-    .long   FLEXCAN1_Handler                                /* FLEXCAN1 Handler*/
-    .long   FLEXCAN2_Handler                                /* FLEXCAN2 Handler*/
-    .long   DefaultISR                                      /* 128*/
-    .long   DefaultISR                                      /* 129*/
-    .long   DefaultISR                                      /* 130*/
-    .long   DefaultISR                                      /* 131*/
-    .long   DefaultISR                                      /* 132*/
-    .long   DefaultISR                                      /* 133*/
-    .long   DefaultISR                                      /* 134*/
-    .long   DefaultISR                                      /* 135*/
-    .long   DefaultISR                                      /* 136*/
-    .long   DefaultISR                                      /* 137*/
-    .long   DefaultISR                                      /* 138*/
-    .long   DefaultISR                                      /* 139*/
-    .long   DefaultISR                                      /* 140*/
-    .long   DefaultISR                                      /* 141*/
-    .long   UART7_Handler                                   /* UART7 Handler*/
-    .long   DefaultISR                                      /* 143*/
+    .long   GPR_Handler                                     /* GPR Interrupt*/
+    .long   DAP_Handler                                     /* DAP Interrupt*/
+    .long   SDMA_Handler                                    /* SDMA Interrupt*/
+    .long   DBGMON_Handler                                  /* DBGMON Interrupt*/
+    .long   SNVS_Handler                                    /* SNVS Interrupt*/
+    .long   LCDIF_Handler                                   /* LCDIF Interrupt*/
+    .long   SIM2_Handler                                    /* SIM2 Interrupt*/
+    .long   CSI_Handler                                     /* CSI Interrupt*/
+    .long   PXP1_Handler                                    /* PXP1 Interrupt*/
+    .long   Reserved9_Handler                               /* Reserved interrupt 9*/
+    .long   WDOG3_Handler                                   /* WDOG3 Interrupt*/
+    .long   SEMA4_HS_M4_Handler                             /* SEMA4_HS_M4 Interrupt*/
+    .long   APBHDMA_Handler                                 /* APBHDMA Interrupt*/
+    .long   EIM_Handler                                     /* EIM Interrupt*/
+    .long   BCH_Handler                                     /* BCH Interrupt*/
+    .long   GPMI_Handler                                    /* GPMI Interrupt*/
+    .long   UART6_Handler                                   /* UART6 Interrupt*/
+    .long   FTM1_Handler                                    /* FTM1 Interrupt*/
+    .long   FTM2_Handler                                    /* FTM2 Interrupt*/
+    .long   SNVS_CONSOLIDATED_Handler                       /* SNVS_CONSOLIDATED Interrupt*/
+    .long   SNVS_SECURITY_Handler                           /* SNVS_SECURITY Interrupt*/
+    .long   CSU_Handler                                     /* CSU Interrupt*/
+    .long   uSDHC1_Handler                                  /* uSDHC1 Interrupt*/
+    .long   uSDHC2_Handler                                  /* uSDHC2 Interrupt*/
+    .long   uSDHC3_Handler                                  /* uSDHC3 Interrupt*/
+    .long   MIPI_CSI_Handler                                /* MIPI_CSI Interrupt*/
+    .long   UART1_Handler                                   /* UART1 Interrupt*/
+    .long   UART2_Handler                                   /* UART2 Interrupt*/
+    .long   UART3_Handler                                   /* UART3 Interrupt*/
+    .long   UART4_Handler                                   /* UART4 Interrupt*/
+    .long   UART5_Handler                                   /* UART5 Interrupt*/
+    .long   eCSPI1_Handler                                  /* eCSPI1 Interrupt*/
+    .long   eCSPI2_Handler                                  /* eCSPI2 Interrupt*/
+    .long   eCSPI3_Handler                                  /* eCSPI3 Interrupt*/
+    .long   eCSPI4_Handler                                  /* eCSPI4 Interrupt*/
+    .long   I2C1_Handler                                    /* I2C1 Interrupt*/
+    .long   I2C2_Handler                                    /* I2C2 Interrupt*/
+    .long   I2C3_Handler                                    /* I2C3 Interrupt*/
+    .long   I2C4_Handler                                    /* I2C4 Interrupt*/
+    .long   RDC_Handler                                     /* RDC Interrupt*/
+    .long   USB_OH3_OTG2_1_Handler                          /* USB_OH3_OTG2_1 Interrupt*/
+    .long   MIPI_DSI_Handler                                /* MIPI_DSI Interrupt*/
+    .long   USB_OH3_OTG2_2_Handler                          /* USB_OH3_OTG2_2 Interrupt*/
+    .long   USB_OH2_OTG_Handler                             /* USB_OH2_OTG Interrupt*/
+    .long   USB_OTG1_Handler                                /* USB_OTG1 Interrupt*/
+    .long   USB_OTG2_Handler                                /* USB_OTG2 Interrupt*/
+    .long   PXP2_Handler                                    /* PXP2 Interrupt*/
+    .long   SCTR1_Handler                                   /* SCTR1 Interrupt*/
+    .long   SCTR2_Handler                                   /* SCTR2 Interrupt*/
+    .long   Analog_TempSensor_Handler                       /* Analog_TempSensor Interrupt*/
+    .long   SAI3_Handler                                    /* SAI3 Interrupt*/
+    .long   Analog_brown_out_Handler                        /* Analog_brown_out Interrupt*/
+    .long   GPT4_Handler                                    /* GPT4 Interrupt*/
+    .long   GPT3_Handler                                    /* GPT3 Interrupt*/
+    .long   GPT2_Handler                                    /* GPT2 Interrupt*/
+    .long   GPT1_Handler                                    /* GPT1 Interrupt*/
+    .long   GPIO1_INT7_Handler                              /* GPIO1_INT7 Interrupt*/
+    .long   GPIO1_INT6_Handler                              /* GPIO1_INT6 Interrupt*/
+    .long   GPIO1_INT5_Handler                              /* GPIO1_INT5 Interrupt*/
+    .long   GPIO1_INT4_Handler                              /* GPIO1_INT4 Interrupt*/
+    .long   GPIO1_INT3_Handler                              /* GPIO1_INT3 Interrupt*/
+    .long   GPIO1_INT2_Handler                              /* GPIO1_INT2 Interrupt*/
+    .long   GPIO1_INT1_Handler                              /* GPIO1_INT1 Interrupt*/
+    .long   GPIO1_INT0_Handler                              /* GPIO1_INT0 Interrupt*/
+    .long   GPIO1_INT15_0_Handler                           /* GPIO1_INT15_0 Interrupt*/
+    .long   GPIO1_INT31_16_Handler                          /* GPIO1_INT31_16 Interrupt*/
+    .long   GPIO2_INT15_0_Handler                           /* GPIO2_INT15_0 Interrupt*/
+    .long   GPIO2_INT31_16_Handler                          /* GPIO2_INT31_16 Interrupt*/
+    .long   GPIO3_INT15_0_Handler                           /* GPIO3_INT15_0 Interrupt*/
+    .long   GPIO3_INT31_16_Handler                          /* GPIO3_INT31_16 Interrupt*/
+    .long   GPIO4_INT15_0_Handler                           /* GPIO4_INT15_0 Interrupt*/
+    .long   GPIO4_INT31_16_Handler                          /* GPIO4_INT31_16 Interrupt*/
+    .long   GPIO5_INT15_0_Handler                           /* GPIO5_INT15_0 Interrupt*/
+    .long   GPIO5_INT31_16_Handler                          /* GPIO5_INT31_16 Interrupt*/
+    .long   GPIO6_INT15_0_Handler                           /* GPIO6_INT15_0 Interrupt*/
+    .long   GPIO6_INT31_16_Handler                          /* GPIO6_INT31_16 Interrupt*/
+    .long   GPIO7_INT15_0_Handler                           /* GPIO7_INT15_0 Interrupt*/
+    .long   GPIO7_INT31_16_Handler                          /* GPIO7_INT31_16 Interrupt*/
+    .long   WDOG1_Handler                                   /* WDOG1 Interrupt*/
+    .long   WDOG2_Handler                                   /* WDOG2 Interrupt*/
+    .long   KPP_Handler                                     /* KPP Interrupt*/
+    .long   PWM1_Handler                                    /* PWM1 Interrupt*/
+    .long   PWM2_Handler                                    /* PWM2 Interrupt*/
+    .long   PWM3_Handler                                    /* PWM3 Interrupt*/
+    .long   PWM4_Handler                                    /* PWM4 Interrupt*/
+    .long   CCM1_Handler                                    /* CCM1 Interrupt*/
+    .long   CCM2_Handler                                    /* CCM2 Interrupt*/
+    .long   GPC_Handler                                     /* GPC Interrupt*/
+    .long   MU_A7_Handler                                   /* MU_A7 Interrupt*/
+    .long   SRC_Handler                                     /* SRC Interrupt*/
+    .long   SIM1_Handler                                    /* SIM1 Interrupt*/
+    .long   RTIC_Handler                                    /* RTIC Interrupt*/
+    .long   CPU_Handler                                     /* CPU Interrupt*/
+    .long   CPU_CTI_Handler                                 /* CPU_CTI Interrupt*/
+    .long   CCM_SRC_GPC_Handler                             /* CCM_SRC_GPC Interrupt*/
+    .long   SAI1_Handler                                    /* SAI1 Interrupt*/
+    .long   SAI2_Handler                                    /* SAI2 Interrupt*/
+    .long   MU_M4_Handler                                   /* MU_M4 Interrupt*/
+    .long   ADC1_Handler                                    /* ADC1 Interrupt*/
+    .long   ADC2_Handler                                    /* ADC2 Interrupt*/
+    .long   ENET2_MAC0_TRANS1_Handler                       /* ENET2_MAC0_TRANS1 Interrupt*/
+    .long   ENET2_MAC0_TRANS2_Handler                       /* ENET2_MAC0_TRANS2 Interrupt*/
+    .long   ENET2_MAC0_IRQ_Handler                          /* ENET2_MAC0_IRQ Interrupt*/
+    .long   ENET2_1588_TIMER_IRQ_Handler                    /* ENET2_1588_TIMER_IRQ Interrupt*/
+    .long   TPR_Handler                                     /* TPR Interrupt*/
+    .long   CAAM_QUEUE_Handler                              /* CAAM_QUEUE Interrupt*/
+    .long   CAAM_ERROR_Handler                              /* CAAM_ERROR Interrupt*/
+    .long   QSPI_Handler                                    /* QSPI Interrupt*/
+    .long   TZASC1_Handler                                  /* TZASC1 Interrupt*/
+    .long   WDOG4_Handler                                   /* WDOG4 Interrupt*/
+    .long   FLEXCAN1_Handler                                /* FLEXCAN1 Interrupt*/
+    .long   FLEXCAN2_Handler                                /* FLEXCAN2 Interrupt*/
+    .long   PERFMON1_Handler                                /* PERFMON1 Interrupt*/
+    .long   PERFMON2_Handler                                /* PERFMON2 Interrupt*/
+    .long   CAAM_WRAPPER1_Handler                           /* CAAM_WRAPPER1 Interrupt*/
+    .long   CAAM_WRAPPER2_Handler                           /* CAAM_WRAPPER2 Interrupt*/
+    .long   SEMA4_HS_A7_Handler                             /* SEMA4_HS_A7 Interrupt*/
+    .long   EPDC_Handler                                    /* EPDC Interrupt*/
+    .long   ENET1_MAC0_TRANS1_Handler                       /* ENET1_MAC0_TRANS1 Interrupt*/
+    .long   ENET1_MAC0_TRANS2_Handler                       /* ENET1_MAC0_TRANS2 Interrupt*/
+    .long   ENET1_MAC0_Handler                              /* ENET1_MAC0 Interrupt*/
+    .long   ENET1_1588_TIMER_Handler                        /* ENET1_1588_TIMER Interrupt*/
+    .long   PCIE_CTRL1_Handler                              /* PCIE_CTRL1 Interrupt*/
+    .long   PCIE_CTRL2_Handler                              /* PCIE_CTRL2 Interrupt*/
+    .long   PCIE_CTRL3_Handler                              /* PCIE_CTRL3 Interrupt*/
+    .long   PCIE_CTRL4_Handler                              /* PCIE_CTRL4 Interrupt*/
+    .long   UART7_Handler                                   /* UART7 Interrupt*/
+    .long   PCIE_CTRL_REQUEST_Handler                       /* PCIE_CTRL_REQUEST Interrupt*/
 
     .size    __isr_vector, . - __isr_vector
-
-
 
     .text
     .thumb
@@ -220,24 +208,57 @@ Reset_Handler:
 #ifndef __NO_SYSTEM_INIT
     bl SystemInit
 #endif
-    /* data copy */
-    ldr r0,=__DATA_ROM
-    subs r0,r0,#0x1
-    ldr r1,=__data_start__
-    subs r1,r1,#0x1
-    ldr r2,=__data_end__
-    subs r3,r2,r1
-    b  Copy_init_data
-  Loop_copy_init_data:
-    adds r1,r1,#0x1
-    adds r0,r0,#0x1
-    ldrb r4,[r0]
-    str r4,[r1]
+/*     Loop to copy data from read only memory to RAM. The ranges
+ *      of copy from/to are specified by following symbols evaluated in
+ *      linker script.
+ *      __etext: End of code section, i.e., begin of data sections to copy from.
+ *      __data_start__/__data_end__: RAM address range that data should be
+ *      copied to. Both must be aligned to 4 bytes boundary.  */
 
-  Copy_init_data:
-    subs r3,r3,#0x1
-    cmp r3,#0x0
-    bne Loop_copy_init_data
+    ldr    r1, =__etext
+    ldr    r2, =__data_start__
+    ldr    r3, =__data_end__
+
+#if 1
+/* Here are two copies of loop implemenations. First one favors code size
+ * and the second one favors performance. Default uses the first one.
+ * Change to "#if 0" to use the second one */
+.LC0:
+    cmp     r2, r3
+    ittt    lt
+    ldrlt   r0, [r1], #4
+    strlt   r0, [r2], #4
+    blt    .LC0
+#else
+    subs    r3, r2
+    ble    .LC1
+.LC0:
+    subs    r3, #4
+    ldr    r0, [r1, r3]
+    str    r0, [r2, r3]
+    bgt    .LC0
+.LC1:
+#endif
+
+#ifdef __STARTUP_CLEAR_BSS
+/*     This part of work usually is done in C library startup code. Otherwise,
+ *     define this macro to enable it in this startup.
+ *
+ *     Loop to zero out BSS section, which uses following symbols
+ *     in linker script:
+ *      __bss_start__: start of BSS section. Must align to 4
+ *      __bss_end__: end of BSS section. Must align to 4
+ */
+    ldr r1, =__bss_start__
+    ldr r2, =__bss_end__
+
+    movs    r0, 0
+.LC2:
+    cmp     r1, r2
+    itt    lt
+    strlt   r0, [r1], #4
+    blt    .LC2
+#endif /* __STARTUP_CLEAR_BSS */
 
     cpsie   i               /* Unmask interrupts */
     bl _start
@@ -270,9 +291,32 @@ DefaultISR:
     def_irq_handler    DebugMon_Handler
     def_irq_handler    PendSV_Handler
     def_irq_handler    SysTick_Handler
+    def_irq_handler    GPR_Handler
+    def_irq_handler    DAP_Handler
+    def_irq_handler    SDMA_Handler
+    def_irq_handler    DBGMON_Handler
+    def_irq_handler    SNVS_Handler
+    def_irq_handler    LCDIF_Handler
+    def_irq_handler    SIM2_Handler
+    def_irq_handler    CSI_Handler
+    def_irq_handler    PXP1_Handler
+    def_irq_handler    Reserved9_Handler
     def_irq_handler    WDOG3_Handler
-    def_irq_handler    SEMA4_Handler
+    def_irq_handler    SEMA4_HS_M4_Handler
+    def_irq_handler    APBHDMA_Handler
+    def_irq_handler    EIM_Handler
+    def_irq_handler    BCH_Handler
+    def_irq_handler    GPMI_Handler
     def_irq_handler    UART6_Handler
+    def_irq_handler    FTM1_Handler
+    def_irq_handler    FTM2_Handler
+    def_irq_handler    SNVS_CONSOLIDATED_Handler
+    def_irq_handler    SNVS_SECURITY_Handler
+    def_irq_handler    CSU_Handler
+    def_irq_handler    uSDHC1_Handler
+    def_irq_handler    uSDHC2_Handler
+    def_irq_handler    uSDHC3_Handler
+    def_irq_handler    MIPI_CSI_Handler
     def_irq_handler    UART1_Handler
     def_irq_handler    UART2_Handler
     def_irq_handler    UART3_Handler
@@ -286,6 +330,19 @@ DefaultISR:
     def_irq_handler    I2C2_Handler
     def_irq_handler    I2C3_Handler
     def_irq_handler    I2C4_Handler
+    def_irq_handler    RDC_Handler
+    def_irq_handler    USB_OH3_OTG2_1_Handler
+    def_irq_handler    MIPI_DSI_Handler
+    def_irq_handler    USB_OH3_OTG2_2_Handler
+    def_irq_handler    USB_OH2_OTG_Handler
+    def_irq_handler    USB_OTG1_Handler
+    def_irq_handler    USB_OTG2_Handler
+    def_irq_handler    PXP2_Handler
+    def_irq_handler    SCTR1_Handler
+    def_irq_handler    SCTR2_Handler
+    def_irq_handler    Analog_TempSensor_Handler
+    def_irq_handler    SAI3_Handler
+    def_irq_handler    Analog_brown_out_Handler
     def_irq_handler    GPT4_Handler
     def_irq_handler    GPT3_Handler
     def_irq_handler    GPT2_Handler
@@ -312,10 +369,54 @@ DefaultISR:
     def_irq_handler    GPIO6_INT31_16_Handler
     def_irq_handler    GPIO7_INT15_0_Handler
     def_irq_handler    GPIO7_INT31_16_Handler
-    def_irq_handler    MU_Handler
+    def_irq_handler    WDOG1_Handler
+    def_irq_handler    WDOG2_Handler
+    def_irq_handler    KPP_Handler
+    def_irq_handler    PWM1_Handler
+    def_irq_handler    PWM2_Handler
+    def_irq_handler    PWM3_Handler
+    def_irq_handler    PWM4_Handler
+    def_irq_handler    CCM1_Handler
+    def_irq_handler    CCM2_Handler
+    def_irq_handler    GPC_Handler
+    def_irq_handler    MU_A7_Handler
+    def_irq_handler    SRC_Handler
+    def_irq_handler    SIM1_Handler
+    def_irq_handler    RTIC_Handler
+    def_irq_handler    CPU_Handler
+    def_irq_handler    CPU_CTI_Handler
+    def_irq_handler    CCM_SRC_GPC_Handler
+    def_irq_handler    SAI1_Handler
+    def_irq_handler    SAI2_Handler
+    def_irq_handler    MU_M4_Handler
     def_irq_handler    ADC1_Handler
     def_irq_handler    ADC2_Handler
+    def_irq_handler    ENET2_MAC0_TRANS1_Handler
+    def_irq_handler    ENET2_MAC0_TRANS2_Handler
+    def_irq_handler    ENET2_MAC0_IRQ_Handler
+    def_irq_handler    ENET2_1588_TIMER_IRQ_Handler
+    def_irq_handler    TPR_Handler
+    def_irq_handler    CAAM_QUEUE_Handler
+    def_irq_handler    CAAM_ERROR_Handler
+    def_irq_handler    QSPI_Handler
+    def_irq_handler    TZASC1_Handler
+    def_irq_handler    WDOG4_Handler
     def_irq_handler    FLEXCAN1_Handler
     def_irq_handler    FLEXCAN2_Handler
+    def_irq_handler    PERFMON1_Handler
+    def_irq_handler    PERFMON2_Handler
+    def_irq_handler    CAAM_WRAPPER1_Handler
+    def_irq_handler    CAAM_WRAPPER2_Handler
+    def_irq_handler    SEMA4_HS_A7_Handler
+    def_irq_handler    EPDC_Handler
+    def_irq_handler    ENET1_MAC0_TRANS1_Handler
+    def_irq_handler    ENET1_MAC0_TRANS2_Handler
+    def_irq_handler    ENET1_MAC0_Handler
+    def_irq_handler    ENET1_1588_TIMER_Handler
+    def_irq_handler    PCIE_CTRL1_Handler
+    def_irq_handler    PCIE_CTRL2_Handler
+    def_irq_handler    PCIE_CTRL3_Handler
+    def_irq_handler    PCIE_CTRL4_Handler
     def_irq_handler    UART7_Handler
+    def_irq_handler    PCIE_CTRL_REQUEST_Handler
     .end

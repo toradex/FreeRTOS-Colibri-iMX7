@@ -33,8 +33,8 @@
 **  @{
 */
 
-#ifndef __PIN_MUX__
-#define __PIN_MUX__
+#ifndef __PIN_MUX_H__
+#define __PIN_MUX_H__
 
 /* MODULE pin_mux. */
 
@@ -88,7 +88,7 @@ void configure_i2c_pins(I2C_Type* base);
 /* ===================================================================*/
 void configure_uart_pins(UART_Type* base);
 
-#endif /* __PIN_MUX__ */
+#endif /* __PIN_MUX_H__ */
 /*******************************************************************************
  * EOF
  ******************************************************************************/

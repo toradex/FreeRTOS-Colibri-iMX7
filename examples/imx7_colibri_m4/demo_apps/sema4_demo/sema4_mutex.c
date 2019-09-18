@@ -122,7 +122,7 @@ void SEMA4_Mutex_Unlock(uint32_t gate)
 
 void BOARD_SEMA4_HANDLER()
 {
-    BaseType_t xHigherPriorityTaskWoken;
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     uint32_t i;
     uint16_t flag;
 
@@ -135,7 +135,12 @@ void BOARD_SEMA4_HANDLER()
             /* Because the status cannot be cleared manually, we have to disable the gate's
              * interrupt to avoid endlessly going into ISR */
             SEMA4_SetIntCmd(BOARD_SEMA4_BASEADDR, flag, false);
+
+            /* Unlock the task to process the event. */
             xSemaphoreGiveFromISR(xSemaphore[i], &xHigherPriorityTaskWoken);
+
+            /* Perform a context switch to wake the higher priority task. */
+            portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
         }
     }
 }

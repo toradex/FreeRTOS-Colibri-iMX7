@@ -48,187 +48,162 @@
 /*! @brief Uart module initialize structure. */
 typedef struct _uart_init_config
 {
-    uint32_t clockRate;     /*!< Current UART module clock freq. */
-    uint32_t baudRate;      /*!< Desired UART baud rate. */
-    uint32_t wordLength;    /*!< Data bits in one frame. */
-    uint32_t stopBitNum;    /*!< Number of stop bits in one frame. */
-    uint32_t parity;        /*!< Parity error check mode of this module. */
-    uint32_t direction;     /*!< Data transfer direction of this module. */
+    uint32_t clockRate;  /*!< Current UART module clock freq. */
+    uint32_t baudRate;   /*!< Desired UART baud rate. */
+    uint32_t wordLength; /*!< Data bits in one frame. */
+    uint32_t stopBitNum; /*!< Number of stop bits in one frame. */
+    uint32_t parity;     /*!< Parity error check mode of this module. */
+    uint32_t direction;  /*!< Data transfer direction of this module. */
 } uart_init_config_t;
 
-/*!
- * @brief UART number of data bits in a character.
- */
+/*! @brief UART number of data bits in a character. */
 enum _uart_word_length
 {
-    uartWordLength7Bits     = 0x0,
-    uartWordLength8Bits     = UART_UCR2_WS_MASK,
+    uartWordLength7Bits = 0x0,               /*!< One character has 7 bits. */
+    uartWordLength8Bits = UART_UCR2_WS_MASK, /*!< One character has 8 bits. */
 };
 
-/*!
- * @brief UART number of stop bits.
- */
+/*! @brief UART number of stop bits. */
 enum _uart_stop_bit_num
 {
-    uartStopBitNumOne       = 0x0,
-    uartStopBitNumTwo       = UART_UCR2_STPB_MASK,
+    uartStopBitNumOne = 0x0,                 /*!< One bit Stop. */
+    uartStopBitNumTwo = UART_UCR2_STPB_MASK, /*!< Two bits Stop. */
 };
 
-/*!
- * @brief UART parity mode.
- */
+/*! @brief UART parity mode. */
 enum _uart_partity_mode
 {
-    uartParityDisable       = 0x0,
-    uartParityEven          = UART_UCR2_PREN_MASK,
-    uartParityOdd           = UART_UCR2_PREN_MASK | UART_UCR2_PROE_MASK
+    uartParityDisable = 0x0,                                       /*!< Parity error check disabled. */
+    uartParityEven    = UART_UCR2_PREN_MASK,                       /*!< Even error check is selected. */
+    uartParityOdd     = UART_UCR2_PREN_MASK | UART_UCR2_PROE_MASK, /*!< Odd error check is selected. */
 };
 
-/*!
- * @brief Data transfer direction.
- */
+/*! @brief Data transfer direction. */
 enum _uart_direction_mode
 {
-    uartDirectionDisable    = 0x0,
-    uartDirectionTx         = UART_UCR2_TXEN_MASK,
-    uartDirectionRx         = UART_UCR2_RXEN_MASK,
-    uartDirectionTxRx       = UART_UCR2_TXEN_MASK | UART_UCR2_RXEN_MASK
+    uartDirectionDisable = 0x0,                                       /*!< Both Tx and Rx are disabled. */
+    uartDirectionTx      = UART_UCR2_TXEN_MASK,                       /*!< Tx is enabled. */
+    uartDirectionRx      = UART_UCR2_RXEN_MASK,                       /*!< Rx is enabled. */
+    uartDirectionTxRx    = UART_UCR2_TXEN_MASK | UART_UCR2_RXEN_MASK, /*!< Both Tx and Rx are enabled. */
 };
 
-/*!
- * @brief This enumeration contains the settings for all of the UART
- *        interrupt configurations.
- */
+/*! @brief This enumeration contains the settings for all of the UART interrupt configurations. */
 enum _uart_interrupt
 {
-    uartIntAutoBaud                       = 0x0080000F,
-    uartIntTxReady                        = 0x0080000D,
-    uartIntIdle                           = 0x0080000C,
-    uartIntRxReady                        = 0x00800009,
-    uartIntTxEmpty                        = 0x00800006,
-    uartIntRtsDelta                       = 0x00800005,
-    uartIntEscape                         = 0x0084000F,
-    uartIntRts                            = 0x00840004,
-    uartIntAgingTimer                     = 0x00840003,
-    uartIntDtr                            = 0x0088000D,
-    uartIntParityError                    = 0x0088000C,
-    uartIntFrameError                     = 0x0088000B,
-    uartIntDcd                            = 0x00880009,
-    uartIntRi                             = 0x00880008,
-    uartIntRxDs                           = 0x00880006,
-    uartInttAirWake                       = 0x00880005,
-    uartIntAwake                          = 0x00880004,
-    uartIntDtrDelta                       = 0x00880003,
-    uartIntAutoBaudCnt                    = 0x00880000,
-    uartIntIr                             = 0x008C0008,
-    uartIntWake                           = 0x008C0007,
-    uartIntTxComplete                     = 0x008C0003,
-    uartIntBreakDetect                    = 0x008C0002,
-    uartIntRxOverrun                      = 0x008C0001,
-    uartIntRxDataReady                    = 0x008C0000,
-    uartIntRs485SlaveAddrMatch            = 0x00B80003
+    uartIntAutoBaud            = 0x0080000F, /*!< Automatic baud rate detection Interrupt Enable. */
+    uartIntTxReady             = 0x0080000D, /*!< transmitter ready Interrupt Enable. */
+    uartIntIdle                = 0x0080000C, /*!< IDLE Interrupt Enable. */
+    uartIntRxReady             = 0x00800009, /*!< Receiver Ready Interrupt Enable. */
+    uartIntTxEmpty             = 0x00800006, /*!< Transmitter Empty Interrupt Enable. */
+    uartIntRtsDelta            = 0x00800005, /*!< RTS Delta Interrupt Enable. */
+    uartIntEscape              = 0x0084000F, /*!< Escape Sequence Interrupt Enable. */
+    uartIntRts                 = 0x00840004, /*!< Request to Send Interrupt Enable. */
+    uartIntAgingTimer          = 0x00840003, /*!< Aging Timer Interrupt Enable. */
+    uartIntDtr                 = 0x0088000D, /*!< Data Terminal Ready Interrupt Enable. */
+    uartIntParityError         = 0x0088000C, /*!< Parity Error Interrupt Enable.  */
+    uartIntFrameError          = 0x0088000B, /*!< Frame Error Interrupt Enable. */
+    uartIntDcd                 = 0x00880009, /*!< Data Carrier Detect Interrupt Enable. */
+    uartIntRi                  = 0x00880008, /*!< Ring Indicator Interrupt Enable. */
+    uartIntRxDs                = 0x00880006, /*!< Receive Status Interrupt Enable. */
+    uartInttAirWake            = 0x00880005, /*!< Asynchronous IR WAKE Interrupt Enable. */
+    uartIntAwake               = 0x00880004, /*!< Asynchronous WAKE Interrupt Enable. */
+    uartIntDtrDelta            = 0x00880003, /*!< Data Terminal Ready Delta Interrupt Enable. */
+    uartIntAutoBaudCnt         = 0x00880000, /*!< Autobaud Counter Interrupt Enable. */
+    uartIntIr                  = 0x008C0008, /*!< Serial Infrared Interrupt Enable. */
+    uartIntWake                = 0x008C0007, /*!< WAKE Interrupt Enable. */
+    uartIntTxComplete          = 0x008C0003, /*!< TransmitComplete Interrupt Enable. */
+    uartIntBreakDetect         = 0x008C0002, /*!< BREAK Condition Detected Interrupt Enable. */
+    uartIntRxOverrun           = 0x008C0001, /*!< Receiver Overrun Interrupt Enable. */
+    uartIntRxDataReady         = 0x008C0000, /*!< Receive Data Ready Interrupt Enable. */
+    uartIntRs485SlaveAddrMatch = 0x00B80003, /*!< RS-485 Slave Address Detected Interrupt Enable. */
 };
 
-/*!
- * @brief Flag for UART interrupt/DMA status check or polling status.
- */
+/*! @brief Flag for UART interrupt/DMA status check or polling status. */
 enum _uart_status_flag
 {
-    uartStatusRxCharReady                 = 0x0000000F,
-    uartStatusRxError                     = 0x0000000E,
-    uartStatusRxOverrunError              = 0x0000000D,
-    uartStatusRxFrameError                = 0x0000000C,
-    uartStatusRxBreakDetect               = 0x0000000B,
-    uartStatusRxParityError               = 0x0000000A,
-    uartStatusParityError                 = 0x0094000F,
-    uartStatusRtsStatus                   = 0x0094000E,
-    uartStatusTxReady                     = 0x0094000D,
-    uartStatusRtsDelta                    = 0x0094000C,
-    uartStatusEscape                      = 0x0094000B,
-    uartStatusFrameError                  = 0x0094000A,
-    uartStatusRxReady                     = 0x00940009,
-    uartStatusAgingTimer                  = 0x00940008,
-    uartStatusDtrDelta                    = 0x00940007,
-    uartStatusRxDs                        = 0x00940006,
-    uartStatustAirWake                    = 0x00940005,
-    uartStatusAwake                       = 0x00940004,
-    uartStatusRs485SlaveAddrMatch         = 0x00940003,
-    uartStatusAutoBaud                    = 0x0098000F,
-    uartStatusTxEmpty                     = 0x0098000E,
-    uartStatusDtr                         = 0x0098000D,
-    uartStatusIdle                        = 0x0098000C,
-    uartStatusAutoBaudCntStop             = 0x0098000B,
-    uartStatusRiDelta                     = 0x0098000A,
-    uartStatusRi                          = 0x00980009,
-    uartStatusIr                          = 0x00980008,
-    uartStatusWake                        = 0x00980007,
-    uartStatusDcdDelta                    = 0x00980006,
-    uartStatusDcd                         = 0x00980005,
-    uartStatusRts                         = 0x00980004,
-    uartStatusTxComplete                  = 0x00980003,
-    uartStatusBreakDetect                 = 0x00980002,
-    uartStatusRxOverrun                   = 0x00980001,
-    uartStatusRxDataReady                 = 0x00980000
+    uartStatusRxCharReady         = 0x0000000F, /*!< Rx Character Ready Flag. */
+    uartStatusRxError             = 0x0000000E, /*!< Rx Error Detect Flag. */
+    uartStatusRxOverrunError      = 0x0000000D, /*!< Rx Overrun Flag. */
+    uartStatusRxFrameError        = 0x0000000C, /*!< Rx Frame Error Flag. */
+    uartStatusRxBreakDetect       = 0x0000000B, /*!< Rx Break Detect Flag. */
+    uartStatusRxParityError       = 0x0000000A, /*!< Rx Parity Error Flag. */
+    uartStatusParityError         = 0x0094000F, /*!< Parity Error Interrupt Flag. */
+    uartStatusRtsStatus           = 0x0094000E, /*!< RTS_B Pin Status Flag. */
+    uartStatusTxReady             = 0x0094000D, /*!< Transmitter Ready Interrupt/DMA Flag. */
+    uartStatusRtsDelta            = 0x0094000C, /*!< RTS Delta Flag. */
+    uartStatusEscape              = 0x0094000B, /*!< Escape Sequence Interrupt Flag. */
+    uartStatusFrameError          = 0x0094000A, /*!< Frame Error Interrupt Flag. */
+    uartStatusRxReady             = 0x00940009, /*!< Receiver Ready Interrupt/DMA Flag. */
+    uartStatusAgingTimer          = 0x00940008, /*!< Ageing Timer Interrupt Flag. */
+    uartStatusDtrDelta            = 0x00940007, /*!< DTR Delta Flag. */
+    uartStatusRxDs                = 0x00940006, /*!< Receiver IDLE Interrupt Flag. */
+    uartStatustAirWake            = 0x00940005, /*!< Asynchronous IR WAKE Interrupt Flag. */
+    uartStatusAwake               = 0x00940004, /*!< Asynchronous WAKE Interrupt Flag. */
+    uartStatusRs485SlaveAddrMatch = 0x00940003, /*!< RS-485 Slave Address Detected Interrupt Flag. */
+    uartStatusAutoBaud            = 0x0098000F, /*!< Automatic Baud Rate Detect Complete Flag. */
+    uartStatusTxEmpty             = 0x0098000E, /*!< Transmit Buffer FIFO Empty. */
+    uartStatusDtr                 = 0x0098000D, /*!< DTR edge triggered interrupt flag. */
+    uartStatusIdle                = 0x0098000C, /*!< Idle Condition Flag. */
+    uartStatusAutoBaudCntStop     = 0x0098000B, /*!< Autobaud Counter Stopped Flag. */
+    uartStatusRiDelta             = 0x0098000A, /*!< Ring Indicator Delta Flag. */
+    uartStatusRi                  = 0x00980009, /*!< Ring Indicator Input Flag. */
+    uartStatusIr                  = 0x00980008, /*!< Serial Infrared Interrupt Flag. */
+    uartStatusWake                = 0x00980007, /*!< Wake Flag. */
+    uartStatusDcdDelta            = 0x00980006, /*!< Data Carrier Detect Delta Flag. */
+    uartStatusDcd                 = 0x00980005, /*!< Data Carrier Detect Input Flag. */
+    uartStatusRts                 = 0x00980004, /*!< RTS Edge Triggered Interrupt Flag. */
+    uartStatusTxComplete          = 0x00980003, /*!< Transmitter Complete Flag. */
+    uartStatusBreakDetect         = 0x00980002, /*!< BREAK Condition Detected Flag. */
+    uartStatusRxOverrun           = 0x00980001, /*!< Overrun Error Flag. */
+    uartStatusRxDataReady         = 0x00980000, /*!< Receive Data Ready Flag. */
 };
 
-/*!
- * @brief The events will generate DMA Request.
- */
+/*! @brief The events generate the DMA Request. */
 enum _uart_dma
 {
-    uartDmaRxReady                        = 0x00800008,
-    uartDmaTxReady                        = 0x00800003,
-    uartDmaAgingTimer                     = 0x00800002,
-    uartDmaIdle                           = 0x008C0006
+    uartDmaRxReady    = 0x00800008, /*!< Receive Ready DMA Enable. */
+    uartDmaTxReady    = 0x00800003, /*!< Transmitter Ready DMA Enable. */
+    uartDmaAgingTimer = 0x00800002, /*!< Aging DMA Timer Enable. */
+    uartDmaIdle       = 0x008C0006, /*!< DMA IDLE Condition Detected Interrupt Enable. */
 };
 
-/*!
- * @brief RTS pin interrupt trigger edge.
- */
+/*! @brief RTS pin interrupt trigger edge. */
 enum _uart_rts_int_trigger_edge
 {
-    uartRtsTriggerEdgeRising              = UART_UCR2_RTEC(0),
-    uartRtsTriggerEdgeFalling             = UART_UCR2_RTEC(1),
-    uartRtsTriggerEdgeBoth                = UART_UCR2_RTEC(2)
+    uartRtsTriggerEdgeRising  = UART_UCR2_RTEC(0), /*!< RTS pin interrupt triggered on rising edge. */
+    uartRtsTriggerEdgeFalling = UART_UCR2_RTEC(1), /*!< RTS pin interrupt triggered on falling edge. */
+    uartRtsTriggerEdgeBoth    = UART_UCR2_RTEC(2), /*!< RTS pin interrupt triggered on both edge. */
 };
 
-/*!
- * @brief UART module modem role selections.
- */
+/*! @brief UART module modem role selections. */
 enum _uart_modem_mode
 {
-    uartModemModeDce                      = 0,
-    uartModemModeDte                      = UART_UFCR_DCEDTE_MASK
+    uartModemModeDce = 0,                     /*!< UART module works as DCE. */
+    uartModemModeDte = UART_UFCR_DCEDTE_MASK, /*!< UART module works as DTE. */
 };
 
-/*!
- * @brief DTR pin interrupt trigger edge.
- */
+/*! @brief DTR pin interrupt trigger edge. */
 enum _uart_dtr_int_trigger_edge
 {
-    uartDtrTriggerEdgeRising              = UART_UCR3_DPEC(0),
-    uartDtrTriggerEdgeFalling             = UART_UCR3_DPEC(1),
-    uartDtrTriggerEdgeBoth                = UART_UCR3_DPEC(2)
+    uartDtrTriggerEdgeRising  = UART_UCR3_DPEC(0), /*!< DTR pin interrupt triggered on rising edge. */
+    uartDtrTriggerEdgeFalling = UART_UCR3_DPEC(1), /*!< DTR pin interrupt triggered on falling edge. */
+    uartDtrTriggerEdgeBoth    = UART_UCR3_DPEC(2), /*!< DTR pin interrupt triggered on both edge. */
 };
 
-/*!
- * @brief IrDA vote clock selections.
- */
+/*! @brief IrDA vote clock selections. */
 enum _uart_irda_vote_clock
 {
-    uartIrdaVoteClockSampling             = 0x0,
-    uartIrdaVoteClockReference            = UART_UCR4_IRSC_MASK
+    uartIrdaVoteClockSampling  = 0x0,                 /*!< The vote logic uses the sampling clock (16x baud rate) for normal operation. */
+    uartIrdaVoteClockReference = UART_UCR4_IRSC_MASK, /*!< The vote logic uses the UART reference clock. */
 };
 
-/*!
- * @brief UART module Rx Idle condition selections.
- */
+/*! @brief UART module Rx Idle condition selections. */
 enum _uart_rx_idle_condition
 {
-     uartRxIdleMoreThan4Frames            = UART_UCR1_ICD(0),
-     uartRxIdleMoreThan8Frames            = UART_UCR1_ICD(1),
-     uartRxIdleMoreThan16Frames           = UART_UCR1_ICD(2),
-     uartRxIdleMoreThan32Frames           = UART_UCR1_ICD(3),
+     uartRxIdleMoreThan4Frames  = UART_UCR1_ICD(0), /*!< Idle for more than 4 frames. */
+     uartRxIdleMoreThan8Frames  = UART_UCR1_ICD(1), /*!< Idle for more than 8 frames. */
+     uartRxIdleMoreThan16Frames = UART_UCR1_ICD(2), /*!< Idle for more than 16 frames. */
+     uartRxIdleMoreThan32Frames = UART_UCR1_ICD(3), /*!< Idle for more than 32 frames. */
 };
 
 /*******************************************************************************
@@ -248,12 +223,12 @@ extern "C" {
  * @brief Initialize UART module with given initialize structure.
  *
  * @param base UART base pointer.
- * @param initConfig UART initialize structure(see uart_init_config_t above).
+ * @param initConfig UART initialize structure (see @ref uart_init_config_t structure above).
  */
-void UART_Init(UART_Type* base, uart_init_config_t* initConfig);
+void UART_Init(UART_Type* base, const uart_init_config_t* initConfig);
 
 /*!
- * @brief This function reset Uart module register content to its default value.
+ * @brief This function reset UART module register content to its default value.
  *
  * @param base UART base pointer.
  */
@@ -292,26 +267,28 @@ void UART_SetBaudRate(UART_Type* base, uint32_t clockRate, uint32_t baudRate);
  * @brief This function is used to set the transform direction of UART Module.
  *
  * @param base UART base pointer.
- * @param direction UART transfer direction(see _uart_direction_mode enumeration above).
+ * @param direction UART transfer direction (see @ref _uart_direction_mode enumeration).
  */
 static inline void UART_SetDirMode(UART_Type* base, uint32_t direction)
 {
     assert((direction & uartDirectionTx) || (direction & uartDirectionRx));
+
     UART_UCR2_REG(base) = (UART_UCR2_REG(base) & ~(UART_UCR2_RXEN_MASK | UART_UCR2_TXEN_MASK)) | direction;
 }
 
 /*!
  * @brief This function is used to set the number of frames RXD is allowed to
  *        be idle before an idle condition is reported. The available condition
- *        can be select from _uart_idle_condition enumeration.
+ *        can be select from @ref _uart_idle_condition enumeration.
  *
  * @param base UART base pointer.
  * @param idleCondition The condition that an idle condition is reported
- *                      (see _uart_idle_condition enumeration above).
+ *                      (see @ref _uart_idle_condition enumeration).
  */
 static inline void UART_SetRxIdleCondition(UART_Type* base, uint32_t idleCondition)
 {
     assert(idleCondition <= uartRxIdleMoreThan32Frames);
+
     UART_UCR1_REG(base) = (UART_UCR1_REG(base) & ~UART_UCR1_ICD_MASK) | idleCondition;
 }
 
@@ -320,7 +297,7 @@ static inline void UART_SetRxIdleCondition(UART_Type* base, uint32_t idleConditi
  *        of Tx and Rx can be set separately.
  *
  * @param base UART base pointer.
- * @param direction UART transfer direction(see _uart_direction_mode enumeration above).
+ * @param direction UART transfer direction (see @ref _uart_direction_mode enumeration).
  * @param invert Set true to invert the polarity of UART signal.
  */
 void UART_SetInvertCmd(UART_Type* base, uint32_t direction, bool invert);
@@ -336,7 +313,9 @@ void UART_SetInvertCmd(UART_Type* base, uint32_t direction, bool invert);
  * @brief This function is used to set UART enable condition in the DOZE state.
  *
  * @param base UART base pointer.
- * @param enable Set true to enable UART module in doze mode.
+ * @param enable Enable/Disable UART module in doze mode.
+ *               - true: Enable UART module in doze mode.
+ *               - false: Disable UART module in doze mode.
  */
 void UART_SetDozeMode(UART_Type* base, bool enable);
 
@@ -344,7 +323,9 @@ void UART_SetDozeMode(UART_Type* base, bool enable);
  * @brief This function is used to set UART enable condition of the UART low power feature.
  *
  * @param base UART base pointer.
- * @param enable Set true to enable UART module low power feature.
+ * @param enable Enable/Disable UART module low power feature.
+ *               - true: Enable UART module low power feature.
+ *               - false: Disable UART module low power feature.
  */
 void UART_SetLowPowerMode(UART_Type* base, bool enable);
 
@@ -360,7 +341,7 @@ void UART_SetLowPowerMode(UART_Type* base, bool enable);
  *        A independent 9 Bits RS-485 send data function is provided.
  *
  * @param base UART base pointer.
- * @param data Data to be set through Uart module.
+ * @param data Data to be set through UART module.
  */
 static inline void UART_Putchar(UART_Type* base, uint8_t data)
 {
@@ -389,18 +370,20 @@ static inline uint8_t UART_Getchar(UART_Type* base)
 /*!
  * @brief This function is used to set the enable condition of
  *        specific UART interrupt source. The available interrupt
- *        source can be select from uart_interrupt enumeration.
+ *        source can be select from @ref _uart_interrupt enumeration.
  *
  * @param base UART base pointer.
  * @param intSource Available interrupt source for this module.
- * @param enable Set true to enable corresponding interrupt.
+ * @param enable Enable/Disable corresponding interrupt.
+ *               - true: Enable corresponding interrupt.
+ *               - false: Disable corresponding interrupt.
  */
 void UART_SetIntCmd(UART_Type* base, uint32_t intSource, bool enable);
 
 /*!
  * @brief This function is used to get the current status of specific
  *        UART status flag(including interrupt flag). The available
- *        status flag can be select from _uart_status_flag enumeration.
+ *        status flag can be select from @ref _uart_status_flag enumeration.
  *
  * @param base UART base pointer.
  * @param flag Status flag to check.
@@ -411,7 +394,7 @@ bool UART_GetStatusFlag(UART_Type* base, uint32_t flag);
 /*!
  * @brief This function is used to get the current status
  *        of specific UART status flag. The available status
- *        flag can be select from _uart_status_flag enumeration.
+ *        flag can be select from @ref _uart_status_flag enumeration.
  *
  * @param base UART base pointer.
  * @param flag Status flag to clear.
@@ -428,11 +411,13 @@ void UART_ClearStatusFlag(UART_Type* base, uint32_t flag);
 /*!
  * @brief This function is used to set the enable condition of
  *        specific UART DMA source. The available DMA source
- *        can be select from _uart_dma enumeration.
+ *        can be select from @ref _uart_dma enumeration.
  *
  * @param base UART base pointer.
  * @param dmaSource The Event that can generate DMA request.
- * @param enable Set true to enable corresponding DMA source.
+ * @param enable Enable/Disable corresponding DMA source.
+ *               - true: Enable corresponding DMA source.
+ *               - false: Disable corresponding DMA source.
  */
 void UART_SetDmaCmd(UART_Type* base, uint32_t dmaSource, bool enable);
 
@@ -483,14 +468,16 @@ static inline void UART_SetRxFifoWatermark(UART_Type* base, uint8_t watermark)
  *        Hardware flow control.
  *
  * @param base UART base pointer.
- * @param enable Set true to enable RTS hardware flow control.
+ * @param enable Enable/Disbale RTS hardware flow control.
+ *               - true: Enable RTS hardware flow control.
+ *               - false: Disbale RTS hardware flow control.
  */
 void UART_SetRtsFlowCtrlCmd(UART_Type* base, bool enable);
 
 /*!
  * @brief This function is used to set the RTS interrupt trigger edge.
  *        The available trigger edge can be select from
- *        _uart_rts_trigger_edge enumeration.
+ *        @ref _uart_rts_trigger_edge enumeration.
  *
  * @param base UART base pointer.
  * @param triggerEdge Available RTS pin interrupt trigger edge.
@@ -507,12 +494,14 @@ static inline void UART_SetRtsIntTriggerEdge(UART_Type* base, uint32_t triggerEd
 
 /*!
  * @brief This function is used to set the enable condition of CTS
- *        auto control. if CTS control is enabled, the CTS_B pin will
- *        be controlled by the receiver, otherwise the CTS_B pin will
+ *        auto control. if CTS control is enabled, the CTS_B pin 
+ *        is controlled by the receiver, otherwise the CTS_B pin is
  *        controlled by UART_CTSPinCtrl function. 
  *
  * @param base UART base pointer.
- * @param enable Set true to enable CTS auto control.
+ * @param enable Enable/Disable CTS auto control.
+ *               - true: Enable CTS auto control.
+ *               - false: Disable CTS auto control.
  */
 void UART_SetCtsFlowCtrlCmd(UART_Type* base, bool enable);
 
@@ -523,14 +512,15 @@ void UART_SetCtsFlowCtrlCmd(UART_Type* base, bool enable);
  *        The CTS_B pin is high(inactive)
  *
  * @param base UART base pointer.
- * @param active Set true: the CTS_B pin active;
- *               Set false: the CTS_B pin inactive.
+ * @param active The CTS_B pin state to set.
+ *               - true: the CTS_B pin active;
+ *               - false: the CTS_B pin inactive.
  */
 void UART_SetCtsPinLevel(UART_Type* base, bool active);
 
 /*!
  * @brief This function is used to set the auto CTS_B pin control
- *        trigger level. The CTS_B pin will be de-asserted when 
+ *        trigger level. The CTS_B pin is de-asserted when 
  *        Rx FIFO reach CTS trigger level.
  *
  * @param base UART base pointer.
@@ -547,23 +537,24 @@ static inline void UART_SetCtsTriggerLevel(UART_Type* base, uint8_t triggerLevel
  *        in RS-232 communication.
  *
  * @param base UART base pointer.
- * @param mode The role(DTE/DCE) of UART module(see _uart_modem_mode enumeration above).
+ * @param mode The role(DTE/DCE) of UART module (see @ref _uart_modem_mode enumeration).
  */
 void UART_SetModemMode(UART_Type* base, uint32_t mode);
 
 /*!
  * @brief This function is used to set the edge of DTR_B (DCE) or
- *        DSR_B (DTE) on which an interrupt will be generated. 
+ *        DSR_B (DTE) on which an interrupt is generated. 
  *
  * @param base UART base pointer.
- * @param triggerEdge The trigger edge on which an interrupt will be generated.
- *                    (see _uart_dtr_trigger_edge enumeration above)
+ * @param triggerEdge The trigger edge on which an interrupt is generated
+ *                    (see @ref _uart_dtr_trigger_edge enumeration above).
  */
 static inline void UART_SetDtrIntTriggerEdge(UART_Type* base, uint32_t triggerEdge)
 {
     assert((triggerEdge == uartDtrTriggerEdgeRising)  || \
            (triggerEdge == uartDtrTriggerEdgeFalling) || \
            (triggerEdge == uartDtrTriggerEdgeBoth));
+
     UART_UCR3_REG(base) = (UART_UCR3_REG(base) & ~UART_UCR3_DPEC_MASK) | triggerEdge;
 }
 
@@ -572,8 +563,9 @@ static inline void UART_SetDtrIntTriggerEdge(UART_Type* base, uint32_t triggerEd
  *        or DTR pin(for DTE mode) for the modem interface.
  *
  * @param base UART base pointer.
- * @param active Set true: DSR/DTR pin is logic one.
- *               Set false: DSR/DTR pin is logic zero.
+ * @param active The state of DSR pin.
+ *               - true: DSR/DTR pin is logic one.
+ *               - false: DSR/DTR pin is logic zero.
  */
 void UART_SetDtrPinLevel(UART_Type* base, bool active);
 
@@ -582,8 +574,9 @@ void UART_SetDtrPinLevel(UART_Type* base, bool active);
  *        DCD pin. THIS FUNCTION IS FOR DCE MODE ONLY.
  *
  * @param base UART base pointer.
- * @param active Set true: DCD_B pin is logic one (DCE mode)
- *               Set false: DCD_B pin is logic zero (DCE mode)
+ * @param active The state of DCD pin.
+ *               - true: DCD_B pin is logic one (DCE mode)
+ *               - false: DCD_B pin is logic zero (DCE mode)
  */
 void UART_SetDcdPinLevel(UART_Type* base, bool active);
 
@@ -592,15 +585,16 @@ void UART_SetDcdPinLevel(UART_Type* base, bool active);
  *        RI pin. THIS FUNCTION IS FOR DCE MODE ONLY.
  *
  * @param base UART base pointer.
- * @param active Set true: RI_B pin is logic one (DCE mode)
- *               Set false: RI_B pin is logic zero (DCE mode)
+ * @param active The state of RI pin.
+ *               - true: RI_B pin is logic one (DCE mode)
+ *               - false: RI_B pin is logic zero (DCE mode)
  */
 void UART_SetRiPinLevel(UART_Type* base, bool active);
 
 /*@}*/
 
 /*!
- * @name Multi-processor and RS-485 functions.
+ * @name Multiprocessor and RS-485 functions.
  * @{
  */
 
@@ -609,7 +603,7 @@ void UART_SetRiPinLevel(UART_Type* base, bool active);
  *        RS-485 Multidrop mode.
  *
  * @param base UART base pointer.
- * @param data Data(9 bits) to be set through uart module.
+ * @param data Data(9 bits) to be set through UART module.
  */
 void UAER_Putchar9(UART_Type* base, uint16_t data);
 
@@ -627,7 +621,9 @@ uint16_t UAER_Getchar9(UART_Type* base);
  *        9-Bits data or Multidrop mode.
  *
  * @param base UART base pointer.
- * @param enable Set true to enable Multidrop mode.
+ * @param enable Enable/Disable Multidrop mode.
+ *               - true: Enable Multidrop mode.
+ *               - false: Disable Multidrop mode.
  */
 void UART_SetMultidropMode(UART_Type* base, bool enable);
 
@@ -636,13 +632,15 @@ void UART_SetMultidropMode(UART_Type* base, bool enable);
  *        Automatic Address Detect Mode.
  *
  * @param base UART base pointer.
- * @param enable Set true to enable Automatic Address Detect mode.
+ * @param enable Enable/Disable Automatic Address Detect mode.
+ *               - true: Enable Automatic Address Detect mode.
+ *               - false: Disable Automatic Address Detect mode.
  */
 void UART_SetSlaveAddressDetectCmd(UART_Type* base, bool enable);
 
 /*!
  * @brief This function is used to set the slave address char
- *        that the receiver will try to detect.
+ *        that the receiver tries to detect.
  *
  * @param base UART base pointer.
  * @param slaveAddress The slave to detect.
@@ -665,14 +663,16 @@ static inline void UART_SetSlaveAddress(UART_Type* base, uint8_t slaveAddress)
  *        IrDA Mode.
  *
  * @param base UART base pointer.
- * @param enable Set true to enable IrDA mode.
+ * @param enable Enable/Disable IrDA mode.
+ *               - true: Enable IrDA mode.
+ *               - false: Disable IrDA mode.
  */
 void UART_SetIrDACmd(UART_Type* base, bool enable);
 
 /*!
  * @brief This function is used to set the clock for the IR pulsed
  *        vote logic. The available clock can be select from
- *        _uart_irda_vote_clock enumeration.
+ *        @ref _uart_irda_vote_clock enumeration.
  *
  * @param base UART base pointer.
  * @param voteClock The available IrDA vote clock selection.
@@ -691,7 +691,9 @@ void UART_SetIrDAVoteClock(UART_Type* base, uint32_t voteClock);
  *        Automatic Baud Rate Detection feature.
  *
  * @param base UART base pointer.
- * @param enable Set true to enable Automatic Baud Rate Detection feature.
+ * @param enable Enable/Disable Automatic Baud Rate Detection feature.
+ *               - true: Enable Automatic Baud Rate Detection feature.
+ *               - false: Disable Automatic Baud Rate Detection feature.
  */
 void UART_SetAutoBaudRateCmd(UART_Type* base, bool enable);
 
@@ -715,16 +717,19 @@ static inline uint16_t UART_ReadBaudRateCount(UART_Type* base)
  *
  * @param base UART base pointer.
  * @param active Asserted high to generate BREAK.
+ *               - true: Generate BREAK character.
+ *               - false: Stop generate BREAK character.
  */
 void UART_SendBreakChar(UART_Type* base, bool active);
 
 /*!
- * @brief This function is used to send BREAK character.It is 
- *        important that SNDBRK is asserted high for a sufficient
- *        period of time to generate a valid BREAK. 
+ * @brief This function is used to Enable/Disable the Escape
+ *        Sequence Decection feature.
  *
  * @param base UART base pointer.
- * @param active Asserted high to generate BREAK.
+ * @param enable Enable/Disable Escape Sequence Decection.
+ *               - true: Enable Escape Sequence Decection.
+ *               - false: Disable Escape Sequence Decection.
  */
 void UART_SetEscapeDecectCmd(UART_Type* base, bool enable);
 

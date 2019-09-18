@@ -98,7 +98,7 @@ int main(void)
     // Initialize SEMA4 mutex gate and reset
     SEMA4_Mutex_Init(SEMA4_DEMO_GATE, true);
 
-    // Create a demo task which will print Hello world and echo user's input.
+    // Create a demo task.
     xTaskCreate(Sema4Task, "SEMA4 Task", configMINIMAL_STACK_SIZE,
                 NULL, tskIDLE_PRIORITY+1, NULL);
 

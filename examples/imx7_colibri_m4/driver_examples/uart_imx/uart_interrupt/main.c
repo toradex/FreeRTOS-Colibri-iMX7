@@ -56,22 +56,24 @@ static uint32_t UART_XFER_GetReadStatus(void);
 
 int main(void)
 {
-    uint8_t rxChar, txChar;
-
     // Setup UART init structure.
-    uart_init_config_t uart_init_str = {
-        .clockRate  = get_uart_clock_freq(BOARD_DEBUG_UART_BASEADDR),
+    uart_init_config_t initConfig = {
         .baudRate   = 115200u,
         .wordLength = uartWordLength8Bits,
         .stopBitNum = uartStopBitNumOne,
         .parity     = uartParityDisable,
         .direction  = uartDirectionTxRx
     };
+    uint8_t rxChar, txChar;
 
     // Initialize board specified hardware.
     hardware_init();
+
+    // Get current module clock frequency.
+    initConfig.clockRate  = get_uart_clock_freq(BOARD_DEBUG_UART_BASEADDR);
+
     // Initialize the uart module with initialize structure.
-    UART_XFER_Config(&uart_init_str);
+    UART_XFER_Config(&initConfig);
 
     // Inform to start non blocking example.
     UART_XFER_Write((uint8_t*)buffStart, sizeof(buffStart));

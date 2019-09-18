@@ -37,11 +37,11 @@ static uint32_t num = 5;
 
 int main(void)
 {
-    wdog_mode_config_t config = {
-       .wdw   = true,     /*!< true: suspend in low power wait, false: not suspend */
+    wdog_init_config_t config = {
+       .wdw   = false,    /*!< true: suspend in low power wait, false: not suspend */
        .wdt   = true,     /*!< true: assert WDOG_B when timeout, false: not assert WDOG_B */
        .wdbg  = true,     /*!< true: suspend in debug mode, false: not suspend */
-       .wdzst = true      /*!< true: suspend in doze and stop mode, false: not suspend */
+       .wdzst = false     /*!< true: suspend in doze and stop mode, false: not suspend */
     };
 
     hardware_init();
@@ -51,6 +51,8 @@ int main(void)
     /* Enable WDOG interrupt 0.5 second before WDOG timeout */
     NVIC_SetPriority(BOARD_WDOG_IRQ_NUM, 3);
     NVIC_EnableIRQ(BOARD_WDOG_IRQ_NUM);
+    /* Refresh WDOG to reload counter */
+    WDOG_Refresh(BOARD_WDOG_BASEADDR);
     WDOG_EnableInt(BOARD_WDOG_BASEADDR, 1);
 
     PRINTF("WDOG with timeout 1.5 seconds will now start\n\r");

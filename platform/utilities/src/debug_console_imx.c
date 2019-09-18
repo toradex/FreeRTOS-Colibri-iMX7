@@ -366,6 +366,7 @@ void UART_SendDataPolling(void *base, const uint8_t *txBuff, uint32_t txSize)
     while (txSize--)
     {
         UART_Putchar((UART_Type*)base, *txBuff++);
+        while (!UART_GetStatusFlag((UART_Type*)base, uartStatusTxEmpty));
         while (!UART_GetStatusFlag((UART_Type*)base, uartStatusTxComplete));
     }
 }

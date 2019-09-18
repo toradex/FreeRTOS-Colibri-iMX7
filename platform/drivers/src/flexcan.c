@@ -89,7 +89,7 @@ static void FLEXCAN_ExitFreezeMode(CAN_Type* base)
     /* De-assert Freeze Mode */
     CAN_MCR_REG(base) &= ~CAN_MCR_HALT_MASK;
     CAN_MCR_REG(base) &= ~CAN_MCR_FRZ_MASK;
-    /* Wait for entering the freeze mode */
+    /* Wait for exit the freeze mode */
     while (CAN_MCR_REG(base) & CAN_MCR_FRZ_ACK_MASK);
 }
 
@@ -102,7 +102,7 @@ static void FLEXCAN_ExitFreezeMode(CAN_Type* base)
  * Description   : Initialize Flexcan module with given initialize structure.
  *
  *END**************************************************************************/
-void FLEXCAN_Init(CAN_Type* base, flexcan_init_config_t* initConfig)
+void FLEXCAN_Init(CAN_Type* base, const flexcan_init_config_t* initConfig)
 {
     assert(initConfig);
 
@@ -136,6 +136,8 @@ void FLEXCAN_Init(CAN_Type* base, flexcan_init_config_t* initConfig)
  *END**************************************************************************/
 void FLEXCAN_Deinit(CAN_Type* base)
 {
+    uint32_t i;
+
     /* Reset the FLEXCAN module */
     CAN_MCR_REG(base) |= CAN_MCR_SOFT_RST_MASK;
     /* Wait for reset cycle to complete */
@@ -150,8 +152,17 @@ void FLEXCAN_Deinit(CAN_Type* base)
     /* Reset CTRL2 Register */
     CAN_CTRL2_REG(base) = 0x0;
 
+    /* Reset All Message Buffer Content */
+    for (i = 0; i < CAN_CS_COUNT; i++)
+    {
+        base->MB[i].CS = 0x0;
+        base->MB[i].ID = 0x0;
+        base->MB[i].WORD0 = 0x0;
+        base->MB[i].WORD1 = 0x0;
+    }
+
     /* Reset Rx Individual Mask */
-    for (uint8_t i=0; i < CAN_RXIMR_COUNT; i++)
+    for (i = 0; i < CAN_RXIMR_COUNT; i++)
         CAN_RXIMR_REG(base, i) = 0x0;
 
     /* Reset Rx Mailboxes Global Mask */
@@ -167,8 +178,8 @@ void FLEXCAN_Deinit(CAN_Type* base)
     CAN_RXFGMASK_REG(base) = 0xFFFFFFFF;
 
     /* Disable all MB interrupts */
-    CAN_IMASK1_REG(base) = 0X0;
-    CAN_IMASK2_REG(base) = 0X0;
+    CAN_IMASK1_REG(base) = 0x0;
+    CAN_IMASK2_REG(base) = 0x0;
 
     // Clear all MB interrupt flags
     CAN_IFLAG1_REG(base) = 0xFFFFFFFF;
@@ -215,7 +226,7 @@ void FLEXCAN_Disable(CAN_Type* base)
  * Description   : Sets the FlexCAN time segments for setting up bit rate.
  *
  *END**************************************************************************/
-void FLEXCAN_SetTiming(CAN_Type* base, flexcan_timing_t* timing)
+void FLEXCAN_SetTiming(CAN_Type* base, const flexcan_timing_t* timing)
 {
     assert(timing);
 
@@ -287,15 +298,6 @@ void FLEXCAN_SetMaxMsgBufNum(CAN_Type* base, uint32_t bufNum)
 
     /* Set the maximum number of MBs*/
     CAN_MCR_REG(base) = (CAN_MCR_REG(base) & (~CAN_MCR_MAXMB_MASK)) | CAN_MCR_MAXMB(bufNum-1);
-
-    /* Clean MBs content to default value */
-    for (uint8_t i = 0; i < bufNum; i++)
-    {
-        base->MB[i].CS = 0x0;
-        base->MB[i].ID = 0x0;
-        base->MB[i].WORD0 = 0x0;
-        base->MB[i].WORD1 = 0x0;
-    }
 
     /* De-assert Freeze Mode*/
     FLEXCAN_ExitFreezeMode(base);
@@ -491,14 +493,17 @@ void FLEXCAN_ClearMsgBufStatusFlag(CAN_Type* base, uint32_t msgBufIdx)
     assert(msgBufIdx < CAN_CS_COUNT);
 
     if (msgBufIdx > 0x31)
+    {
         index = msgBufIdx - 32;
+        /* write 1 to clear. */
+        base->IFLAG2 = 0x1 << index;
+    }
     else
+    {
         index = msgBufIdx;
-
-    /* The Interrupt flag must be cleared by writing it to '1'.
-     * Writing '0' has no effect.
-     */
-    base->IFLAG1 = 0x1 << index;
+        /* write 1 to clear. */
+        base->IFLAG1 = 0x1 << index;
+    }
 }
 
 /*FUNCTION**********************************************************************
@@ -693,7 +698,7 @@ void FLEXCAN_SetRxFifoFilter(CAN_Type* base, uint32_t idFormat, flexcan_id_table
 
     switch (idFormat)
     {
-        case flexcanFxFifoIdElementFormatA:
+        case flexcanRxFifoIdElementFormatA:
             /* One full ID (standard and extended) per ID Filter Table element.*/
             if (idFilterTable->isRemoteFrame)
             {
@@ -718,7 +723,7 @@ void FLEXCAN_SetRxFifoFilter(CAN_Type* base, uint32_t idFormat, flexcan_id_table
                 }
             }
             break;
-        case flexcanFxFifoIdElementFormatB:
+        case flexcanRxFifoIdElementFormatB:
             /* Two full standard IDs or two partial 14-bit (standard and extended) IDs*/
             /* per ID Filter Table element.*/
             if (idFilterTable->isRemoteFrame)
@@ -754,7 +759,7 @@ void FLEXCAN_SetRxFifoFilter(CAN_Type* base, uint32_t idFormat, flexcan_id_table
                 j = j + 2;
             }
             break;
-        case flexcanFxFifoIdElementFormatC:
+        case flexcanRxFifoIdElementFormatC:
             /* Four partial 8-bit Standard IDs per ID Filter Table element.*/
             j = 0;
             for (i = 0; i < RxFifoFilterElementNum(numOfFilters); i++)
@@ -774,7 +779,7 @@ void FLEXCAN_SetRxFifoFilter(CAN_Type* base, uint32_t idFormat, flexcan_id_table
                 j = j + 4;
             }
             break;
-        case flexcanFxFifoIdElementFormatD:
+        case flexcanRxFifoIdElementFormatD:
             /* All frames rejected.*/
             break;
     }
@@ -835,7 +840,7 @@ void FLEXCAN_SetRxMaskMode(CAN_Type* base, uint32_t mode)
  * Description   : Set the remote trasmit request mask enablement.
  *
  *END**************************************************************************/
-void FLEXCAN_SetRxMaskRtrCmd(CAN_Type* base, uint32_t enable)
+void FLEXCAN_SetRxMaskRtrCmd(CAN_Type* base, bool enable)
 {
     /* Assert Freeze mode */
     FLEXCAN_EnterFreezeMode(base);

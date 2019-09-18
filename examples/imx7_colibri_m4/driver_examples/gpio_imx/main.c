@@ -34,99 +34,243 @@
 #include "gpio_imx.h"
 #include "debug_console_imx.h"
 
+#define GPIO_INTERRUPT         (1)
+#define GPIO_POLLING           (0)
+#define GPIO_DEBOUNCE_DELAY    (100000)
+
 /* button relevent variables */
-static volatile uint8_t keyPressCount;
-static uint8_t keyLastState;
-static uint8_t keyState;
+static uint8_t keyPressCount;
+static bool on = false;
+#ifdef BOARD_GPIO_KEY_CONFIG
+static volatile uint8_t button_pressed_flag;
+#endif
+
+/*!
+ * @brief Initialize GPIO_LED controller.
+ */
+static void GPIO_Ctrl_InitLedPin(void)
+{
+#ifdef BOARD_GPIO_LED_CONFIG
+    /* GPIO module initialize, configure "LED" as output and drive the output high level */
+    gpio_init_config_t ledInitConfig = {
+        .pin = BOARD_GPIO_LED_CONFIG->pin,
+        .direction = gpioDigitalOutput,
+        .interruptMode = gpioNoIntmode
+    };
+    GPIO_Init(BOARD_GPIO_LED_CONFIG->base, &ledInitConfig);
+#endif
+}
+
+/*!
+ * @brief Initialize GPIO INT\POLLING controller.
+ */
+static void GPIO_Ctrl_InitKeyPin(uint32_t gpioMode)
+{
+#ifdef BOARD_GPIO_KEY_CONFIG
+    if (GPIO_INTERRUPT == gpioMode)
+    {
+        /* GPIO module initialize, configure button as interrupt mode. */
+        gpio_init_config_t keyInitConfig = {
+            .pin = BOARD_GPIO_KEY_CONFIG->pin,
+            .direction = gpioDigitalInput,
+            .interruptMode = gpioIntFallingEdge,
+        };
+        GPIO_Init(BOARD_GPIO_KEY_CONFIG->base, &keyInitConfig);
+        /* Enable interrupt. */
+        NVIC_EnableIRQ(BOARD_GPIO_KEY_IRQ_NUM);
+    }
+    else
+    {
+        /* GPIO module initialize, configure button as GPIO functionality. */
+        gpio_init_config_t keyInitConfig = {
+            .pin = BOARD_GPIO_KEY_CONFIG->pin,
+            .direction = gpioDigitalInput,
+            .interruptMode = gpioNoIntmode,
+        };
+        GPIO_Init(BOARD_GPIO_KEY_CONFIG->base, &keyInitConfig);
+    }
+#endif
+}
+
+/*!
+ * @brief Wait user to press key in INT\NOINT mode.
+ */
+static void GPIO_WaitKeyPressed(uint32_t gpioMode)
+{
+#ifdef BOARD_GPIO_KEY_CONFIG
+    uint32_t i, j, debounce;
+
+    if (GPIO_INTERRUPT == gpioMode)
+    {
+        do
+        {
+            debounce = 0;
+
+            /* Clear the interrupt state, this operation is necessary, because the GPIO module maybe confuse
+               the first rising edge as interrupt*/
+            GPIO_ClearStatusFlag(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin);
+            /* Enable GPIO pin interrupt */
+            GPIO_SetPinIntMode(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin, true);
+
+            /* Waitting for Key pressed. */
+            while(button_pressed_flag == 0);
+            button_pressed_flag = 0;
+
+            for (i = 0; i < 3; i++)
+            {
+                /* Delay to wait key value stable. The cycle number should be changed
+                 * according to M4 Core clock frequncy.
+                 */
+                for (j = 0 ; j < GPIO_DEBOUNCE_DELAY; j++)
+                {
+                    __NOP();
+                }
+
+                if (0 == GPIO_ReadPinInput(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin))
+                {
+                    debounce++;
+                }
+            }
+
+            if (debounce > 2)
+            {
+                break;
+            }
+        } while (1);
+    }
+    else
+    {
+        /* Wait for Key Released. */
+        do
+        {
+            debounce = 0;
+            while (0 == GPIO_ReadPinInput(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin));
+
+            for (i = 0; i < 3; i++)
+            {
+                /* Delay to wait key value stable. The cycle number should be changed
+                 * according to M4 Core clock frequncy.
+                 */
+                for (j = 0 ; j < GPIO_DEBOUNCE_DELAY; j++)
+                {
+                    __NOP();
+                }
+
+                if (1 == GPIO_ReadPinInput(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin))
+                {
+                    debounce++;
+                }
+            }
+
+            if (debounce > 2)
+            {
+                break;
+            }
+        }
+        while (1);
+
+        /* Wait for Key Pressed. */
+        do
+        {
+            debounce = 0;
+            while (1 == GPIO_ReadPinInput(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin));
+
+            for (i = 0; i < 3; i++)
+            {
+                /* Delay to wait key value stable. The cycle number should be changed
+                 * according to M4 Core clock frequncy.
+                 */
+                for (j = 0 ; j < GPIO_DEBOUNCE_DELAY; j++)
+                {
+                    __NOP();
+                }
+
+                if (0 == GPIO_ReadPinInput(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin))
+                {
+                    debounce++;
+                }
+            }
+
+            if (debounce > 2)
+            {
+                break;
+            }
+        }
+        while (1);
+    }
+#else
+        GETCHAR();
+#endif
+}
+
+/*!
+ * @brief Toggle the led
+ */
+static void GPIO_LED_Toggle(void)
+{
+#ifdef  BOARD_GPIO_LED_CONFIG
+    GPIO_WritePinOutput(BOARD_GPIO_LED_CONFIG->base,BOARD_GPIO_LED_CONFIG->pin, on ? gpioPinSet : gpioPinClear);
+    keyPressCount++;
+    PRINTF("Button pressed %d times\n\r", keyPressCount);
+#else
+    PRINTF("%c ", on ? '+' : '-');
+#endif
+    on = !on;
+}
 
 /******************************************************************************
 *
 * Function Name: main
 * Comments: GPIO module initialize, interrupt and IO operation.
 *   This example include 2 step:
-*   1)Configure BUTTON1 as interrupt mode, falling edge, and test 
+*   1)Configure BUTTON1 as interrupt mode, falling edge, and test
 *     by pressing the button 3 times to trigger interrupt.
 *   2)Configure BUTTON1 as GPIO functionality
 *     and check the button's state(pressed or released) through switch LED
 *     to on or off if this board has LED.
 *
 ******************************************************************************/
-int main( void )  
+int main(void)
 {
     /* hardware initialiize, include RDC, IOMUX, Uart debug initialize */
-    hardware_init(); 
-
+    hardware_init();
     PRINTF("\n\r====================== GPIO Example ========================\n\r");
 
-#ifdef BOARD_GPIO_LED_CONFIG
-    /* GPIO module initialize, configure "LED" as output and drive the output high level */
-    gpio_init_t ledInitConfig = {
-        .pin = BOARD_GPIO_LED_CONFIG->pin,
-        .direction = gpioDigitalOutput,
-        .interruptMode = gpioNoIntmode
-    };
-    GPIO_Init(BOARD_GPIO_LED_CONFIG->base, &ledInitConfig);
+    /* GPIO module initialize, configure "LED" as output and button as interrupt mode. */
+    GPIO_Ctrl_InitLedPin();
+    GPIO_Ctrl_InitKeyPin(GPIO_INTERRUPT);
 
-    /* drive the LED output high level. */
-    GPIO_WritePinOutput(BOARD_GPIO_LED_CONFIG->base, BOARD_GPIO_LED_CONFIG->pin, gpioPinSet);
-#endif
-
+    /* wait for user to press button */
 #ifdef BOARD_GPIO_KEY_CONFIG
-    /* GPIO module initialize, configure button as interrupt mode. */
-    gpio_init_t keyInitConfig = {
-        .pin = BOARD_GPIO_KEY_CONFIG->pin,
-        .direction = gpioDigitalInput,
-        .interruptMode = gpioIntFallingEdge
-    };
-    GPIO_Init(BOARD_GPIO_KEY_CONFIG->base, &keyInitConfig);
-
-    NVIC_EnableIRQ(BOARD_GPIO_KEY_IRQ_NUM);
-    /* Clear the interrupt state, this operation is necessary, because the GPIO module maybe confuse
-       the first rising edge as interrupt*/
-    GPIO_ClearStatusFlag(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin);
-    /* Enable GPIO pin interrupt */
-    GPIO_SetPinIntMode(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin, true);
-    /* press button trigger interrupt */
     PRINTF("\n\r=================== GPIO Interrupt =====================\n\r");
-    PRINTF("The (%s) button is configured to trigger GPIO interrupt.\n\r", BOARD_GPIO_KEY_CONFIG->name);
+    PRINTF("The (%s) button is configured to trigger GPIO interrupt\n\r", BOARD_GPIO_KEY_CONFIG->name);
     PRINTF("Press the (%s) button 3 times to continue.\n\n\r", BOARD_GPIO_KEY_CONFIG->name);
+#else
+    PRINTF("\n\r============ Use key to simulate GPIO button ==============\n\r");
+    PRINTF("Input any data from terminal 3 times to continues.\n\n\r");
+#endif
+    keyPressCount = 0;
+    while(keyPressCount < 3)
+    {
+        GPIO_WaitKeyPressed(GPIO_INTERRUPT);
+        keyPressCount++;
+        PRINTF("Button pressed %d time. \n\r", keyPressCount);
+    }
 
-    keyPressCount = 1;
-    while(keyPressCount < 4);
-
-    /* Now disable the interrupt */
-    NVIC_DisableIRQ(BOARD_GPIO_KEY_IRQ_NUM);
-    GPIO_SetPinIntMode(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin, false);
-
-    /* GPIO module initialize, configure button as GPIO functionality. */
-    keyInitConfig.pin = BOARD_GPIO_KEY_CONFIG->pin;
-    keyInitConfig.direction = gpioDigitalInput;
-    keyInitConfig.interruptMode = gpioNoIntmode;
-    GPIO_Init(BOARD_GPIO_KEY_CONFIG->base, &keyInitConfig);
+    GPIO_Ctrl_InitKeyPin(GPIO_POLLING);
+    keyPressCount = 0;
 
     /* Configure button as GPIO functionality
        and check the button's state(pressed or released) to switch LED on or off */
-
     /* Check the buttion's status(pressed or released) */
     PRINTF("\n\r================= GPIO Functionality==================\n\r");
-    PRINTF("The (%s) button state is now polled.\n\r", BOARD_GPIO_KEY_CONFIG->name);
-    PRINTF("Press the (%s) button to switch LED on or off\n\n\r", BOARD_GPIO_KEY_CONFIG->name);
-
-    keyLastState = 1;   //initial button released, logic 1
-
-    for(;;)
+    PRINTF("The button state is now polled.\n\r");
+    PRINTF("Press the button to switch LED on or off\n\n\r");
+    while(true)
     {
-        keyState = GPIO_ReadPinInput(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin);
-        if(keyState != keyLastState)
-        {
-            PRINTF("Button %s\n\r", keyState ? "pressed" : "released");
-            keyLastState = keyState;
-#ifdef BOARD_GPIO_LED_CONFIG
-            GPIO_WritePinOutput(BOARD_GPIO_LED_CONFIG->base, BOARD_GPIO_LED_CONFIG->pin, keyState ? gpioPinSet : gpioPinClear);
-#endif
-        }
+        GPIO_WaitKeyPressed(GPIO_POLLING);
+        GPIO_LED_Toggle();
     }
-#endif
 }
 
 /******************************************************************************
@@ -134,13 +278,17 @@ int main( void )
 * Comments: The interrupt service routine triggered by gpio
 * Note: Need to consider how to eliminate the button shake problem
 ******************************************************************************/
+#ifdef BOARD_GPIO_KEY_CONFIG
 void BOARD_GPIO_KEY_HANDLER(void)
 {
-    PRINTF("Button pressed %d time. \n\r", keyPressCount);
-    keyPressCount++;
+    button_pressed_flag = 1;
     /* clear the interrupt status */
     GPIO_ClearStatusFlag(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin);
+
+    /* Disable GPIO pin interrupt */
+    GPIO_SetPinIntMode(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin, false);
 }
+#endif
 
 /*******************************************************************************
  * EOF

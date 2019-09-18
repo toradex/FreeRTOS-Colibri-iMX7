@@ -33,11 +33,11 @@
 #include "board.h"
 #include "debug_console_imx.h"
 #include "gpio_ctrl.h"
-#include "gpt_timer.h"
+#include "hw_timer.h"
 
-#define BLINKING_FREQ_MIN    (100)
+#define BLINKING_INTERVAL_MIN    (100)
 
-static volatile uint32_t blinkingInterval = BLINKING_FREQ_MIN;
+static volatile uint32_t blinkingInterval = BLINKING_INTERVAL_MIN;
 
 /******************************************************************************
 *
@@ -50,8 +50,8 @@ void ToggleTask(void *pvParameters)
     while (true)
     {
         GPIO_Ctrl_ToggleLed();
-        /* Use GPT timer to get accurate delay */
-        GPT_Timer_Delay(blinkingInterval);
+        /* Use Hardware timer to get accurate delay */
+        Hw_Timer_Delay(blinkingInterval);
     }
 }
 
@@ -69,7 +69,7 @@ void SwitchTask(void *pvParameters)
         GPIO_Ctrl_WaitKeyPressed();
         blinkingInterval += 100;
         if (blinkingInterval > 1000)
-            blinkingInterval = BLINKING_FREQ_MIN;
+            blinkingInterval = BLINKING_INTERVAL_MIN;
         /* Delay for 1 second to avoid glitch */
         vTaskDelay(configTICK_RATE_HZ);
     }
@@ -86,7 +86,7 @@ int main(void)
     /* Initialize board specified hardware. */
     hardware_init();
 
-    GPT_Timer_Init();
+    Hw_Timer_Init();
     GPIO_Ctrl_Init();
 
     PRINTF("\n\r================= Blinking Demo ==================\n\r");

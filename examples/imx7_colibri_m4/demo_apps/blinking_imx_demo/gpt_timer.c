@@ -37,15 +37,15 @@
 
 #include "FreeRTOS.h"
 #include "semphr.h"
-#include "gpt.h"
-#include "gpt_timer.h"
 #include "board.h"
+#include "gpt.h"
+#include "hw_timer.h"
 
 static SemaphoreHandle_t xSemaphore;
 
-void GPT_Timer_Init()
+void Hw_Timer_Init(void)
 {
-    gpt_mode_config_t config = {
+    gpt_init_config_t config = {
         .freeRun    = false,
         .waitEnable = true,
         .stopEnable = true,
@@ -53,8 +53,6 @@ void GPT_Timer_Init()
         .dbgEnable  = false,
         .enableMode = true
     };
-
-    xSemaphore = xSemaphoreCreateBinary();
 
     /* Initialize GPT module */
     GPT_Init(BOARD_GPTA_BASEADDR, &config);
@@ -67,11 +65,13 @@ void GPT_Timer_Init()
 
     /* Enable NVIC interrupt */
     NVIC_EnableIRQ(BOARD_GPTA_IRQ_NUM);
+
+    xSemaphore = xSemaphoreCreateBinary();
 }
 
-void GPT_Timer_Delay(uint32_t ms)
+void Hw_Timer_Delay(uint32_t ms)
 {
-    uint64_t counter = 24000 * ms; /* First get the counter needed by delay time */
+    uint64_t counter = 24000ULL * ms; /* First get the counter needed by delay time */
     uint32_t high;
     uint32_t div24m, div;
 
@@ -100,16 +100,20 @@ void GPT_Timer_Delay(uint32_t ms)
     xSemaphoreTake(xSemaphore, portMAX_DELAY);
 }
 
-void BOARD_GPTA_HANDLER()
+void BOARD_GPTA_HANDLER(void)
 {
-    BaseType_t xHigherPriorityTaskWoken;
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-    /* When GPT timeout, we disable GPT to make sure this is a oneshot event */
+    /* When GPT time-out, we disable GPT to make sure this is a one-shot event. */
     GPT_Disable(BOARD_GPTA_BASEADDR);
     GPT_SetIntCmd(BOARD_GPTA_BASEADDR, gptStatusFlagOutputCompare1, false);
     GPT_ClearStatusFlag(BOARD_GPTA_BASEADDR, gptStatusFlagOutputCompare1);
 
+    /* Unlock the task to process the event. */
     xSemaphoreGiveFromISR(xSemaphore, &xHigherPriorityTaskWoken);
+
+    /* Perform a context switch to wake the higher priority task. */
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 /*******************************************************************************

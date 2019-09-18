@@ -44,16 +44,22 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-/*!
- * @brief Structure to configure the running mode.
- */
-typedef struct WdogModeConfig
+/*! @brief The reset source of latest reset. */
+enum _wdog_reset_source
 {
-    bool wdw;     /*!< true: suspend in low power wait, false: not suspend */
-    bool wdt;     /*!< true: assert WDOG_B when timeout, false: not assert WDOG_B */
-    bool wdbg;    /*!< true: suspend in debug mode, false: not suspend */
-    bool wdzst;   /*!< true: suspend in doze and stop mode, false: not suspend */
-} wdog_mode_config_t;
+    wdogResetSourcePor     = WDOG_WRSR_POR_MASK,     /*!< Indicates the reset is the result of a power on reset.*/
+    wdogResetSourceTimeout = WDOG_WRSR_TOUT_MASK,    /*!< Indicates the reset is the result of a WDOG timeout.*/
+    wdogResetSourceSwRst   = WDOG_WRSR_SFTW_MASK,    /*!< Indicates the reset is the result of a software reset.*/
+};
+
+/*! @brief Structure to configure the running mode. */
+typedef struct _wdog_init_config
+{
+    bool wdw;   /*!< true: suspend in low power wait, false: not suspend */
+    bool wdt;   /*!< true: assert WDOG_B when timeout, false: not assert WDOG_B */
+    bool wdbg;  /*!< true: suspend in debug mode, false: not suspend */
+    bool wdzst; /*!< true: suspend in doze and stop mode, false: not suspend */
+} wdog_init_config_t;
 
 /*******************************************************************************
  * API
@@ -69,17 +75,17 @@ extern "C" {
  */
 
 /*!
- * @brief Configure WDOG funtions, call once only
+ * @brief Configure WDOG functions, call once only
  *
  * @param base WDOG base pointer.
- * @param config WDOG mode configuration
+ * @param initConfig WDOG mode configuration
  */
-static inline void WDOG_Init(WDOG_Type *base, wdog_mode_config_t *config)
+static inline void WDOG_Init(WDOG_Type *base, const wdog_init_config_t *initConfig)
 {
-    base->WCR |= config->wdw   ? WDOG_WCR_WDW_MASK   : 0 |
-                 config->wdt   ? WDOG_WCR_WDT_MASK   : 0 |
-                 config->wdbg  ? WDOG_WCR_WDBG_MASK  : 0 |
-                 config->wdzst ? WDOG_WCR_WDZST_MASK : 0;
+    base->WCR |= (initConfig->wdw   ? WDOG_WCR_WDW_MASK   : 0) |
+                 (initConfig->wdt   ? WDOG_WCR_WDT_MASK   : 0) |
+                 (initConfig->wdbg  ? WDOG_WCR_WDBG_MASK  : 0) |
+                 (initConfig->wdzst ? WDOG_WCR_WDZST_MASK : 0);
 }
 
 /*!
@@ -94,10 +100,26 @@ void WDOG_Enable(WDOG_Type *base, uint8_t timeout);
  * @brief Assert WDOG software reset signal
  *
  * @param base WDOG base pointer.
- * @param wda WDOG reset (true: assert WDOG_B, false: no impact on WDOG_B)
- * @param srs System reset (true: assert system reset WDOG_RESET_B_DEB, false: no impact on system reset)
+ * @param wda WDOG reset.
+ *            - true: Assert WDOG_B.
+ *            - false: No impact on WDOG_B.
+ * @param srs System reset.
+ *            - true: Assert system reset WDOG_RESET_B_DEB.
+ *            - false: No impact on system reset.
  */
 void WDOG_Reset(WDOG_Type *base, bool wda, bool srs);
+
+/*!
+ * @brief Get the latest reset source generated due to
+ * WatchDog Timer.
+ *
+ * @param base WDOG base pointer.
+ * @return The latest reset source (see @ref _wdog_reset_source enumeration).
+ */
+static inline uint32_t WDOG_GetResetSource(WDOG_Type *base)
+{
+    return base->WRSR;
+}
 
 /*!
  * @brief Refresh the WDOG to prevent timeout
@@ -138,7 +160,9 @@ static inline void WDOG_EnableInt(WDOG_Type *base, uint8_t time)
  * @brief Check whether WDOG interrupt is pending
  *
  * @param base WDOG base pointer.
- * @return WDOG interrupt status (true: pending, false: not pending)
+ * @return WDOG interrupt status.
+ *              - true: Pending.
+ *              - false: Not pending.
  */
 static inline bool WDOG_IsIntPending(WDOG_Type *base)
 {

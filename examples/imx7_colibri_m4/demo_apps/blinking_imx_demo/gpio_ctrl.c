@@ -37,6 +37,7 @@
 
 #include <stdbool.h>
 #include "FreeRTOS.h"
+#include "task.h"
 #include "semphr.h"
 #include "gpio_pins.h"
 #include "board.h"
@@ -50,7 +51,7 @@ static SemaphoreHandle_t xSemaphore;
 static void GPIO_Ctrl_InitLedPin()
 {
 #ifdef BOARD_GPIO_LED_CONFIG
-    gpio_init_t ledInit = {
+    gpio_init_config_t ledInit = {
         .pin           = BOARD_GPIO_LED_CONFIG->pin,
         .direction     = gpioDigitalOutput,
         .interruptMode = gpioNoIntmode
@@ -69,7 +70,7 @@ static void GPIO_Ctrl_InitLedPin()
 static void GPIO_Ctrl_InitKeyPin()
 {
 #ifdef BOARD_GPIO_KEY_CONFIG
-    gpio_init_t keyInit = {
+    gpio_init_config_t keyInit = {
         .pin           = BOARD_GPIO_KEY_CONFIG->pin,
         .direction     = gpioDigitalInput,
         .interruptMode = gpioIntFallingEdge
@@ -116,37 +117,57 @@ void GPIO_Ctrl_ToggleLed()
 
 void GPIO_Ctrl_WaitKeyPressed()
 {
-    TickType_t ticks;
-
 #ifdef BOARD_GPIO_KEY_CONFIG
-    RDC_SEMAPHORE_Lock(BOARD_GPIO_KEY_RDC_PDAP);
+    uint32_t i, debounce;
 
-    /* Clear the interrupt state */
-    GPIO_ClearStatusFlag(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin);
-    /* Enable GPIO pin interrupt */
-    GPIO_SetPinIntMode(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin, true);
+    do
+    {
+        debounce = 0;
 
-    RDC_SEMAPHORE_Unlock(BOARD_GPIO_KEY_RDC_PDAP);
+        RDC_SEMAPHORE_Lock(BOARD_GPIO_KEY_RDC_PDAP);
 
-    /* Enable the IRQ. */
-    NVIC_EnableIRQ(BOARD_GPIO_KEY_IRQ_NUM);
+        /* Clear the interrupt state */
+        GPIO_ClearStatusFlag(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin);
+        /* Enable GPIO pin interrupt */
+        GPIO_SetPinIntMode(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin, true);
 
-    /* We need wait user input for ever */
-    ticks = portMAX_DELAY;
+        RDC_SEMAPHORE_Unlock(BOARD_GPIO_KEY_RDC_PDAP);
 
-    PRINTF("\n\rPress the (%s) key to switch the blinking frequency:\n\r", BOARD_GPIO_KEY_CONFIG->name);
+        /* Enable the IRQ. */
+        NVIC_EnableIRQ(BOARD_GPIO_KEY_IRQ_NUM);
+
+        PRINTF("\n\rPress the (%s) key to switch the blinking frequency:\n\r", BOARD_GPIO_KEY_CONFIG->name);
+        xSemaphoreTake(xSemaphore, portMAX_DELAY);
+
+        for (i = 0; i < 3; i++)
+        {
+            /* Susupend Task to wait Key stable. */
+            vTaskDelay(5);
+
+            /* Check key value. */
+            if (0 == GPIO_ReadPinInput(BOARD_GPIO_KEY_CONFIG->base, BOARD_GPIO_KEY_CONFIG->pin))
+            {
+                /* Increase debounce counter. */
+                debounce ++;
+            }
+        }
+
+        if (debounce >= 2)
+        {
+            break;
+        }
+    } while (1);
 #else
     /* Without key on board, we return every 5 seconds */
-    ticks = configTICK_RATE_HZ * 5;
     PRINTF("\n\rWait 5 seconds to switch blinking frequency:\n\r");
+    xSemaphoreTake(xSemaphore, configTICK_RATE_HZ * 5);
 #endif
-    xSemaphoreTake(xSemaphore, ticks);
 }
 
 #ifdef BOARD_GPIO_KEY_CONFIG
 void BOARD_GPIO_KEY_HANDLER()
 {
-    BaseType_t xHigherPriorityTaskWoken;
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
     /* When user input captured, we disable GPIO interrupt */
     NVIC_DisableIRQ(BOARD_GPIO_KEY_IRQ_NUM);
@@ -160,7 +181,11 @@ void BOARD_GPIO_KEY_HANDLER()
 
     RDC_SEMAPHORE_Unlock(BOARD_GPIO_KEY_RDC_PDAP);
 
+    /* Unlock the task to process the event. */
     xSemaphoreGiveFromISR(xSemaphore, &xHigherPriorityTaskWoken);
+
+    /* Perform a context switch to wake the higher priority task. */
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 #endif
 

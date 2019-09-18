@@ -46,8 +46,8 @@ void CCM_SetRootDivider(CCM_Type * base, uint32_t ccmRoot, uint32_t pre, uint32_
     assert (post < 64);
 
     CCM_REG(ccmRoot) = (CCM_REG(ccmRoot) &
-                        (~(CCM_TARGET_ROOT0_PRE_PODF_MASK | CCM_TARGET_ROOT0_POST_PODF_MASK))) |
-                       CCM_TARGET_ROOT0_PRE_PODF(pre) | CCM_TARGET_ROOT0_POST_PODF(post);
+                        (~(CCM_TARGET_ROOT_PRE_PODF_MASK | CCM_TARGET_ROOT_POST_PODF_MASK))) |
+                       CCM_TARGET_ROOT_PRE_PODF(pre) | CCM_TARGET_ROOT_POST_PODF(post);
 }
 
 /*FUNCTION**********************************************************************
@@ -60,8 +60,8 @@ void CCM_GetRootDivider(CCM_Type * base, uint32_t ccmRoot, uint32_t *pre, uint32
 {
     assert (pre && post);
 
-    *pre = (CCM_REG(ccmRoot) & CCM_TARGET_ROOT0_PRE_PODF_MASK) >> CCM_TARGET_ROOT0_PRE_PODF_SHIFT;
-    *post = (CCM_REG(ccmRoot) & CCM_TARGET_ROOT0_POST_PODF_MASK) >> CCM_TARGET_ROOT0_POST_PODF_SHIFT;
+    *pre = (CCM_REG(ccmRoot) & CCM_TARGET_ROOT_PRE_PODF_MASK) >> CCM_TARGET_ROOT_PRE_PODF_SHIFT;
+    *post = (CCM_REG(ccmRoot) & CCM_TARGET_ROOT_POST_PODF_MASK) >> CCM_TARGET_ROOT_POST_PODF_SHIFT;
 }
 
 /*FUNCTION**********************************************************************
@@ -76,8 +76,8 @@ void CCM_UpdateRoot(CCM_Type * base, uint32_t ccmRoot, uint32_t mux, uint32_t pr
     assert (post < 64);
 
     CCM_REG(ccmRoot) = (CCM_REG(ccmRoot) &
-                        (~(CCM_TARGET_ROOT0_MUX_MASK | CCM_TARGET_ROOT0_PRE_PODF_MASK | CCM_TARGET_ROOT0_POST_PODF_MASK))) |
-                       CCM_TARGET_ROOT0_MUX(mux) | CCM_TARGET_ROOT0_PRE_PODF(pre) | CCM_TARGET_ROOT0_POST_PODF(post);
+                        (~(CCM_TARGET_ROOT_MUX_MASK | CCM_TARGET_ROOT_PRE_PODF_MASK | CCM_TARGET_ROOT_POST_PODF_MASK))) |
+                       CCM_TARGET_ROOT_MUX(mux) | CCM_TARGET_ROOT_PRE_PODF(pre) | CCM_TARGET_ROOT_POST_PODF(post);
 }
 
 /*******************************************************************************

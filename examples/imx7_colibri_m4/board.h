@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
+ * Copyright (c) 2016, Toradex AG
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -61,8 +62,8 @@
 #define BOARD_SEMA4_RDC_PDAP                  rdcPdapSemaphoreHs
 #define BOARD_SEMA4_CCM_CCGR                  ccmCcgrGateSemaHs
 #define BOARD_SEMA4_BASEADDR                  SEMA4
-#define BOARD_SEMA4_IRQ_NUM                   HS1_IRQn
-#define BOARD_SEMA4_HANDLER                   SEMA4_Handler
+#define BOARD_SEMA4_IRQ_NUM                   SEMA4_HS_M4_IRQn
+#define BOARD_SEMA4_HANDLER                   SEMA4_HS_M4_Handler
 
 /* GPT instance A information for this board */
 #define BOARD_GPTA_RDC_PDAP                   rdcPdapGpt3
@@ -80,7 +81,7 @@
 #define BOARD_GPTB_HANDLER                    GPT4_Handler
 
 /* GPIO information for this board */
-#define BOARD_GPIO_CCM_CCGR                   ccmCcgrGateGpio2
+#define BOARD_GPIO_KEY_CCM_CCGR               ccmCcgrGateGpio2
 #define BOARD_GPIO_LED_RDC_PDAP               rdcPdapGpio1
 #define BOARD_GPIO_LED_CONFIG                 (&gpioLed)
 #define BOARD_GPIO_KEY_RDC_PDAP               rdcPdapGpio2
@@ -97,21 +98,21 @@
 #define BOARD_DEBUG_UART_HANDLER              UART2_Handler
 
 /* MU information for this board*/
-#define BOARD_MU_HANDLER                      MU_Handler
-#define BOARD_MU_IRQ_NUM                      MU_INT_M4_IRQn
-#define BOARD_MU_BASE_ADDR                    MU0_B
+#define BOARD_MU_HANDLER                      MU_M4_Handler
+#define BOARD_MU_IRQ_NUM                      MU_M4_IRQn
+#define BOARD_MU_BASE_ADDR                    MUB
 #define BOARD_MU_CCM_CCGR                     ccmCcgrGateMu
 #define BOARD_MU_RDC_PDAP                     rdcPdapMuB
 
 /* I2C information for this board */
-#define BOARD_I2C_FXAS21002_ADDR              (0x20)
-#define BOARD_I2C_FXOS8700_ADDR               (0x1E)
 #define BOARD_I2C_RDC_PDAP                    rdcPdapI2c4
 #define BOARD_I2C_CCM_ROOT                    ccmRootI2c4
 #define BOARD_I2C_CCM_CCGR                    ccmCcgrGateI2c4
 #define BOARD_I2C_BASEADDR                    I2C4
 #define BOARD_I2C_IRQ_NUM                     I2C4_IRQn
 #define BOARD_I2C_HANDLER                     I2C4_Handler
+#define BOARD_I2C_FXAS21002_ADDR              (0x20)
+#define BOARD_I2C_FXOS8700_ADDR               (0x1E)
 
 /* FlexCAN information for this board */
 #define BOARD_FLEXCAN_RDC_PDAP                rdcPdapFlexCan2
@@ -121,6 +122,8 @@
 #define BOARD_FLEXCAN_IRQ_NUM                 FLEXCAN2_IRQn
 #define BOARD_FLEXCAN_HANDLER                 FLEXCAN2_Handler
 
+/* GPC information for this board*/
+#define BOARD_GPC_BASEADDR                    GPC
 
 #if defined(__cplusplus)
 extern "C" {

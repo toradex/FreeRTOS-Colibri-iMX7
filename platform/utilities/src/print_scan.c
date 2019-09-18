@@ -756,7 +756,7 @@ static int32_t mkfloatnumstr (char *numstr, void *nump, int32_t radix, uint32_t 
     for (i = 0; i < precision_width; i++)
     {
         fb = fa / (int32_t)radix;
-        c = (int32_t)(fa - (uint64_t)fb * (int32_t)radix);
+        c = (int32_t)(fa - (int64_t)fb * (int32_t)radix);
         if (c < 0)
         {
             c = ~c + 1 + '0';
@@ -771,20 +771,28 @@ static int32_t mkfloatnumstr (char *numstr, void *nump, int32_t radix, uint32_t 
     *nstrp++ = (char)'.';
     ++nlen;
     a = (int32_t)intpart;
-    while (a != 0)
+    if(a == 0)
     {
-        b = (int32_t)a / (int32_t)radix;
-        c = (int32_t)a - ((int32_t)b * (int32_t)radix);
-        if (c < 0)
-        {
-            c = ~c + 1 + '0';
-        }else
-        {
-            c = c + '0';
-        }
-        a = b;
-        *nstrp++ = (char)c;
+        *nstrp++ = '0';
         ++nlen;
+    }
+    else
+    {
+        while (a != 0)
+        {
+            b = (int32_t)a / (int32_t)radix;
+            c = (int32_t)a - ((int32_t)b * (int32_t)radix);
+            if (c < 0)
+            {
+                c = ~c + 1 + '0';
+            }else
+            {
+                c = c + '0';
+            }
+            a = b;
+            *nstrp++ = (char)c;
+            ++nlen;
+        }
     }
     done:
     return nlen;

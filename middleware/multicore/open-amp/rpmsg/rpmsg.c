@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2014, Mentor Graphics Corporation
  * All rights reserved.
+ * Copyright (c) 2015 Freescale Semiconductor, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -44,7 +45,7 @@
  * RPMSG driver represents each processor/core to which it communicates with
  * remote_device control block.
  * Each remote device(processor) defines its role in the communication i.e
- * whether it is RPMSG Master or Remote. If the device (processor) to which
+ * whether it is RPMSG Master or Remote. If the device(processor) to which
  * driver is talking is RPMSG master then RPMSG driver implicitly behaves as
  * Remote and vice versa.
  * RPMSG Master is responsible for initiating communications with the Remote
@@ -80,7 +81,6 @@ int rpmsg_init(int dev_id, struct remote_device **rdev,
                 rpmsg_rx_cb_t default_cb, int role) {
     int status;
 
-    PRINTF("init M4 as %s\r\n", role?"REMOTE":"MASTER");
     /* Initialize IPC environment */
     status = env_init();
     if (status == RPMSG_SUCCESS) {
@@ -194,6 +194,7 @@ int rpmsg_send_offchannel_raw(struct rpmsg_channel *rp_chnl, unsigned long src,
                 rp_hdr->dst = dst;
                 rp_hdr->src = src;
                 rp_hdr->len = size;
+                rp_hdr->flags = 0;
 
                 /* Copy data to rpmsg buffer. */
                 env_memcpy(rp_hdr->data, data, size);
@@ -214,6 +215,21 @@ int rpmsg_send_offchannel_raw(struct rpmsg_channel *rp_chnl, unsigned long src,
     /* Do cleanup in case of error.*/
     if (status != RPMSG_SUCCESS) {
         rpmsg_free_buffer(rdev, buffer);
+        // in case of error ask master 
+        // to release buffer
+        if (rdev->role == RPMSG_MASTER && status == RPMSG_ERR_BUFF_SIZE)
+        {
+            rp_hdr = (struct rpmsg_hdr *) buffer;
+            rp_hdr->dst = dst;
+            rp_hdr->src = src;
+            rp_hdr->len = 0;
+            rp_hdr->flags = RPMSG_DROP_HDR_FLAG;
+            int tmp_status = rpmsg_enqueue_buffer(rdev, buffer, buff_len, idx);
+            if (tmp_status == RPMSG_SUCCESS) {
+                /* Let the other side know that there is a job to process. */
+                virtqueue_kick(rdev->tvq);
+            }
+        }
     }
 
     return status;
@@ -283,15 +299,6 @@ int rpmsg_get_buffer_size(struct rpmsg_channel *rp_chnl) {
 struct rpmsg_endpoint *rpmsg_create_ept(struct rpmsg_channel *rp_chnl,
                 rpmsg_rx_cb_t cb, void *priv, unsigned long addr) {
 
-    /*
-     * Note : When calling rpmsg_create_ept to a channel, the endpoint
-     *        is put into info field of remote_device, not the channel
-     *
-     *
-     *        CHANNEL ---> RDEV ---> CHANNELs
-     *
-     *        EPT     ---> RDEV ---> EPTs
-     */
     struct remote_device *rdev = RPMSG_NULL;
     struct rpmsg_endpoint *rp_ept = RPMSG_NULL;
 
@@ -365,8 +372,7 @@ struct rpmsg_channel *rpmsg_create_channel(struct remote_device *rdev,
     }
 
     /* Create default endpoint for the channel */
-    rp_ept = rpmsg_create_ept(rp_chnl , rdev->default_cb, rdev,
-                    RPMSG_ADDR_ANY);
+    rp_ept = rpmsg_create_ept(rp_chnl , rdev->default_cb, rdev, RPMSG_ADDR_ANY);
 
     if (!rp_ept) {
         _rpmsg_delete_channel(rp_chnl);

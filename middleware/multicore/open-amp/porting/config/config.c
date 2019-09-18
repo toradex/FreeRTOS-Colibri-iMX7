@@ -43,6 +43,20 @@
 
 #include "config.h"
 
+/**
+ * config_get_firmware
+ *
+ * Searches the given firmware in firmware table list and provides
+ * it to caller.
+ *
+ * @param fw_name    - name of the firmware
+ * @param start_addr - pointer t hold start address of firmware
+ * @param size       - pointer to hold size of firmware
+ *
+ * returns -  status of function execution
+ *
+ */
+
 int config_get_firmware(char *fw_name, unsigned int *start_addr, unsigned int *size) {
     return -1;
 }
