@@ -1,14 +1,48 @@
-/* Entry Point */
+/*
+ Linker file for Colibri i.MX7S and Colibri i.MX7D
+ Storing code and data in the TCML / TCMU sections
+
+      __etext +-------------+
+              |             |  ^
+              |    code     |  |m_text_size
+              |             |  v
+ m_text_start +-------------+
+
+
+   __StackTop +-------------+
+              |             |  ^  ^
+              |    stack    |  |  |STACK_SIZE
+              |             |  |  v
+ __StackLimit +-------------+  |
+  __HeapLimit +-------------+  |
+              |             |  |  ^
+              |    heap     |  |  |HEAP_SIZE
+              |             |  |  v
+   __HeapBase +-------------+  |
+              |             |  |m_data_size
+              | normal data |  |
+              |             |  v
+ m_data_start +-------------+
+*/
+
+TCML_code         = 0x1fff8000;
+TCMU_system       = 0x20000000;
+OCRAM_code        = 0x00900000;
+OCRAM_system      = 0x20200000;
+OCRAM_EPDC_code   = 0x00920000;
+OCRAM_EPDC_system = 0x20220000;
+
+
+/* Code execution after reset starts here: */
 ENTRY(Reset_Handler)
 
 STACK_SIZE = 0x400;
-HEAP_SIZE = 0x200;
+HEAP_SIZE  = 0x200;
 /* Specify the memory areas */
 MEMORY
 {
-  m_text          (RX)  : ORIGIN = 0x00920000, LENGTH = 0x00020000
-
-  m_data          (RW)  : ORIGIN = 0x20000000, LENGTH = 0x00007FFF
+  m_text    (RX)  : ORIGIN = OCRAM_EPDC_code, LENGTH = 0x00020000
+  m_data    (RW)  : ORIGIN = TCMU_system,     LENGTH = 0x00007FFF
 }
 
 SECTIONS
@@ -28,12 +62,12 @@ SECTIONS
   .text :
   {
     . = ALIGN(4);
-    *(.text)                 /* .text sections (code) */
-    *(.text*)                /* .text* sections (code) */
-    *(.rodata)               /* .rodata sections (constants, strings, etc.) */
-    *(.rodata*)              /* .rodata* sections (constants, strings, etc.) */
-    *(.glue_7)               /* glue arm to thumb code */
-    *(.glue_7t)              /* glue thumb to arm code */
+    *(.text)                 /* code */
+    *(.text*)
+    *(.rodata)               /* strings and constants */
+    *(.rodata*)
+    *(.glue_7)               /* thumb <-> arm32 code */
+    *(.glue_7t)
     *(.eh_frame)
     KEEP (*(.init))
     KEEP (*(.fini))
@@ -55,21 +89,16 @@ SECTIONS
  .ctors :
   {
     __CTOR_LIST__ = .;
-    /* gcc uses crtbegin.o to find the start of
-       the constructors, so we make sure it is
-       first.  Because this is a wildcard, it
-       doesn't matter if the user does not
-       actually link against crtbegin.o; the
-       linker won't look for a file to match a
-       wildcard.  The wildcard also means that it
-       doesn't matter which directory crtbegin.o
-       is in.  */
+    /* gcc uses crtbegin.o to find the start of the constructors, so we make
+       sure it is first.  Because this is a wildcard, it doesn't matter if
+       the user does not actually link against crtbegin.o; the linker won't
+       look for a file to match a wildcard.  The wildcard also means that it
+       doesn't matter which directory crtbegin.o is in.  */
     KEEP (*crtbegin.o(.ctors))
     KEEP (*crtbegin?.o(.ctors))
-    /* We don't want to include the .ctor section from
-       from the crtend.o file until after the sorted ctors.
-       The .ctor section from the crtend file contains the
-       end of ctors marker and it must be last */
+    /* We don't want to include the .ctor section from the crtend.o file
+       until after the sorted ctors. The .ctor section from the crtend file
+       contains the end of ctors marker and it must be last */
     KEEP (*(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors))
     KEEP (*(SORT(.ctors.*)))
     KEEP (*(.ctors))
@@ -110,16 +139,16 @@ SECTIONS
     PROVIDE_HIDDEN (__fini_array_end = .);
   } > m_text
 
-  __etext = .;    /* define a global symbol at end of code */
-  __DATA_ROM = .; /* Symbol is used by startup for data initialization */
+  __etext = .;              /* create a global symbol at end of code */
+  __DATA_ROM = .;           /* Used by startup for data initialization */
 
   .data : AT(__DATA_ROM)
   {
     . = ALIGN(4);
     __DATA_RAM = .;
     __data_start__ = .;      /* create a global symbol at data start */
-    *(.data)                 /* .data sections */
-    *(.data*)                /* .data* sections */
+    *(.data)                 /* regular data */
+    *(.data*)
     KEEP(*(.jcr*))
     . = ALIGN(4);
     __data_end__ = .;        /* define a global symbol at data end */
@@ -142,6 +171,7 @@ SECTIONS
     __END_BSS = .;
   } > m_data
 
+  /* Heap follows right behind the regular data */
   .heap :
   {
     . = ALIGN(8);
@@ -151,16 +181,19 @@ SECTIONS
     . += HEAP_SIZE;
     __HeapLimit = .;
   } > m_data
-    .stack :
+  .stack :
   {
     . = ALIGN(8);
     . += STACK_SIZE;
   } > m_data
-   /* Initializes stack on the end of block */
+  /* Initializes stack on the end of block */
   __StackTop   = ORIGIN(m_data) + LENGTH(m_data);
   __StackLimit = __StackTop - STACK_SIZE;
   PROVIDE(__stack = __StackTop);
   .ARM.attributes 0 : { *(.ARM.attributes) }
 
-  ASSERT(__StackLimit >= __HeapLimit, "region m_data overflowed with stack and heap")
+  ASSERT(__StackLimit >= __HeapLimit, "stack and heap overflow")
  }
+
+
+

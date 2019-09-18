@@ -25,10 +25,12 @@
  m_data_start +-------------+
 */
 
-TCML_code   = 0x1fff8000;
-TCMU_system = 0x20000000;
-OCRAM_code  = 0x00900000;
-OCRAM_data  = 0x20200000;
+TCML_code         = 0x1fff8000;
+TCMU_system       = 0x20000000;
+OCRAM_code        = 0x00900000;
+OCRAM_system      = 0x20200000;
+OCRAM_EPDC_code   = 0x00920000;
+OCRAM_EPDC_system = 0x20220000;
 
 
 /* Code execution after reset starts here: */
