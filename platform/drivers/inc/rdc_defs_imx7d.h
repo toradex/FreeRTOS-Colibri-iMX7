@@ -43,9 +43,9 @@
 /*! @brief RDC master assignment. */
 enum _rdc_mda
 {
-    rdcMdaA7          = 0U,  /*!< A7 RDC Master. */
-    rdcMdaM4          = 1U,  /*!< M4 RDC Master. */
-    rdcMdaPcie        = 2U,  /*!< PCIE RDC Master. */
+    rdcMdaA7          = 0U,  /*!< ARM Cortex-A7 RDC Master. */
+    rdcMdaM4          = 1U,  /*!< ARM Cortex-M4 RDC Master. */
+    rdcMdaPcie        = 2U,  /*!< PCIe RDC Master. */
     rdcMdaCsi         = 3U,  /*!< CSI RDC Master. */
     rdcMdaEpdc        = 4U,  /*!< EPDC RDC Master. */
     rdcMdaLcdif       = 5U,  /*!< LCDIF RDC Master. */

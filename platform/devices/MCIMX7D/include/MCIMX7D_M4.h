@@ -38892,8 +38892,8 @@ typedef struct {
 #define RDC_SEMAPHORE_GATE_GTFSM_MASK            0xFu
 #define RDC_SEMAPHORE_GATE_GTFSM_SHIFT           0
 #define RDC_SEMAPHORE_GATE_GTFSM(x)              (((uint8_t)(((uint8_t)(x))<<RDC_SEMAPHORE_GATE_GTFSM_SHIFT))&RDC_SEMAPHORE_GATE_GTFSM_MASK)
-#define RDC_SEMAPHORE_GATE_LDOM_MASK             0x60u
-#define RDC_SEMAPHORE_GATE_LDOM_SHIFT            5
+#define RDC_SEMAPHORE_GATE_LDOM_MASK             0x30u
+#define RDC_SEMAPHORE_GATE_LDOM_SHIFT            4
 #define RDC_SEMAPHORE_GATE_LDOM(x)               (((uint8_t)(((uint8_t)(x))<<RDC_SEMAPHORE_GATE_LDOM_SHIFT))&RDC_SEMAPHORE_GATE_LDOM_MASK)
 /* RSTGT_W Bit Fields */
 #define RDC_SEMAPHORE_RSTGT_W_RSTGDP_MASK        0xFFu

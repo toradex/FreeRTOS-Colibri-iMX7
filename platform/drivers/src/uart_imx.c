@@ -370,8 +370,8 @@ void UART_SetCtsFlowCtrlCmd(UART_Type* base, bool enable)
  * Function Name : UART_SetCtsPinLevel
  * Description   : This function is used to control the CTS_B pin state when 
  *                 auto CTS control is disabled.
- *                 The CTS_B pin is low(active)
- *                 The CTS_B pin is high(inactive)
+ *                 The CTS_B pin is low (active)
+ *                 The CTS_B pin is high (inactive)
  *
  *END**************************************************************************/
 void UART_SetCtsPinLevel(UART_Type* base, bool active)
@@ -392,6 +392,7 @@ void UART_SetCtsPinLevel(UART_Type* base, bool active)
 void UART_SetModemMode(UART_Type* base, uint32_t mode)
 {
     assert((mode == uartModemModeDce) || (mode == uartModemModeDte));
+
     if (uartModemModeDce == mode)
         UART_UFCR_REG(base) &= ~UART_UFCR_DCEDTE_MASK;
     else
@@ -449,12 +450,12 @@ void UART_SetRiPinLevel(UART_Type* base, bool active)
  ******************************************************************************/
 /*FUNCTION**********************************************************************
  *
- * Function Name : UAER_Putchar9
+ * Function Name : UART_Putchar9
  * Description   : This function is used to send 9 Bits length data in
  *                 RS-485 Multidrop mode.
  *
  *END**************************************************************************/
-void UAER_Putchar9(UART_Type* base, uint16_t data)
+void UART_Putchar9(UART_Type* base, uint16_t data)
 {
     assert(data <= 0x1FF);
 
@@ -467,12 +468,12 @@ void UAER_Putchar9(UART_Type* base, uint16_t data)
 
 /*FUNCTION**********************************************************************
  *
- * Function Name : UAER_Getchar9
+ * Function Name : UART_Getchar9
  * Description   : This functions is used to receive 9 Bits length data in
  *                 RS-485 Multidrop mode.
  *
  *END**************************************************************************/
-uint16_t UAER_Getchar9(UART_Type* base)
+uint16_t UART_Getchar9(UART_Type* base)
 {
     uint16_t rxData = UART_URXD_REG(base);
 

@@ -257,14 +257,14 @@ void FLEXCAN_SetTiming(CAN_Type* base, const flexcan_timing_t* timing)
  *END**************************************************************************/
 void FLEXCAN_SetOperatingMode(CAN_Type* base, uint8_t mode)
 {
-    assert((mode & flexCanNormalMode) ||
+    assert((mode & flexcanNormalMode) ||
            (mode & flexcanListenOnlyMode) ||
            (mode & flexcanLoopBackMode));
 
     /* Assert Freeze mode*/
     FLEXCAN_EnterFreezeMode(base);
 
-    if (mode & flexCanNormalMode)
+    if (mode & flexcanNormalMode)
         CAN_MCR_REG(base) &= ~CAN_MCR_SUPV_MASK;
     else
         CAN_MCR_REG(base) |= CAN_MCR_SUPV_MASK;

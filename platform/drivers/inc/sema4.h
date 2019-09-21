@@ -266,7 +266,6 @@ static inline uint16_t SEMA4_GetIntEnabled(SEMA4_Type * base, uint16_t flags)
 
 /*@}*/
 
-
 #if defined(__cplusplus)
 }
 #endif

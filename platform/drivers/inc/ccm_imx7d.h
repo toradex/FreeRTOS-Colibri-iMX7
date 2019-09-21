@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Freescale Semiconductor, Inc.
+ * Copyright (c) 2015-2016, Freescale Semiconductor, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -53,7 +53,7 @@
 /*! @brief Root control names for root clock setting. */
 enum _ccm_root_control
 {
-    ccmRootM4     = (uint32_t)(&CCM_TARGET_ROOT1),   /*!< M4 Clock control name.*/
+    ccmRootM4     = (uint32_t)(&CCM_TARGET_ROOT1),   /*!< ARM Cortex-M4 Clock control name.*/
     ccmRootAxi    = (uint32_t)(&CCM_TARGET_ROOT16),  /*!< AXI Clock control name.*/
     ccmRootAhb    = (uint32_t)(&CCM_TARGET_ROOT32),  /*!< AHB Clock control name.*/
     ccmRootIpg    = (uint32_t)(&CCM_TARGET_ROOT33),  /*!< IPG Clock control name.*/
@@ -87,14 +87,14 @@ enum _ccm_root_control
 /*! @brief Clock source enumeration for ARM Cortex-M4 core. */
 enum _ccm_rootmux_m4
 {
-    ccmRootmuxM4Osc24m      = 0U, /*!< M4 Clock from OSC 24M.*/
-    ccmRootmuxM4SysPllDiv2  = 1U, /*!< M4 Clock from SYSTEM PLL divided by 2.*/
-    ccmRootmuxM4EnetPll250m = 2U, /*!< M4 Clock from Ethernet PLL 250M.*/
-    ccmRootmuxM4SysPllPfd2  = 3U, /*!< M4 Clock from SYSTEM PLL PFD2.*/
-    ccmRootmuxM4DdrPllDiv2  = 4U, /*!< M4 Clock from DDR PLL divided by 2.*/
-    ccmRootmuxM4AudioPll    = 5U, /*!< M4 Clock from AUDIO PLL.*/
-    ccmRootmuxM4VideoPll    = 6U, /*!< M4 Clock from VIDEO PLL.*/
-    ccmRootmuxM4UsbPll      = 7U, /*!< M4 Clock from USB PLL.*/
+    ccmRootmuxM4Osc24m      = 0U, /*!< ARM Cortex-M4 Clock from OSC 24M.*/
+    ccmRootmuxM4SysPllDiv2  = 1U, /*!< ARM Cortex-M4 Clock from SYSTEM PLL divided by 2.*/
+    ccmRootmuxM4EnetPll250m = 2U, /*!< ARM Cortex-M4 Clock from Ethernet PLL 250M.*/
+    ccmRootmuxM4SysPllPfd2  = 3U, /*!< ARM Cortex-M4 Clock from SYSTEM PLL PFD2.*/
+    ccmRootmuxM4DdrPllDiv2  = 4U, /*!< ARM Cortex-M4 Clock from DDR PLL divided by 2.*/
+    ccmRootmuxM4AudioPll    = 5U, /*!< ARM Cortex-M4 Clock from AUDIO PLL.*/
+    ccmRootmuxM4VideoPll    = 6U, /*!< ARM Cortex-M4 Clock from VIDEO PLL.*/
+    ccmRootmuxM4UsbPll      = 7U, /*!< ARM Cortex-M4 Clock from USB PLL.*/
 };
 
 /*! @brief Clock source enumeration for AXI bus. */
@@ -274,6 +274,7 @@ enum _ccm_pll_gate
 /*! @brief CCM CCGR gate control. */
 enum _ccm_ccgr_gate
 {
+    ccmCcgrGateSimWakeup = (uint32_t)(&CCM_CCGR9),   /*!< Wakeup Mix Bus Clock Gate.*/
     ccmCcgrGateIpmux1    = (uint32_t)(&CCM_CCGR10),  /*!< IOMUX1 Clock Gate.*/
     ccmCcgrGateIpmux2    = (uint32_t)(&CCM_CCGR11),  /*!< IOMUX2 Clock Gate.*/
     ccmCcgrGateIpmux3    = (uint32_t)(&CCM_CCGR12),  /*!< IPMUX3 Clock Gate.*/

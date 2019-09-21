@@ -44,7 +44,7 @@
  ******************************************************************************/
 #define IO_MAXLINE  20
 
-/*! @brief Configuration for toolchain's printf/scanf or Freescale version printf/scanf */
+/*! @brief Configuration for toolchain's printf/scanf or NXP version printf/scanf */
 #define PRINTF          debug_printf
 //#define PRINTF          printf
 #define SCANF           debug_scanf

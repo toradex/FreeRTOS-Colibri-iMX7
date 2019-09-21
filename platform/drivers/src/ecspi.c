@@ -152,11 +152,11 @@ uint32_t ECSPI_SetBaudRate(ECSPI_Type* base, uint32_t sourceClockInHz, uint32_t 
  ******************************************************************************/
 /*FUNCTION**********************************************************************
  *
- * Function Name : ECSPPI_SetDMACmd
+ * Function Name : ECSPI_SetDMACmd
  * Description   : Enable or disable the specified DMA Source.
  *
  *END**************************************************************************/
-void ECSPPI_SetDMACmd(ECSPI_Type* base, uint32_t source, bool enable)
+void ECSPI_SetDMACmd(ECSPI_Type* base, uint32_t source, bool enable)
 {
     /* Configure the DAM source */
     if(enable)

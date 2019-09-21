@@ -86,7 +86,7 @@ enum _flexcan_msgbuf_code_tx
 /*! @brief FlexCAN operation modes. */
 enum _flexcan_operatining_modes
 {
-    flexCanNormalMode     = 0x1, /*!< Normal mode or user mode @internal gui name="Normal". */
+    flexcanNormalMode     = 0x1, /*!< Normal mode or user mode @internal gui name="Normal". */
     flexcanListenOnlyMode = 0x2, /*!< Listen-only mode @internal gui name="Listen-only". */
     flexcanLoopBackMode   = 0x4, /*!< Loop-back mode @internal gui name="Loop back". */
 };
@@ -169,7 +169,7 @@ enum _flexcan_rx_fifo_filter_id_number
 };
 
 /*! @brief FlexCAN RX FIFO ID filter table structure. */
-typedef struct FLEXCANIdTable
+typedef struct _flexcan_id_table
 {
     uint32_t *idFilter;   /*!< Rx FIFO ID filter elements. */
     bool isRemoteFrame;   /*!< Remote frame. */
@@ -189,9 +189,9 @@ typedef struct _flexcan_msgbuf
             uint32_t rtr       : 1;
             uint32_t ide       : 1;
             uint32_t srr       : 1;
-            uint32_t reverse1  : 1;
+            uint32_t reserved1 : 1;
             uint32_t code      : 4;
-            uint32_t reverse2  : 4;
+            uint32_t reserved2 : 4;
         };
     };
 
@@ -241,7 +241,7 @@ typedef struct _flexcan_timing
     uint32_t propSeg;    /*!< Propagation segment. */
 } flexcan_timing_t;
 
-/*! @brief FlexCAN module initialize structure. */
+/*! @brief FlexCAN module initialization structure. */
 typedef struct _flexcan_init_config
 {
     flexcan_timing_t timing;        /*!< Desired FlexCAN module timing configuration. */
@@ -263,10 +263,10 @@ extern "C" {
  */
 
 /*!
- * @brief Initialize FlexCAN module with given initialize structure.
+ * @brief Initialize FlexCAN module with given initialization structure.
  *
  * @param base CAN base pointer.
- * @param initConfig CAN initialize structure (see @ref flexcan_init_config_t structure).
+ * @param initConfig CAN initialization structure (see @ref flexcan_init_config_t structure).
  */
 void FLEXCAN_Init(CAN_Type* base, const flexcan_init_config_t* initConfig);
 

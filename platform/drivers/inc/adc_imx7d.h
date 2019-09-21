@@ -45,14 +45,14 @@
  * Definitions
  ******************************************************************************/
 
-/*! @brief ADC module initialize structure. */
+/*! @brief ADC module initialization structure. */
 typedef struct _adc_init_config
 {
     uint32_t sampleRate;         /*!< The desired ADC sample rate.*/
     bool     levelShifterEnable; /*!< The level shifter module configuration(Enable to power on ADC module).*/
 } adc_init_config_t;
 
-/*! @brief ADC logic channel initialize structure. */
+/*! @brief ADC logic channel initialization structure. */
 typedef struct _adc_logic_ch_init_config
 {
     uint32_t convertRate;      /*!< The continuous rate when continuous sample enabled.*/
@@ -153,10 +153,10 @@ extern "C" {
  */
 
 /*!
- * @brief Initialize ADC to reset state and initialize with initialize structure.
+ * @brief Initialize ADC to reset state and initialize with initialization structure.
  *
  * @param base ADC base pointer.
- * @param initConfig ADC initialize structure.
+ * @param initConfig ADC initialization structure.
  */
 void ADC_Init(ADC_Type* base, const adc_init_config_t* initConfig);
 
@@ -233,11 +233,11 @@ void ADC_SetPowerDownCmd(ADC_Type* base, bool powerDown);
  */
 
 /*!
- * @brief Initialize ADC Logic channel with initialize structure.
+ * @brief Initialize ADC Logic channel with initialization structure.
  *
  * @param base ADC base pointer.
  * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
- * @param chInitConfig ADC logic channel initialize structure.
+ * @param chInitConfig ADC logic channel initialization structure.
  */
 void ADC_LogicChInit(ADC_Type* base, uint8_t logicCh, const adc_logic_ch_init_config_t* chInitConfig);
 
@@ -315,8 +315,8 @@ void ADC_TriggerSingleConvert(ADC_Type* base, uint8_t logicCh);
 
 /*!
  * @brief Stop current convert on target logic channel.
- *        For logic channel A ~ D, current conversion will stop immediately.
- *        For Software channel, this function will be waited until current conversion finished.
+ *        For logic channel A ~ D, current conversion stops immediately.
+ *        For Software channel, this function is waited until current conversion is finished.
  * @param base ADC base pointer.
  * @param logicCh ADC module logic channel selection (see @ref _adc_logic_ch_selection enumeration).
  */

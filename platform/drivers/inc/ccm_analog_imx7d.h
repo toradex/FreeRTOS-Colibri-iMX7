@@ -262,7 +262,7 @@ static inline void CCM_ANALOG_DisablePllClock(CCM_ANALOG_Type * base, uint32_t p
  * @brief Get ARM PLL clock frequency
  *
  * @param base CCM_ANALOG base pointer.
- * @return ARM PLL clock frequency in HZ
+ * @return ARM PLL clock frequency in Hz
  */
 uint32_t CCM_ANALOG_GetArmPllFreq(CCM_ANALOG_Type * base);
 
@@ -270,7 +270,7 @@ uint32_t CCM_ANALOG_GetArmPllFreq(CCM_ANALOG_Type * base);
  * @brief Get System PLL (PLL_480) clock frequency
  *
  * @param base CCM_ANALOG base pointer.
- * @return System PLL clock frequency in HZ
+ * @return System PLL clock frequency in Hz
  */
 uint32_t CCM_ANALOG_GetSysPllFreq(CCM_ANALOG_Type * base);
 
@@ -278,7 +278,7 @@ uint32_t CCM_ANALOG_GetSysPllFreq(CCM_ANALOG_Type * base);
  * @brief Get DDR PLL clock frequency
  *
  * @param base CCM_ANALOG base pointer.
- * @return DDR PLL clock frequency in HZ
+ * @return DDR PLL clock frequency in Hz
  */
 uint32_t CCM_ANALOG_GetDdrPllFreq(CCM_ANALOG_Type * base);
 
@@ -286,7 +286,7 @@ uint32_t CCM_ANALOG_GetDdrPllFreq(CCM_ANALOG_Type * base);
  * @brief Get ENET PLL clock frequency
  *
  * @param base CCM_ANALOG base pointer.
- * @return ENET PLL clock frequency in HZ
+ * @return ENET PLL clock frequency in Hz
  */
 uint32_t CCM_ANALOG_GetEnetPllFreq(CCM_ANALOG_Type * base);
 
@@ -294,7 +294,7 @@ uint32_t CCM_ANALOG_GetEnetPllFreq(CCM_ANALOG_Type * base);
  * @brief Get Audio PLL clock frequency
  *
  * @param base CCM_ANALOG base pointer.
- * @return Audio PLL clock frequency in HZ
+ * @return Audio PLL clock frequency in Hz
  */
 uint32_t CCM_ANALOG_GetAudioPllFreq(CCM_ANALOG_Type * base);
 
@@ -302,7 +302,7 @@ uint32_t CCM_ANALOG_GetAudioPllFreq(CCM_ANALOG_Type * base);
  * @brief Get Video PLL clock frequency
  *
  * @param base CCM_ANALOG base pointer.
- * @return Video PLL clock frequency in HZ
+ * @return Video PLL clock frequency in Hz
  */
 uint32_t CCM_ANALOG_GetVideoPllFreq(CCM_ANALOG_Type * base);
 
@@ -380,7 +380,7 @@ static inline uint32_t CCM_ANALOG_GetPfdFrac(CCM_ANALOG_Type * base, uint32_t pf
  *
  * @param base CCM_ANALOG base pointer.
  * @param pfdFrac PFD clock fraction (see @ref _ccm_analog_pfd_frac enumeration)
- * @return PFD clock frequency in HZ
+ * @return PFD clock frequency in Hz
  */
 uint32_t CCM_ANALOG_GetPfdFreq(CCM_ANALOG_Type * base, uint32_t pfdFrac);
 

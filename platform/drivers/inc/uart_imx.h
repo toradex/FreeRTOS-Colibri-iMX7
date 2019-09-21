@@ -45,7 +45,7 @@
  * Definitions
  ******************************************************************************/
 
-/*! @brief Uart module initialize structure. */
+/*! @brief Uart module initialization structure. */
 typedef struct _uart_init_config
 {
     uint32_t clockRate;  /*!< Current UART module clock freq. */
@@ -220,10 +220,10 @@ extern "C" {
  */
 
 /*!
- * @brief Initialize UART module with given initialize structure.
+ * @brief Initialize UART module with given initialization structure.
  *
  * @param base UART base pointer.
- * @param initConfig UART initialize structure (see @ref uart_init_config_t structure above).
+ * @param initConfig UART initialization structure (see @ref uart_init_config_t structure above).
  */
 void UART_Init(UART_Type* base, const uart_init_config_t* initConfig);
 
@@ -533,7 +533,7 @@ static inline void UART_SetCtsTriggerLevel(UART_Type* base, uint8_t triggerLevel
 }
 
 /*!
- * @brief This function is used to set the role(DTE/DCE) of UART module
+ * @brief This function is used to set the role (DTE/DCE) of UART module
  *        in RS-232 communication.
  *
  * @param base UART base pointer.
@@ -605,7 +605,7 @@ void UART_SetRiPinLevel(UART_Type* base, bool active);
  * @param base UART base pointer.
  * @param data Data(9 bits) to be set through UART module.
  */
-void UAER_Putchar9(UART_Type* base, uint16_t data);
+void UART_Putchar9(UART_Type* base, uint16_t data);
 
 /*!
  * @brief This functions is used to receive 9 Bits length data in
@@ -614,7 +614,7 @@ void UAER_Putchar9(UART_Type* base, uint16_t data);
  * @param base UART base pointer.
  * @return The data(9 bits) received from UART module.
  */
-uint16_t UAER_Getchar9(UART_Type* base);
+uint16_t UART_Getchar9(UART_Type* base);
 
 /*!
  * @brief This function is used to set the enable condition of 

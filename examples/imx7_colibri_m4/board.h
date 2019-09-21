@@ -125,6 +125,9 @@
 /* GPC information for this board*/
 #define BOARD_GPC_BASEADDR                    GPC
 
+/* SIM_WAKEUP CG information*/
+#define BOARD_SIM_WAKEUP_CCGR                 ccmCcgrGateSimWakeup
+
 #if defined(__cplusplus)
 extern "C" {
 #endif /* __cplusplus */

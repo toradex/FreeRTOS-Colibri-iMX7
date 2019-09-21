@@ -172,7 +172,7 @@ extern "C" {
  * @brief Initializes the eCSPI module.
  *
  * @param base eCSPI base pointer.
- * @param initConfig eCSPI initialize structure.
+ * @param initConfig eCSPI initialization structure.
  */
 void ECSPI_Init(ECSPI_Type* base, const ecspi_init_config_t* initConfig);
 
@@ -411,7 +411,7 @@ static inline uint32_t ECSPI_GetTxfifoCounter(ECSPI_Type* base)
  *               - true: Enable specified DMA Source.
  *               - false: Disable specified DMA Source.
  */
-void ECSPPI_SetDMACmd(ECSPI_Type* base, uint32_t source, bool enable);
+void ECSPI_SetDMACmd(ECSPI_Type* base, uint32_t source, bool enable);
 
 /*!
   * @brief Set the burst length of a DMA operation.

@@ -45,7 +45,7 @@
  * Definitions
  ******************************************************************************/
 
-/*! @brief I2C module initialize structure. */
+/*! @brief I2C module initialization structure. */
 typedef struct _i2c_init_config
 {
     uint32_t clockRate;    /*!< Current I2C module clock freq. */
@@ -93,10 +93,10 @@ extern "C" {
  */
 
 /*!
- * @brief Initialize I2C module with given initialize structure.
+ * @brief Initialize I2C module with given initialization structure.
  *
  * @param base I2C base pointer.
- * @param initConfig I2C initialize structure (see @ref i2c_init_config_t).
+ * @param initConfig I2C initialization structure (see @ref i2c_init_config_t).
  */
 void I2C_Init(I2C_Type* base, const i2c_init_config_t* initConfig);
 
