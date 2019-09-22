@@ -2,7 +2,7 @@ INCLUDE(CMakeForceCompiler)
 
 # === Project-specific settings ===
 SET(ProjectName low_power_demo)
-SET(LinkerFile MCIMX7D_M4_tcm.ld)
+SET(LinkerFile MCIMX7D_M4_ocram.ld)
 SET(BspRootDirPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../..)
 
 PROJECT(${ProjectName})

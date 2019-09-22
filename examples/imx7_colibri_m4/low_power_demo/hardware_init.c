@@ -42,6 +42,10 @@ void hardware_init(void)
 
     /* Enable clock gate for wakeup mix*/
     CCM_ControlGate(CCM, BOARD_SIM_WAKEUP_CCGR, ccmClockNeededAll);
+
+    /* Enable clock gate for OCRAM */
+    CCM_ControlGate(CCM, ccmCcgrGateOcram, ccmClockNeededAll);
+    
     /* In this demo, we need to share board GPIO without RDC SEMAPHORE */
     RDC_SetPdapAccess(RDC, rdcPdapGpio1, 0xFF, false, false);
     RDC_SetPdapAccess(RDC, rdcPdapGpio4, 0xFF, false, false);
