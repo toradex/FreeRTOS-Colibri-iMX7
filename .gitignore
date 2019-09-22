@@ -4,3 +4,7 @@ Makefile
 cmake_install.cmake
 release/
 debug/
+*.bin
+*.elf
+*.hex
+*.map
