@@ -95,9 +95,9 @@ STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x0400;
 /* Specify the memory areas */
 MEMORY
 {
-  m_interrupts  (RX)  : ORIGIN = OCRAM_system + 0x10000,         LENGTH = 0x00000240
-  m_text        (RX)  : ORIGIN = OCRAM_system + 0x10000 + 0x240, LENGTH = 0x00008000 - 0x240
-  m_data        (RW)  : ORIGIN = TCMU_system,                    LENGTH = 0x00008000
+  m_interrupts  (RX)  : ORIGIN = OCRAM_code + 0x10000,         LENGTH = 0x00000240
+  m_text        (RX)  : ORIGIN = OCRAM_code + 0x10000 + 0x240, LENGTH = 0x00010000 - 0x240
+  m_data        (RW)  : ORIGIN = OCRAM_EPDC_system,            LENGTH = 0x00020000
 }
 
 __FLASH_START = ORIGIN(m_interrupts);
