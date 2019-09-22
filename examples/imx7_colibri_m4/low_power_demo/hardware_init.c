@@ -45,7 +45,19 @@ void hardware_init(void)
     RDC_SetPdapAccess(RDC, rdcPdapGpio4, 0xFF, false, false);
 
     /* Enable gpio clock gate */
-    CCM_ControlGate(CCM, BOARD_GPIO_KEY_CCM_CCGR, ccmClockNeededRunWait);
+    CCM_ControlGate(CCM, ccmCcgrGateGpio1, ccmClockNeededRunWait);
+    CCM_ControlGate(CCM, ccmCcgrGateGpio4, ccmClockNeededRunWait);
+
+    /* RDC ECSPI */
+    RDC_SetPdapAccess(RDC, rdcPdapEcspi3, 0xff, false, false);
+    //RDC_SetPdapAccess(RDC, rdcPdapEcspi3, 3 << (BOARD_DOMAIN_ID * 2), false, false);
+    /* Select board ecspi clock derived from OSC clock(24M) */
+    CCM_UpdateRoot(CCM, BOARD_ECSPI_CCM_ROOT, ccmRootmuxEcspiOsc24m, 0, 0);
+    /* Enable ecspi clock gate */
+    CCM_EnableRoot(CCM, BOARD_ECSPI_CCM_ROOT);
+    CCM_ControlGate(CCM, BOARD_ECSPI_CCM_CCGR, ccmClockNeededAll);
+    /* Configure ecspi pin IOMUX */
+    configure_ecspi_pins(BOARD_ECSPI_BASEADDR);
 }
 
 /*******************************************************************************
