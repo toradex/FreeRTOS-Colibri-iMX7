@@ -95,9 +95,9 @@ STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x0400;
 /* Specify the memory areas */
 MEMORY
 {
-  m_interrupts          (RX)  : ORIGIN = DDR_system + 255*0x00100000,         LENGTH = 0x00000240
-  m_text                (RX)  : ORIGIN = DDR_system + 255*0x00100000 + 0x240, LENGTH = 0x000F0000 - 0x240
-  m_data                (RW)  : ORIGIN = TCMU_system,                         LENGTH = 0x00008000
+  m_interrupts          (RX)  : ORIGIN = DDR_code   + 255*0x00100000,           LENGTH = 0x00000240
+  m_text                (RX)  : ORIGIN = DDR_code   + 255*0x00100000 + 0x240,   LENGTH = 0x00080000 - 0x240
+  m_data                (RW)  : ORIGIN = DDR_system + 255*0x00100000 + 0x80000, LENGTH = 0x00070000
 }
 
 __FLASH_START = ORIGIN(m_interrupts);
