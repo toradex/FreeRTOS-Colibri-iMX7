@@ -8,3 +8,5 @@ debug/
 *.elf
 *.hex
 *.map
+*.cproject
+*.project
