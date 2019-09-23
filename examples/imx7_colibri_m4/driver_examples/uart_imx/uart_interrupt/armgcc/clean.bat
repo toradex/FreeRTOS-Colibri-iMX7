@@ -1,6 +1,9 @@
-@echo [7mCleaning build files[0m
-@REM Folders
-RD /s /Q CMakeFiles Debug Release 
-@REM Files
-DEL /s /Q /F CMakeCache.txt Makefile cmake_install.cmake
+cd debug
+rd /s /Q CMakeFiles/
+del /s /Q /F Makefile cmake_install.cmake CMakeCache.txt *.elf *.bin *.map *.hex
+cd ..
+cd release
+rd /s /Q CMakeFiles/
+del /s /Q /F Makefile cmake_install.cmake CMakeCache.txt *.elf *.bin *.map *.hex
+cd ..
 pause
