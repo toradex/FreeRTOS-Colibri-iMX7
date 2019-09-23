@@ -104,4 +104,10 @@ MEMORY
   m_data                (RW)  : ORIGIN = DDR_system + 255*0x00100000 + 0x80000, LENGTH = 0x00070000
 }
 
+__MMDC_CODE_START = ORIGIN(m_text);
+__MMDC_CODE_END   = ORIGIN(m_text) + LENGTH(m_text);
+
+__MMDC_DATA_START = ORIGIN(m_data);
+__MMDC_DATA_END   = ORIGIN(m_data) + LENGTH(m_data);
+
 INCLUDE "MCIMX7D_M4.ld"
