@@ -78,6 +78,8 @@
 
 TCML_code         = 0x1fff8000;
 TCMU_system       = 0x20000000;
+OCRAM_S_code      = 0x00000000;
+OCRAM_S_system    = 0x00180000;
 OCRAM_code        = 0x00900000;
 OCRAM_system      = 0x20200000;
 OCRAM_EPDC_code   = 0x00920000;
@@ -95,9 +97,9 @@ STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x0400;
 /* Specify the memory areas */
 MEMORY
 {
-  m_interrupts  (RX)  : ORIGIN = OCRAM_code + 0x10000,         LENGTH = 0x00000240
-  m_text        (RX)  : ORIGIN = OCRAM_code + 0x10000 + 0x240, LENGTH = 0x00010000 - 0x240
-  m_data        (RW)  : ORIGIN = OCRAM_EPDC_system,            LENGTH = 0x00020000
+  m_interrupts  (RX)  : ORIGIN = OCRAM_S_code,         LENGTH = 0x00000240
+  m_text        (RX)  : ORIGIN = OCRAM_code + 0x10000, LENGTH = 0x00010000
+  m_data        (RW)  : ORIGIN = OCRAM_EPDC_system,    LENGTH = 0x00020000
 }
 
 INCLUDE "MCIMX7D_M4.ld"

@@ -49,15 +49,17 @@
  Linker file for Colibri i.MX7S and Colibri i.MX7D
  Storing code and data in the TCML / TCMU sections
 
-   __FLASH_END +-------------+
+               +-------------+
                |             |  ^
                |   m_text    |  |LENGTH(m_text)
                |             |  v
+        m_text +-------------+  
+
                +-------------+  
                |             |  ^
                |m_interrupts |  |LENGTH(m_interrupts)
                |             |  v
- __FLASH_START +-------------+
+  m_interrupts +-------------+
 
 
     __StackTop +-------------+
@@ -78,6 +80,8 @@
 
 TCML_code         = 0x1fff8000;
 TCMU_system       = 0x20000000;
+OCRAM_S_code      = 0x00000000;
+OCRAM_S_system    = 0x00180000;
 OCRAM_code        = 0x00900000;
 OCRAM_system      = 0x20200000;
 OCRAM_EPDC_code   = 0x00920000;
@@ -95,8 +99,8 @@ STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x0400;
 /* Specify the memory areas */
 MEMORY
 {
-  m_interrupts          (RX)  : ORIGIN = DDR_code   + 255*0x00100000,           LENGTH = 0x00000240
-  m_text                (RX)  : ORIGIN = DDR_code   + 255*0x00100000 + 0x240,   LENGTH = 0x00080000 - 0x240
+  m_interrupts          (RX)  : ORIGIN = OCRAM_S_code,                          LENGTH = 0x00000240
+  m_text                (RX)  : ORIGIN = DDR_code   + 255*0x00100000,           LENGTH = 0x00080000
   m_data                (RW)  : ORIGIN = DDR_system + 255*0x00100000 + 0x80000, LENGTH = 0x00070000
 }
 
