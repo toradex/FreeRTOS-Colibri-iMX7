@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "J-Link Debug <project name>.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "rtos": "FreeRTOS",
+            "servertype": "jlink",
+            "interface": "swd",
+            "device": "<j-link cpu>",
+            "cwd": "${workspaceRoot}",
+            "executable": "<executable path>.elf",
+            "runToMain": true,
+            "postLaunchCommands": [
+                "flush regs",
+                "load"
+            ],
+            "postRestartCommands": [
+                "flush regs",
+                "load"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,41 @@
+{
+	"folders": [
+		{
+			"name": "Application",
+			"path": ".."
+		},
+		{
+			"name": "<path-to-socroot>/platform/devices",
+			"path": "<path-to-socroot>/platform/devices"
+		},
+		{
+			"name": "<path-to-socroot>/platform/drivers",
+			"path": "<path-to-socroot>/platform/drivers"
+		},
+		{
+			"name": "<path-to-socroot>/platform/utilities",
+			"path": "<path-to-socroot>/platform/utilities"
+		},
+		{
+			"name": "<path-to-socroot>/rtos/FreeRTOS",
+			"path": "<path-to-socroot>/rtos/FreeRTOS"
+		}
+	],
+	"settings": {
+		"C_Cpp.default.browse.path": [
+			"<path-to-socroot>"
+		],
+		"C_Cpp.dimInactiveRegions": true,
+		"C_Cpp.inactiveRegionForegroundColor": "#808080"
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cpptools",
+			"marus25.cortex-debug",
+			"ms-vscode-remote.remote-wsl",
+			"dan-c-underwood.arm",
+			"twxs.cmake",
+			"amapleaf.linker-script"
+		]
+	}
+}

@@ -1,0 +1,79 @@
+{
+    "version": "2.0.0",
+    "windows": {
+        "options": {
+            "cwd": "${workspaceFolder}/armgcc",
+            "shell": {
+                "executable": "cmd.exe",
+                "args": [
+                    "/d",
+                    "/c"
+                ]
+            }
+        }
+    },
+    "linux": {
+        "options": {
+            "cwd": "${workspaceFolder}/armgcc"
+        }
+    },
+    "tasks": [
+        {
+            "label": "CMake (<configuration>)",
+            "group": "build",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/armgcc/<configuration2>"
+            },
+            "command": "cmake",
+            "windows": {
+                "args": [
+                    "-DCMAKE_TOOLCHAIN_FILE=${config:toradex_freertos.cmake_toolchain_file}",
+                    "-G",
+                    "MinGW Makefiles",
+                    "-DCMAKE_BUILD_TYPE=<configuration>",
+                    ".."
+                ]
+            },
+            "linux": {
+                "args": [
+                    "-DCMAKE_TOOLCHAIN_FILE=${config:toradex_freertos.cmake_toolchain_file}",
+                    "-G",
+                    "Unix Makefiles",
+                    "-DCMAKE_BUILD_TYPE=<configuration>",
+                    ".."
+                ]
+            },
+            "presentation": {
+                "showReuseMessage": false
+            }
+        },
+        {
+            "label": "make (<configuration>)",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/armgcc/<configuration2>"
+            },
+            "windows": {
+                "command": "mingw32-make"
+            },
+            "linux": {
+                "command": "make"
+            },
+            "args": [
+                "-j4"
+            ],
+            "dependsOn": [
+                "CMake (<configuration>)"
+            ],
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": "absolute"
+            }
+        }
+    ]
+}

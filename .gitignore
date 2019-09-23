@@ -1,5 +1,7 @@
 CMakeCache.txt
 CMakeFiles/
+ipch/
+__pycache__/
 Makefile
 cmake_install.cmake
 release/
@@ -10,3 +12,4 @@ debug/
 *.map
 *.cproject
 *.project
+*.state.json
