@@ -106,7 +106,7 @@ void ADC_Deinit(ADC_Type* base)
 void ADC_SetSampleRate(ADC_Type* base, uint32_t sampleRate)
 {
     uint8_t preDiv;
-    uint8_t coreTimerUnit;
+    uint8_t coreTimerUnit = 0;
 
     assert((sampleRate <= 1000000) && (sampleRate >= 1563));
 
