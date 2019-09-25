@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -125,7 +125,7 @@ to exclude the API function. */
 #define INCLUDE_vTaskDelayUntil					1
 #define INCLUDE_vTaskDelay						1
 #define INCLUDE_eTaskGetState					1
-#define INCLUDE_xEventGroupSetBitFromISR		1
+#define INCLUDE_xEventGroupSetBitsFromISR		1
 #define INCLUDE_xTimerPendFunctionCall			1
 
 /* This demo makes use of one or more example stats formatting functions.  These

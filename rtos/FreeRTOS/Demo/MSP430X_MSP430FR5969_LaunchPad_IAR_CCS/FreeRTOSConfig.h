@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -144,9 +144,8 @@ left at 1 with no impact on the code size. */
 #define INCLUDE_xTaskGetIdleTaskHandle			1
 #define INCLUDE_xQueueGetMutexHolder			1
 #define INCLUDE_eTaskGetState					1
-#define INCLUDE_xEventGroupSetBitFromISR		1
+#define INCLUDE_xEventGroupSetBitsFromISR		1
 #define INCLUDE_xTimerPendFunctionCall			1
-#define INCLUDE_pcTaskGetTaskName				1
 
 /* Include functions that format system and run-time stats into human readable
 tables. */

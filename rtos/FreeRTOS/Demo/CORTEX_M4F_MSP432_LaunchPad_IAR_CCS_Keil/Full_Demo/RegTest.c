@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -68,7 +68,7 @@
 */
 
 
-__asm vRegTest1Implementation( void )
+__asm void vRegTest1Implementation( void )
 {
 	PRESERVE8
 	IMPORT ulRegTest1LoopCounter
@@ -251,7 +251,7 @@ reg1_error_loop
 }
 /*-----------------------------------------------------------*/
 
-__asm vRegTest2Implementation( void )
+__asm void vRegTest2Implementation( void )
 {
 	PRESERVE8
 	IMPORT ulRegTest2LoopCounter
@@ -443,7 +443,7 @@ reg2_error_loop
 }
 /*-----------------------------------------------------------*/
 
-__asm vRegTestClearFlopRegistersToParameterValue( unsigned long ulValue	)
+__asm void vRegTestClearFlopRegistersToParameterValue( unsigned long ulValue	)
 {
 	PRESERVE8
 
@@ -460,7 +460,7 @@ __asm vRegTestClearFlopRegistersToParameterValue( unsigned long ulValue	)
 }
 /*-----------------------------------------------------------*/
 
-__asm ulRegTestCheckFlopRegistersContainParameterValue( unsigned long ulValue )
+__asm void ulRegTestCheckFlopRegistersContainParameterValue( unsigned long ulValue )
 {
 	PRESERVE8
 

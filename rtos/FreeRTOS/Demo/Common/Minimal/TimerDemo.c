@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -285,17 +285,15 @@ TickType_t xTimer;
 
 	for( xTimer = 0; xTimer < configTIMER_QUEUE_LENGTH; xTimer++ )
 	{
-		/* As the timer queue is not yet full, it should be possible to both create
-		and start a timer.  These timers are being started before the scheduler has
-		been started, so their block times should get set to zero within the timer
-		API itself. */
+		/* As the timer queue is not yet full, it should be possible to both
+		create and start a timer.  These timers are being started before the
+		scheduler has been started, so their block times should get set to zero
+		within the timer API itself. */
 		xAutoReloadTimers[ xTimer ] = xTimerCreate( "FR Timer",							/* Text name to facilitate debugging.  The kernel does not use this itself. */
 													( ( xTimer + ( TickType_t ) 1 ) * xBasePeriod ),/* The period for the timer.  The plus 1 ensures a period of zero is not specified. */
 													pdTRUE,								/* Auto-reload is set to true. */
 													( void * ) xTimer,					/* An identifier for the timer as all the auto reload timers use the same callback. */
 													prvAutoReloadTimerCallback );		/* The callback to be called when the timer expires. */
-
-		configASSERT( strcmp( pcTimerGetTimerName( xAutoReloadTimers[ xTimer ] ), "FR Timer" ) == 0 );
 
 		if( xAutoReloadTimers[ xTimer ] == NULL )
 		{
@@ -304,6 +302,8 @@ TickType_t xTimer;
 		}
 		else
 		{
+			configASSERT( strcmp( pcTimerGetName( xAutoReloadTimers[ xTimer ] ), "FR Timer" ) == 0 );
+
 			/* The scheduler has not yet started, so the block period of
 			portMAX_DELAY should just get set to zero in xTimerStart().  Also,
 			the timer queue is not yet full so xTimerStart() should return
@@ -402,7 +402,7 @@ UBaseType_t uxOriginalPriority;
 	in the Blocked state. */
 	uxOriginalPriority = uxTaskPriorityGet( NULL );
 	vTaskPrioritySet( NULL, ( configMAX_PRIORITIES - 1 ) );
-	
+
 	/* Delaying for configTIMER_QUEUE_LENGTH * xBasePeriod ticks should allow
 	all the auto reload timers to expire at least once. */
 	xBlockPeriod = ( ( TickType_t ) configTIMER_QUEUE_LENGTH ) * xBasePeriod;
@@ -1044,12 +1044,12 @@ static TickType_t uxTick = ( TickType_t ) -1;
 
 static void prvAutoReloadTimerCallback( TimerHandle_t pxExpiredTimer )
 {
-uint32_t ulTimerID;
+size_t uxTimerID;
 
-	ulTimerID = ( uint32_t ) pvTimerGetTimerID( pxExpiredTimer );
-	if( ulTimerID <= ( configTIMER_QUEUE_LENGTH + 1 ) )
+	uxTimerID = ( size_t ) pvTimerGetTimerID( pxExpiredTimer );
+	if( uxTimerID <= ( configTIMER_QUEUE_LENGTH + 1 ) )
 	{
-		( ucAutoReloadTimerCounters[ ulTimerID ] )++;
+		( ucAutoReloadTimerCounters[ uxTimerID ] )++;
 	}
 	else
 	{
@@ -1065,19 +1065,19 @@ static void prvOneShotTimerCallback( TimerHandle_t pxExpiredTimer )
 /* A count is kept of the number of times this callback function is executed.
 The count is stored as the timer's ID.  This is only done to test the
 vTimerSetTimerID() function. */
-static uint32_t ulCallCount = 0;
-uint32_t ulLastCallCount;
+static size_t uxCallCount = 0;
+size_t uxLastCallCount;
 
 	/* Obtain the timer's ID, which should be a count of the number of times
 	this callback function has been executed. */
-	ulLastCallCount = ( uint32_t ) pvTimerGetTimerID( pxExpiredTimer );
-	configASSERT( ulLastCallCount == ulCallCount );
+	uxLastCallCount = ( size_t ) pvTimerGetTimerID( pxExpiredTimer );
+	configASSERT( uxLastCallCount == uxCallCount );
 
 	/* Increment the call count, then save it back as the timer's ID.  This is
 	only done to test the vTimerSetTimerID() API function. */
-	ulLastCallCount++;
-	vTimerSetTimerID( pxExpiredTimer, ( void * ) ulLastCallCount );
-	ulCallCount++;	
+	uxLastCallCount++;
+	vTimerSetTimerID( pxExpiredTimer, ( void * ) uxLastCallCount );
+	uxCallCount++;
 
 	ucOneShotTimerCounter++;
 }

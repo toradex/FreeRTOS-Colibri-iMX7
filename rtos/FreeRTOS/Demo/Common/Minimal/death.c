@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -114,9 +114,11 @@ task can tell if any of the suicidal tasks have failed to die.
 */
 static volatile UBaseType_t uxTasksRunningAtStart = 0;
 
-/* Tasks are deleted by the idle task.  Under heavy load the idle task might
-not get much processing time, so it would be legitimate for several tasks to
-remain undeleted for a short period. */
+/* When a task deletes itself, it stack and TCB are cleaned up by the Idle task.
+Under heavy load the idle task might not get much processing time, so it would
+be legitimate for several tasks to remain undeleted for a short period.  There
+may also be a few other unexpected tasks if, for example, the tasks that test
+static allocation are also being used. */
 static const UBaseType_t uxMaxNumberOfExtraTasksRunning = 3;
 
 /* Used to store a handle to the task that should be killed by a suicidal task,
@@ -127,40 +129,35 @@ TaskHandle_t xCreatedTask;
 
 void vCreateSuicidalTasks( UBaseType_t uxPriority )
 {
-UBaseType_t *puxPriority;
-
-	/* Create the Creator tasks - passing in as a parameter the priority at which
-	the suicidal tasks should be created. */
-	puxPriority = ( UBaseType_t * ) pvPortMalloc( sizeof( UBaseType_t ) );
-	*puxPriority = uxPriority;
-
-	xTaskCreate( vCreateTasks, "CREATOR", deathSTACK_SIZE, ( void * ) puxPriority, uxPriority, NULL );
+	xTaskCreate( vCreateTasks, "CREATOR", deathSTACK_SIZE, ( void * ) NULL, uxPriority, NULL );
 
 	/* Record the number of tasks that are running now so we know if any of the
 	suicidal tasks have failed to be killed. */
 	uxTasksRunningAtStart = ( UBaseType_t ) uxTaskGetNumberOfTasks();
-	
+
 	/* FreeRTOS.org versions before V3.0 started the idle-task as the very
 	first task. The idle task was then already included in uxTasksRunningAtStart.
 	From FreeRTOS V3.0 on, the idle task is started when the scheduler is
 	started. Therefore the idle task is not yet accounted for. We correct
 	this by increasing uxTasksRunningAtStart by 1. */
 	uxTasksRunningAtStart++;
-	
-	/* From FreeRTOS version 7.0.0 can optionally create a timer service task.  
+
+	/* From FreeRTOS version 7.0.0 can optionally create a timer service task.
 	If this is done, then uxTasksRunningAtStart needs incrementing again as that
 	too is created when the scheduler is started. */
 	#if configUSE_TIMERS == 1
+	{
 		uxTasksRunningAtStart++;
+	}
 	#endif
 }
 /*-----------------------------------------------------------*/
-					
+
 static portTASK_FUNCTION( vSuicidalTask, pvParameters )
 {
 volatile long l1, l2;
 TaskHandle_t xTaskToKill;
-const TickType_t xDelay = ( TickType_t ) 200 / portTICK_PERIOD_MS;
+const TickType_t xDelay = pdMS_TO_TICKS( ( TickType_t ) 200 );
 
 	if( pvParameters != NULL )
 	{
@@ -199,11 +196,13 @@ const TickType_t xDelay = ( TickType_t ) 200 / portTICK_PERIOD_MS;
 
 static portTASK_FUNCTION( vCreateTasks, pvParameters )
 {
-const TickType_t xDelay = ( TickType_t ) 1000 / portTICK_PERIOD_MS;
+const TickType_t xDelay = pdMS_TO_TICKS( ( TickType_t ) 1000 );
 UBaseType_t uxPriority;
 
-	uxPriority = *( UBaseType_t * ) pvParameters;
-	vPortFree( pvParameters );
+	/* Remove compiler warning about unused parameter. */
+	( void ) pvParameters;
+
+	uxPriority = uxTaskPriorityGet( NULL );
 
 	for( ;; )
 	{
@@ -236,7 +235,7 @@ static UBaseType_t uxTasksRunningNow;
 	{
 		usLastCreationCount = usCreationCount;
 	}
-	
+
 	uxTasksRunningNow = ( UBaseType_t ) uxTaskGetNumberOfTasks();
 
 	if( uxTasksRunningNow < uxTasksRunningAtStart )

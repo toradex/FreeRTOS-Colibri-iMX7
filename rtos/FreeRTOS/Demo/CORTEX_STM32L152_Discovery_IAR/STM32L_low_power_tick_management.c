@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -278,6 +278,8 @@ const TickType_t xRegulatorOffIdleTime = 30;
 		/* Re-enable interrupts - see comments above the cpsid instruction()
 		above. */
 		__asm volatile ( "cpsie i" );
+		__asm volatile ( "dsb" );
+		__asm volatile ( "isb" );
 	}
 	else
 	{

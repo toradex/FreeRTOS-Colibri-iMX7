@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -69,14 +69,12 @@
 
 /*
  *******************************************************************************
- * NOTE 1: Do not expect to get real time behaviour from the Win32 port or this
- * demo application.  It is provided as a convenient development and
- * demonstration test bed only.  Windows will not be running the FreeRTOS
- * threads continuously, so the timing information in the FreeRTOS+Trace logs
- * have no meaningful units.  See the documentation page for the Windows
- * simulator for further explanation:
+ * NOTE: Windows will not be running the FreeRTOS demo threads continuously, so
+ * do not expect to get real time behaviour from the FreeRTOS Windows port, or
+ * this demo application.  Also, the timing information in the FreeRTOS+Trace
+ * logs have no meaningful units.  See the documentation page for the Windows
+ * port for further information:
  * http://www.freertos.org/FreeRTOS-Windows-Simulator-Emulator-for-Visual-Studio-and-Eclipse-MingW.html
- * - READ THE WEB DOCUMENTATION FOR THIS PORT FOR MORE INFORMATION ON USING IT -
  *
  * NOTE 2:  This project provides two demo applications.  A simple blinky style
  * project, and a more comprehensive test and demo application.  The
@@ -100,9 +98,9 @@
  * "Check" task - This only executes every five seconds but has a high priority
  * to ensure it gets processor time.  Its main function is to check that all the
  * standard demo tasks are still operational.  While no errors have been
- * discovered the check task will print out "OK" and the current simulated tick
- * time.  If an error is discovered in the execution of a task then the check
- * task will print out an appropriate error message.
+ * discovered the check task will print out "No Errors" along with some system
+ * status information.  If an error is discovered in the execution of a task
+ * then the check task will print out an appropriate error message.
  *
  */
 
@@ -137,6 +135,9 @@
 #include "IntSemTest.h"
 #include "TaskNotify.h"
 #include "QueueSetPolling.h"
+#include "StaticAllocation.h"
+#include "blocktim.h"
+#include "AbortDelay.h"
 
 /* Priorities at which the tasks are created. */
 #define mainCHECK_TASK_PRIORITY			( configMAX_PRIORITIES - 2 )
@@ -173,19 +174,34 @@ static void prvDemonstrateTaskStateAndHandleGetFunctions( void );
 static void prvDemonstratePendingFunctionCall( void );
 
 /*
- * The function that is pended by prvDemonstratePendingFunctionCall().
- */
+* The function that is pended by prvDemonstratePendingFunctionCall().
+*/
 static void prvPendedFunction( void *pvParameter1, uint32_t ulParameter2 );
+
+/*
+ * prvDemonstrateTimerQueryFunctions() is called from the idle task hook
+ * function to demonstrate the use of functions that query information about a
+ * software timer.  prvTestTimerCallback() is the callback function for the
+ * timer being queried.
+ */
+static void prvDemonstrateTimerQueryFunctions( void );
+static void prvTestTimerCallback( TimerHandle_t xTimer );
 
 /*
  * A task to demonstrate the use of the xQueueSpacesAvailable() function.
  */
 static void prvDemoQueueSpaceFunctions( void *pvParameters );
 
+/*
+ * Tasks that ensure indefinite delays are truly indefinite.
+ */
+static void prvPermanentlyBlockingSemaphoreTask( void *pvParameters );
+static void prvPermanentlyBlockingNotificationTask( void *pvParameters );
+
 /*-----------------------------------------------------------*/
 
 /* The variable into which error messages are latched. */
-static char *pcStatusMessage = "OK";
+static char *pcStatusMessage = "No errors";
 
 /* This semaphore is created purely to test using the vSemaphoreDelete() and
 semaphore tracing API functions.  It has no other purpose. */
@@ -215,7 +231,17 @@ int main_full( void )
 	vStartEventGroupTasks();
 	vStartInterruptSemaphoreTasks();
 	vStartQueueSetPollingTask();
+	vCreateBlockTimeTasks();
+	vCreateAbortDelayTasks();
 	xTaskCreate( prvDemoQueueSpaceFunctions, "QSpace", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
+	xTaskCreate( prvPermanentlyBlockingSemaphoreTask, "BlockSem", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
+	xTaskCreate( prvPermanentlyBlockingNotificationTask, "BlockNoti", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
+
+	#if( configSUPPORT_STATIC_ALLOCATION == 1 )
+	{
+		vStartStaticallyAllocatedTasks();
+	}
+	#endif
 
 	#if( configUSE_PREEMPTION != 0  )
 	{
@@ -237,16 +263,16 @@ int main_full( void )
 	/* Start the scheduler itself. */
 	vTaskStartScheduler();
 
-    /* Should never get here unless there was not enough heap space to create
+	/* Should never get here unless there was not enough heap space to create
 	the idle and other system tasks. */
-    return 0;
+	return 0;
 }
 /*-----------------------------------------------------------*/
 
 static void prvCheckTask( void *pvParameters )
 {
 TickType_t xNextWakeTime;
-const TickType_t xCycleFrequency = 2500 / portTICK_PERIOD_MS;
+const TickType_t xCycleFrequency = pdMS_TO_TICKS( 2500UL );
 
 	/* Just to remove compiler warning. */
 	( void ) pvParameters;
@@ -283,10 +309,10 @@ const TickType_t xCycleFrequency = 2500 / portTICK_PERIOD_MS;
 		{
 			pcStatusMessage = "Error: EventGroup";
 		}
-	    else if( xAreIntegerMathsTaskStillRunning() != pdTRUE )
-	    {
+		else if( xAreIntegerMathsTaskStillRunning() != pdTRUE )
+		{
 			pcStatusMessage = "Error: IntMath";
-	    }
+		}
 		else if( xAreGenericQueueTasksStillRunning() != pdTRUE )
 		{
 			pcStatusMessage = "Error: GenQueue";
@@ -299,20 +325,20 @@ const TickType_t xCycleFrequency = 2500 / portTICK_PERIOD_MS;
 		{
 			pcStatusMessage = "Error: BlockQueue";
 		}
-	    else if( xAreSemaphoreTasksStillRunning() != pdTRUE )
-	    {
+		else if( xAreSemaphoreTasksStillRunning() != pdTRUE )
+		{
 			pcStatusMessage = "Error: SemTest";
-	    }
-	    else if( xArePollingQueuesStillRunning() != pdTRUE )
-	    {
+		}
+		else if( xArePollingQueuesStillRunning() != pdTRUE )
+		{
 			pcStatusMessage = "Error: PollQueue";
-	    }
+		}
 		else if( xAreMathsTaskStillRunning() != pdPASS )
 		{
 			pcStatusMessage = "Error: Flop";
 		}
-	    else if( xAreRecursiveMutexTasksStillRunning() != pdTRUE )
-	    {
+		else if( xAreRecursiveMutexTasksStillRunning() != pdTRUE )
+		{
 			pcStatusMessage = "Error: RecMutex";
 		}
 		else if( xAreCountingSemaphoreTasksStillRunning() != pdTRUE )
@@ -339,10 +365,28 @@ const TickType_t xCycleFrequency = 2500 / portTICK_PERIOD_MS;
 		{
 			pcStatusMessage = "Error: Queue set polling";
 		}
+		else if( xAreBlockTimeTestTasksStillRunning() != pdPASS )
+		{
+			pcStatusMessage = "Error: Block time";
+		}
+		else if( xAreAbortDelayTestTasksStillRunning() != pdPASS )
+		{
+			pcStatusMessage = "Error: Abort delay";
+		}
+
+		#if( configSUPPORT_STATIC_ALLOCATION == 1 )
+			else if( xAreStaticAllocationTasksStillRunning() != pdPASS )
+			{
+				pcStatusMessage = "Error: Static allocation";
+			}
+		#endif /* configSUPPORT_STATIC_ALLOCATION */
 
 		/* This is the only task that uses stdout so its ok to call printf()
 		directly. */
-		printf( "%s - %d\r\n", pcStatusMessage, xTaskGetTickCount() );
+		printf( "%s - tick count %d - free heap %d - min free heap %d\r\n", pcStatusMessage,
+																			xTaskGetTickCount(),
+																			xPortGetFreeHeapSize(),
+																			xPortGetMinimumEverFreeHeapSize() );
 	}
 }
 /*-----------------------------------------------------------*/
@@ -383,19 +427,34 @@ void *pvAllocated;
 	demonstrated by any of the standard demo tasks. */
 	prvDemonstratePendingFunctionCall();
 
+	/* Demonstrate the use of functions that query information about a software
+	timer. */
+	prvDemonstrateTimerQueryFunctions();
+
+
 	/* If xMutexToDelete has not already been deleted, then delete it now.
 	This is done purely to demonstrate the use of, and test, the
 	vSemaphoreDelete() macro.  Care must be taken not to delete a semaphore
 	that has tasks blocked on it. */
 	if( xMutexToDelete != NULL )
 	{
+		/* For test purposes, add the mutex to the registry, then remove it
+		again, before it is deleted - checking its name is as expected before
+		and after the assertion into the registry and its removal from the
+		registry. */
+		configASSERT( pcQueueGetName( xMutexToDelete ) == NULL );
+		vQueueAddToRegistry( xMutexToDelete, "Test_Mutex" );
+		configASSERT( strcmp( pcQueueGetName( xMutexToDelete ), "Test_Mutex" ) == 0 );
+		vQueueUnregisterQueue( xMutexToDelete );
+		configASSERT( pcQueueGetName( xMutexToDelete ) == NULL );
+
 		vSemaphoreDelete( xMutexToDelete );
 		xMutexToDelete = NULL;
 	}
 
 	/* Exercise heap_5 a bit.  The malloc failed hook will trap failed
 	allocations so there is no need to test here. */
-	pvAllocated = pvPortMalloc( ( rand() % 100 ) + 1 );
+	pvAllocated = pvPortMalloc( ( rand() % 500 ) + 1 );
 	vPortFree( pvAllocated );
 }
 /*-----------------------------------------------------------*/
@@ -454,6 +513,53 @@ uint32_t ulParameter1;
 }
 /*-----------------------------------------------------------*/
 
+static void prvTestTimerCallback( TimerHandle_t xTimer )
+{
+	/* This is the callback function for the timer accessed by
+	prvDemonstrateTimerQueryFunctions().  The callback does not do anything. */
+	( void ) xTimer;
+}
+/*-----------------------------------------------------------*/
+
+static void prvDemonstrateTimerQueryFunctions( void )
+{
+static TimerHandle_t xTimer = NULL;
+const char *pcTimerName = "TestTimer";
+volatile TickType_t xExpiryTime;
+const TickType_t xDontBlock = 0;
+
+	if( xTimer == NULL )
+	{
+		xTimer = xTimerCreate( pcTimerName, portMAX_DELAY, pdTRUE, NULL, prvTestTimerCallback );
+
+		if( xTimer != NULL )
+		{
+			/* Called from the idle task so a block time must not be
+			specified. */
+			xTimerStart( xTimer, xDontBlock );
+		}
+	}
+
+	if( xTimer != NULL )
+	{
+		/* Demonstrate querying a timer's name. */
+		configASSERT( strcmp( pcTimerGetName( xTimer ), pcTimerName ) == 0 );
+
+		/* Demonstrate querying a timer's period. */
+		configASSERT( xTimerGetPeriod( xTimer ) == portMAX_DELAY );
+
+		/* Demonstrate querying a timer's next expiry time, although nothing is
+		done with the returned value.  Note if the expiry time is less than the
+		maximum tick count then the expiry time has overflowed from the current
+		time.  In this case the expiry time was set to portMAX_DELAY, so it is
+		expected to be less than the current time until the current time has
+		itself overflowed. */
+		xExpiryTime = xTimerGetExpiryTime( xTimer );
+		( void ) xExpiryTime;
+	}
+}
+/*-----------------------------------------------------------*/
+
 static void prvDemonstratePendingFunctionCall( void )
 {
 static uint32_t ulParameter1 = 1000UL, ulParameter2 = 0UL;
@@ -475,6 +581,8 @@ TaskHandle_t xIdleTaskHandle, xTimerTaskHandle;
 char *pcTaskName;
 static portBASE_TYPE xPerformedOneShotTests = pdFALSE;
 TaskHandle_t xTestTask;
+TaskStatus_t xTaskInfo;
+extern StackType_t uxTimerTaskStack[];
 
 	/* Demonstrate the use of the xTimerGetTimerDaemonTaskHandle() and
 	xTaskGetIdleTaskHandle() functions.  Also try using the function that sets
@@ -489,11 +597,28 @@ TaskHandle_t xTestTask;
 		pcStatusMessage = "Error:  Returned idle task handle was incorrect";
 	}
 
+	/* Check the same handle is obtained using the idle task's name.  First try
+	with the wrong name, then the right name. */
+	if( xTaskGetHandle( "Idle" ) == xIdleTaskHandle )
+	{
+		pcStatusMessage = "Error:  Returned handle for name Idle was incorrect";
+	}
+
+	if( xTaskGetHandle( "IDLE" ) != xIdleTaskHandle )
+	{
+		pcStatusMessage = "Error:  Returned handle for name Idle was incorrect";
+	}
+
 	/* Check the timer task handle was returned correctly. */
-	pcTaskName = pcTaskGetTaskName( xTimerTaskHandle );
+	pcTaskName = pcTaskGetName( xTimerTaskHandle );
 	if( strcmp( pcTaskName, "Tmr Svc" ) != 0 )
 	{
 		pcStatusMessage = "Error:  Returned timer task handle was incorrect";
+	}
+
+	if( xTaskGetHandle( "Tmr Svc" ) != xTimerTaskHandle )
+	{
+		pcStatusMessage = "Error:  Returned handle for name Tmr Svc was incorrect";
 	}
 
 	/* This task is running, make sure it's state is returned as running. */
@@ -506,6 +631,22 @@ TaskHandle_t xTestTask;
 	if( eTaskStateGet( xTimerTaskHandle ) != eBlocked )
 	{
 		pcStatusMessage = "Error:  Returned timer task state was incorrect";
+	}
+
+	/* Also with the vTaskGetInfo() function. */
+	vTaskGetInfo( xTimerTaskHandle, /* The task being queried. */
+					  &xTaskInfo,		/* The structure into which information on the task will be written. */
+					  pdTRUE,			/* Include the task's high watermark in the structure. */
+					  eInvalid );		/* Include the task state in the structure. */
+
+	/* Check the information returned by vTaskGetInfo() is as expected. */
+	if( ( xTaskInfo.eCurrentState != eBlocked )						 ||
+		( strcmp( xTaskInfo.pcTaskName, "Tmr Svc" ) != 0 )			 ||
+		( xTaskInfo.uxCurrentPriority != configTIMER_TASK_PRIORITY ) ||
+		( xTaskInfo.pxStackBase != uxTimerTaskStack )				 ||
+		( xTaskInfo.xHandle != xTimerTaskHandle ) )
+	{
+		pcStatusMessage = "Error:  vTaskGetInfo() returned incorrect information about the timer task";
 	}
 
 	/* Other tests that should only be performed once follow.  The test task
@@ -611,5 +752,43 @@ unsigned portBASE_TYPE uxReturn, x;
 		#endif
 	}
 }
+/*-----------------------------------------------------------*/
+
+static void prvPermanentlyBlockingSemaphoreTask( void *pvParameters )
+{
+SemaphoreHandle_t xSemaphore;
+
+	/* Prevent compiler warning about unused parameter in the case that
+	configASSERT() is not defined. */
+	( void ) pvParameters;
+
+	/* This task should block on a semaphore, and never return. */
+	xSemaphore = xSemaphoreCreateBinary();
+	configASSERT( xSemaphore );
+
+	xSemaphoreTake( xSemaphore, portMAX_DELAY );
+
+	/* The above xSemaphoreTake() call should never return, force an assert if
+	it does. */
+	configASSERT( pvParameters != NULL );
+	vTaskDelete( NULL );
+}
+/*-----------------------------------------------------------*/
+
+static void prvPermanentlyBlockingNotificationTask( void *pvParameters )
+{
+	/* Prevent compiler warning about unused parameter in the case that
+	configASSERT() is not defined. */
+	( void ) pvParameters;
+
+	/* This task should block on a task notification, and never return. */
+	ulTaskNotifyTake( pdTRUE, portMAX_DELAY );
+
+	/* The above ulTaskNotifyTake() call should never return, force an assert
+	if it does. */
+	configASSERT( pvParameters != NULL );
+	vTaskDelete( NULL );
+}
+
 
 

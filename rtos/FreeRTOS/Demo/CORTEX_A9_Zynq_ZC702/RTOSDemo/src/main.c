@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -68,6 +68,9 @@
 */
 
 /******************************************************************************
+ *
+ * See http://www.freertos.org/RTOS-Xilinx-Zynq.html for instructions.
+ *
  * This project provides three demo applications.  A simple blinky style
  * project, a more comprehensive test and demo application, and an lwIP example.
  * The mainSELECTED_APPLICATION setting (defined in this file) is used to
@@ -82,12 +85,16 @@
  * !!! IMPORTANT NOTE !!!
  * The GCC libraries that ship with the Xilinx SDK make use of the floating
  * point registers.  To avoid this causing corruption it is necessary to avoid
- * their use.  For this reason main.c contains very basic C implementations of
- * the standard C library functions memset(), memcpy() and memcmp(), which are
- * are used by FreeRTOS itself.  Defining these functions in the project
- * prevents the linker pulling them in from the library.  Any other standard C
- * library functions that are used by the application must likewise be defined
- * in C.
+ * their use unless a task has been given a floating point context.  See
+ * http://www.freertos.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html
+ * for information on how to give a task a floating point context, and how to
+ * handle floating point operations in interrupts.  As this demo does not give
+ * all tasks a floating point context main.c contains very basic C
+ * implementations of the standard C library functions memset(), memcpy() and
+ * memcmp(), which are are used by FreeRTOS itself.  Defining these functions in
+ * the project prevents the linker pulling them in from the library.  Any other
+ * standard C library functions that are used by the application must likewise
+ * be defined in C.
  *
  * ENSURE TO READ THE DOCUMENTATION PAGE FOR THIS PORT AND DEMO APPLICATION ON
  * THE http://www.FreeRTOS.org WEB SITE FOR FULL INFORMATION ON USING THIS DEMO
@@ -182,11 +189,13 @@ XScuGic xInterruptController;
 
 int main( void )
 {
+	/* See http://www.freertos.org/RTOS-Xilinx-Zynq.html for instructions. */
+
 	/* Configure the hardware ready to run the demo. */
 	prvSetupHardware();
 
-	/* The mainSELECTED_APPLICATION setting is described at the top
-	of this file. */
+	/* The mainSELECTED_APPLICATION setting is described at the top	of this
+	file. */
 	#if( mainSELECTED_APPLICATION == 0 )
 	{
 		main_blinky();
@@ -268,7 +277,7 @@ void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName )
 
 void vApplicationIdleHook( void )
 {
-volatile size_t xFreeHeapSpace;
+volatile size_t xFreeHeapSpace, xMinimumEverFreeHeapSpace;
 
 	/* This is just a trivial example of an idle hook.  It is called on each
 	cycle of the idle task.  It must *NOT* attempt to block.  In this case the
@@ -278,9 +287,11 @@ volatile size_t xFreeHeapSpace;
 	configTOTAL_HEAP_SIZE value in FreeRTOSConfig.h can be reduced to free up
 	RAM. */
 	xFreeHeapSpace = xPortGetFreeHeapSize();
+	xMinimumEverFreeHeapSpace = xPortGetMinimumEverFreeHeapSize();
 
 	/* Remove compiler warning about xFreeHeapSpace being set but never used. */
 	( void ) xFreeHeapSpace;
+	( void ) xMinimumEverFreeHeapSpace;
 }
 /*-----------------------------------------------------------*/
 
@@ -374,15 +385,15 @@ volatile size_t x;
 
 	/* Extremely crude standard library implementations in lieu of having a C
 	library. */
-    for( x = 0; x < xBytes; x++ )
-    {
-        if( pucMem1[ x ] != pucMem2[ x ] )
-        {
-            break;
-        }
-    }
+	for( x = 0; x < xBytes; x++ )
+	{
+		if( pucMem1[ x ] != pucMem2[ x ] )
+		{
+			break;
+		}
+	}
 
-    return xBytes - x;
+	return xBytes - x;
 }
 /*-----------------------------------------------------------*/
 
@@ -403,6 +414,55 @@ const uint32_t ulMaxDivisor = 0xff, ulDivisorShift = 0x08;
 	 XScuWdt_SetTimerMode( &xWatchDogInstance );
 	 XScuWdt_Start( &xWatchDogInstance );
 }
+/*-----------------------------------------------------------*/
 
+/* configUSE_STATIC_ALLOCATION is set to 1, so the application must provide an
+implementation of vApplicationGetIdleTaskMemory() to provide the memory that is
+used by the Idle task. */
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize )
+{
+/* If the buffers to be provided to the Idle task are declared inside this
+function then they must be declared static - otherwise they will be allocated on
+the stack and so not exists after this function exits. */
+static StaticTask_t xIdleTaskTCB;
+static StackType_t uxIdleTaskStack[ configMINIMAL_STACK_SIZE ];
+
+	/* Pass out a pointer to the StaticTask_t structure in which the Idle task's
+	state will be stored. */
+	*ppxIdleTaskTCBBuffer = &xIdleTaskTCB;
+
+	/* Pass out the array that will be used as the Idle task's stack. */
+	*ppxIdleTaskStackBuffer = uxIdleTaskStack;
+
+	/* Pass out the size of the array pointed to by *ppxIdleTaskStackBuffer.
+	Note that, as the array is necessarily of type StackType_t,
+	configMINIMAL_STACK_SIZE is specified in words, not bytes. */
+	*pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
+}
+/*-----------------------------------------------------------*/
+
+/* configUSE_STATIC_ALLOCATION and configUSE_TIMERS are both set to 1, so the
+application must provide an implementation of vApplicationGetTimerTaskMemory()
+to provide the memory that is used by the Timer service task. */
+void vApplicationGetTimerTaskMemory( StaticTask_t **ppxTimerTaskTCBBuffer, StackType_t **ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize )
+{
+/* If the buffers to be provided to the Timer task are declared inside this
+function then they must be declared static - otherwise they will be allocated on
+the stack and so not exists after this function exits. */
+static StaticTask_t xTimerTaskTCB;
+static StackType_t uxTimerTaskStack[ configTIMER_TASK_STACK_DEPTH ];
+
+	/* Pass out a pointer to the StaticTask_t structure in which the Timer
+	task's state will be stored. */
+	*ppxTimerTaskTCBBuffer = &xTimerTaskTCB;
+
+	/* Pass out the array that will be used as the Timer task's stack. */
+	*ppxTimerTaskStackBuffer = uxTimerTaskStack;
+
+	/* Pass out the size of the array pointed to by *ppxTimerTaskStackBuffer.
+	Note that, as the array is necessarily of type StackType_t,
+	configMINIMAL_STACK_SIZE is specified in words, not bytes. */
+	*pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
+}
 
 

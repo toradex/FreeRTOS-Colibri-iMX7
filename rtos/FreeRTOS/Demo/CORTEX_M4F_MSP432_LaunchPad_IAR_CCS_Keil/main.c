@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -122,7 +122,7 @@ int main( void )
 
 	/* The configCREATE_SIMPLE_TICKLESS_DEMO setting is described at the top
 	of this file. */
-	#if configCREATE_SIMPLE_TICKLESS_DEMO == 1
+	#if( configCREATE_SIMPLE_TICKLESS_DEMO == 1 )
 	{
 		main_blinky();
 	}

@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -116,9 +116,9 @@ that make up the total heap.  This is only done to provide an example of heap_5
 being used as this demo could easily create one large heap region instead of
 multiple smaller heap regions - in which case heap_4.c would be the more
 appropriate choice. */
-#define mainREGION_1_SIZE	3001
+#define mainREGION_1_SIZE	7001
 #define mainREGION_2_SIZE	18105
-#define mainREGION_3_SIZE	1107
+#define mainREGION_3_SIZE	2807
 
 /*
  * main_blinky() is used when mainCREATE_SIMPLE_BLINKY_DEMO_ONLY is set to 1.

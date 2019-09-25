@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -130,10 +130,14 @@ void vStartQueueSetPollingTask( void )
 	the set. */
 	xQueue = xQueueCreate( setpollQUEUE_LENGTH, sizeof( uint32_t ) );
 	xQueueSet = xQueueCreateSet( setpollQUEUE_LENGTH );
-	xQueueAddToSet( xQueue, xQueueSet );
 
-	/* Create the task. */
-	xTaskCreate( prvQueueSetReceivingTask, "SetPoll", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
+	if( ( xQueue != NULL ) && ( xQueueSet != NULL ) )
+	{
+		xQueueAddToSet( xQueue, xQueueSet );
+
+		/* Create the task. */
+		xTaskCreate( prvQueueSetReceivingTask, "SetPoll", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
+	}
 }
 /*-----------------------------------------------------------*/
 

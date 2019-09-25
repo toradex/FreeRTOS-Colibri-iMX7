@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -109,7 +109,7 @@ Changes from V2.0.0
 
 #define pollqSTACK_SIZE			configMINIMAL_STACK_SIZE
 #define pollqQUEUE_SIZE			( 10 )
-#define pollqPRODUCER_DELAY		( ( TickType_t ) 200 / portTICK_PERIOD_MS )
+#define pollqPRODUCER_DELAY		( pdMS_TO_TICKS( ( TickType_t ) 200 ) )
 #define pollqCONSUMER_DELAY		( pollqPRODUCER_DELAY - ( TickType_t ) ( 20 / portTICK_PERIOD_MS ) )
 #define pollqNO_DELAY			( ( TickType_t ) 0 )
 #define pollqVALUES_TO_PRODUCE	( ( BaseType_t ) 3 )
@@ -134,17 +134,20 @@ static QueueHandle_t xPolledQueue;
 	/* Create the queue used by the producer and consumer. */
 	xPolledQueue = xQueueCreate( pollqQUEUE_SIZE, ( UBaseType_t ) sizeof( uint16_t ) );
 
-	/* vQueueAddToRegistry() adds the queue to the queue registry, if one is
-	in use.  The queue registry is provided as a means for kernel aware 
-	debuggers to locate queues and has no purpose if a kernel aware debugger
-	is not being used.  The call to vQueueAddToRegistry() will be removed
-	by the pre-processor if configQUEUE_REGISTRY_SIZE is not defined or is 
-	defined to be less than 1. */
-	vQueueAddToRegistry( xPolledQueue, "Poll_Test_Queue" );
+	if( xPolledQueue != NULL )
+	{
+		/* vQueueAddToRegistry() adds the queue to the queue registry, if one is
+		in use.  The queue registry is provided as a means for kernel aware
+		debuggers to locate queues and has no purpose if a kernel aware debugger
+		is not being used.  The call to vQueueAddToRegistry() will be removed
+		by the pre-processor if configQUEUE_REGISTRY_SIZE is not defined or is
+		defined to be less than 1. */
+		vQueueAddToRegistry( xPolledQueue, "Poll_Test_Queue" );
 
-	/* Spawn the producer and consumer. */
-	xTaskCreate( vPolledQueueConsumer, "QConsNB", pollqSTACK_SIZE, ( void * ) &xPolledQueue, uxPriority, ( TaskHandle_t * ) NULL );
-	xTaskCreate( vPolledQueueProducer, "QProdNB", pollqSTACK_SIZE, ( void * ) &xPolledQueue, uxPriority, ( TaskHandle_t * ) NULL );
+		/* Spawn the producer and consumer. */
+		xTaskCreate( vPolledQueueConsumer, "QConsNB", pollqSTACK_SIZE, ( void * ) &xPolledQueue, uxPriority, ( TaskHandle_t * ) NULL );
+		xTaskCreate( vPolledQueueProducer, "QProdNB", pollqSTACK_SIZE, ( void * ) &xPolledQueue, uxPriority, ( TaskHandle_t * ) NULL );
+	}
 }
 /*-----------------------------------------------------------*/
 
@@ -154,7 +157,7 @@ uint16_t usValue = ( uint16_t ) 0;
 BaseType_t xError = pdFALSE, xLoop;
 
 	for( ;; )
-	{		
+	{
 		for( xLoop = 0; xLoop < pollqVALUES_TO_PRODUCE; xLoop++ )
 		{
 			/* Send an incrementing number on the queue without blocking. */
@@ -193,7 +196,7 @@ uint16_t usData, usExpectedValue = ( uint16_t ) 0;
 BaseType_t xError = pdFALSE;
 
 	for( ;; )
-	{		
+	{
 		/* Loop until the queue is empty. */
 		while( uxQueueMessagesWaiting( *( ( QueueHandle_t * ) pvParameters ) ) )
 		{

@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -99,7 +99,6 @@
 #define configCHECK_FOR_STACK_OVERFLOW	2
 #define configUSE_QUEUE_SETS			1
 #define configUSE_COUNTING_SEMAPHORES	1
-#define configUSE_ALTERNATIVE_API		1
 
 #define configMAX_PRIORITIES			( 5UL )
 #define configMAX_CO_ROUTINE_PRIORITIES ( 2 )
@@ -125,7 +124,6 @@ to exclude the API function. */
 #define INCLUDE_xTaskGetSchedulerState			1
 #define INCLUDE_xTimerGetTimerDaemonTaskHandle	1
 #define INCLUDE_xTaskGetIdleTaskHandle			1
-#define INCLUDE_pcTaskGetTaskName				1
 #define INCLUDE_xSemaphoreGetMutexHolder		1
 #define INCLUDE_eTaskGetState					1
 #define INCLUDE_xTimerPendFunctionCall			1

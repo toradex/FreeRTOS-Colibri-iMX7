@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -155,21 +155,21 @@
 /* The priority used by the UART command console task. */
 #define mainUART_COMMAND_CONSOLE_TASK_PRIORITY	( configMAX_PRIORITIES - 2 )
 
-/* The LED used by the check timer. */
+/* The LED used by the check task. */
 #define mainCHECK_LED						( 7 )
 
 
 /* A block time of zero simply means "don't block". */
 #define mainDONT_BLOCK						( 0UL )
 
-/* The period after which the check timer will expire, in ms, provided no errors
-have been reported by any of the standard demo tasks.  ms are converted to the
-equivalent in ticks using the portTICK_PERIOD_MS constant. */
+/* The period of the check task, in ms, provided no errors have been reported by
+any of the standard demo tasks.  ms are converted to the equivalent in ticks
+using the pdMS_TO_TICKS() macro constant. */
 #define mainNO_ERROR_CHECK_TASK_PERIOD		( pdMS_TO_TICKS( 3000UL ) )
 
-/* The period at which the check timer will expire, in ms, if an error has been
-reported in one of the standard demo tasks.  ms are converted to the equivalent
-in ticks using the portTICK_PERIOD_MS constant. */
+/* The period of the check task, in ms, if an error has been reported in one of
+the standard demo tasks.  ms are converted to the equivalent in ticks using the
+pdMS_TO_TICKS() macro. */
 #define mainERROR_CHECK_TASK_PERIOD 		( pdMS_TO_TICKS( 200UL ) )
 
 /* Parameters that are passed into the register check tasks solely for the
@@ -281,12 +281,10 @@ void main_full( void )
 
 	/* If all is well, the scheduler will now be running, and the following
 	line will never be reached.  If the following line does execute, then
-	there was either insufficient FreeRTOS heap memory available for the idle
-	and/or timer tasks to be created, or vTaskStartScheduler() was called from
-	User mode.  See the memory management section on the FreeRTOS web site for
-	more details on the FreeRTOS heap http://www.freertos.org/a00111.html.  The
-	mode from which main() is called is set in the C start up code and must be
-	a privileged mode (not user mode). */
+	there was insufficient FreeRTOS heap memory available for the Idle and/or
+	timer tasks to be created.  See the memory management section on the
+	FreeRTOS web site for more details on the FreeRTOS heap
+	http://www.freertos.org/a00111.html. */
 	for( ;; );
 }
 /*-----------------------------------------------------------*/
@@ -415,7 +413,7 @@ static void prvRegTestTaskEntry1( void *pvParameters )
 	}
 
 	/* The following line will only execute if the task parameter is found to
-	be incorrect.  The check timer will detect that the regtest loop counter is
+	be incorrect.  The check task will detect that the regtest loop counter is
 	not being incremented and flag an error. */
 	vTaskDelete( NULL );
 }
@@ -433,7 +431,7 @@ static void prvRegTestTaskEntry2( void *pvParameters )
 	}
 
 	/* The following line will only execute if the task parameter is found to
-	be incorrect.  The check timer will detect that the regtest loop counter is
+	be incorrect.  The check task will detect that the regtest loop counter is
 	not being incremented and flag an error. */
 	vTaskDelete( NULL );
 }

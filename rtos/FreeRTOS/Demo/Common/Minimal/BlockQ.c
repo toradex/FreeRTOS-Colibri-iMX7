@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -104,6 +104,10 @@
 #define blckqSTACK_SIZE		configMINIMAL_STACK_SIZE
 #define blckqNUM_TASK_SETS	( 3 )
 
+#if( configSUPPORT_DYNAMIC_ALLOCATION == 0 )
+	#error This example cannot be used if dynamic allocation is not allowed.
+#endif
+
 /* Structure used to pass parameters to the blocking queue tasks. */
 typedef struct BLOCKING_QUEUE_PARAMETERS
 {
@@ -136,7 +140,7 @@ xBlockingQueueParameters *pxQueueParameters1, *pxQueueParameters2;
 xBlockingQueueParameters *pxQueueParameters3, *pxQueueParameters4;
 xBlockingQueueParameters *pxQueueParameters5, *pxQueueParameters6;
 const UBaseType_t uxQueueSize1 = 1, uxQueueSize5 = 5;
-const TickType_t xBlockTime = ( TickType_t ) 1000 / portTICK_PERIOD_MS;
+const TickType_t xBlockTime = pdMS_TO_TICKS( ( TickType_t ) 1000 );
 const TickType_t xDontBlock = ( TickType_t ) 0;
 
 	/* Create the first two tasks as described at the top of the file. */

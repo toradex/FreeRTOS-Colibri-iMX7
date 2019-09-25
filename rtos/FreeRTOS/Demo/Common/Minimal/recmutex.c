@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -125,7 +125,7 @@ be overridden by a definition in FreeRTOSConfig.h. */
 /* Misc. */
 #define recmuSHORT_DELAY				( pdMS_TO_TICKS( 20 ) )
 #define recmuNO_DELAY					( ( TickType_t ) 0 )
-#define recmuEIGHT_TICK_DELAY			( ( TickType_t ) 8 )
+#define recmu15ms_DELAY					( pdMS_TO_TICKS( 15 ) )
 
 /* The three tasks as described at the top of this file. */
 static void prvRecursiveMutexControllingTask( void *pvParameters );
@@ -151,20 +151,19 @@ void vStartRecursiveMutexTasks( void )
 
 	xMutex = xSemaphoreCreateRecursiveMutex();
 
-	/* vQueueAddToRegistry() adds the mutex to the registry, if one is
-	in use.  The registry is provided as a means for kernel aware
-	debuggers to locate mutex and has no purpose if a kernel aware debugger
-	is not being used.  The call to vQueueAddToRegistry() will be removed
-	by the pre-processor if configQUEUE_REGISTRY_SIZE is not defined or is
-	defined to be less than 1. */
-	vQueueAddToRegistry( ( QueueHandle_t ) xMutex, "Recursive_Mutex" );
-
-
 	if( xMutex != NULL )
 	{
+		/* vQueueAddToRegistry() adds the mutex to the registry, if one is
+		in use.  The registry is provided as a means for kernel aware
+		debuggers to locate mutex and has no purpose if a kernel aware debugger
+		is not being used.  The call to vQueueAddToRegistry() will be removed
+		by the pre-processor if configQUEUE_REGISTRY_SIZE is not defined or is
+		defined to be less than 1. */
+		vQueueAddToRegistry( ( QueueHandle_t ) xMutex, "Recursive_Mutex" );
+
 		xTaskCreate( prvRecursiveMutexControllingTask, "Rec1", configMINIMAL_STACK_SIZE, NULL, recmuCONTROLLING_TASK_PRIORITY, &xControllingTaskHandle );
-        xTaskCreate( prvRecursiveMutexBlockingTask, "Rec2", configMINIMAL_STACK_SIZE, NULL, recmuBLOCKING_TASK_PRIORITY, &xBlockingTaskHandle );
-        xTaskCreate( prvRecursiveMutexPollingTask, "Rec3", configMINIMAL_STACK_SIZE, NULL, recmuPOLLING_TASK_PRIORITY, NULL );
+		xTaskCreate( prvRecursiveMutexBlockingTask, "Rec2", configMINIMAL_STACK_SIZE, NULL, recmuBLOCKING_TASK_PRIORITY, &xBlockingTaskHandle );
+		xTaskCreate( prvRecursiveMutexPollingTask, "Rec3", configMINIMAL_STACK_SIZE, NULL, recmuPOLLING_TASK_PRIORITY, NULL );
 	}
 }
 /*-----------------------------------------------------------*/
@@ -199,7 +198,7 @@ UBaseType_t ux;
 			long enough to ensure the polling task will execute again before the
 			block time expires.  If the block time does expire then the error
 			flag will be set here. */
-			if( xSemaphoreTakeRecursive( xMutex, recmuEIGHT_TICK_DELAY ) != pdPASS )
+			if( xSemaphoreTakeRecursive( xMutex, recmu15ms_DELAY ) != pdPASS )
 			{
 				xErrorOccurred = pdTRUE;
 			}

@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -150,6 +150,9 @@
 #include "EventGroupsDemo.h"
 #include "TaskNotify.h"
 #include "IntSemTest.h"
+#include "StaticAllocation.h"
+#include "AbortDelay.h"
+
 
 /* Priorities for the demo application tasks. */
 #define mainSEM_TEST_PRIORITY				( tskIDLE_PRIORITY + 1UL )
@@ -258,7 +261,8 @@ void main_full( void )
 	vStartEventGroupTasks();
 	vStartTaskNotifyTask();
 	vStartInterruptSemaphoreTasks();
-
+	vStartStaticallyAllocatedTasks();
+	vCreateAbortDelayTasks();
 
 	/* Start the tasks that implements the command console on the UART, as
 	described above. */
@@ -400,17 +404,27 @@ unsigned long ulErrorFound = pdFALSE;
 			ulErrorFound |= 1UL << 14UL;
 		}
 
+		if( xAreStaticAllocationTasksStillRunning() != pdPASS )
+		{
+			ulErrorFound |= 1UL << 15UL;
+		}
+
+		if( xAreAbortDelayTestTasksStillRunning() != pdPASS )
+		{
+			ulErrorFound |= 1UL << 16UL;
+		}
+
 		/* Check that the register test 1 task is still running. */
 		if( ulLastRegTest1Value == ulRegTest1LoopCounter )
 		{
-			ulErrorFound |= 1UL << 15UL;
+			ulErrorFound |= 1UL << 17UL;
 		}
 		ulLastRegTest1Value = ulRegTest1LoopCounter;
 
 		/* Check that the register test 2 task is still running. */
 		if( ulLastRegTest2Value == ulRegTest2LoopCounter )
 		{
-			ulErrorFound |= 1UL << 16UL;
+			ulErrorFound |= 1UL << 18UL;
 		}
 		ulLastRegTest2Value = ulRegTest2LoopCounter;
 

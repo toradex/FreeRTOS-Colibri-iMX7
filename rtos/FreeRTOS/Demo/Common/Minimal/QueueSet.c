@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -122,7 +122,7 @@ queuesetPRIORITY_CHANGE_LOOPS number of values are sent to a queue. */
 /* A delay inserted when the Tx task changes its priority to be above the idle
 task priority to ensure the idle priority tasks get some CPU time before the
 next iteration of the queue set Tx task. */
-#define queuesetTX_LOOP_DELAY	( 200 / portTICK_PERIOD_MS )
+#define queuesetTX_LOOP_DELAY	pdMS_TO_TICKS( ( TickType_t ) 200 )
 
 /* The allowable maximum deviation between a received value and the expected
 received value.  A deviation will occur when data is received from a queue
@@ -187,8 +187,8 @@ static void prvChangeRelativePriorities( void );
  * Local pseudo random number seed and return functions.  Used to avoid calls
  * to the standard library.
  */
-static uint32_t prvRand( void );
-static void prvSRand( uint32_t ulSeed );
+static size_t prvRand( void );
+static void prvSRand( size_t uxSeed );
 
 /*-----------------------------------------------------------*/
 
@@ -223,7 +223,7 @@ expected. */
 static volatile uint32_t ulISRTxValue = queuesetINITIAL_ISR_TX_VALUE;
 
 /* Used by the pseudo random number generator. */
-static uint32_t ulNextRand = 0;
+static size_t uxNextRand = 0;
 
 /* The task handles are stored so their priorities can be changed. */
 TaskHandle_t xQueueSetSendingTask, xQueueSetReceivingTask;
@@ -234,14 +234,18 @@ void vStartQueueSetTasks( void )
 {
 	/* Create the tasks. */
 	xTaskCreate( prvQueueSetSendingTask, "SetTx", configMINIMAL_STACK_SIZE, NULL, queuesetMEDIUM_PRIORITY, &xQueueSetSendingTask );
-	xTaskCreate( prvQueueSetReceivingTask, "SetRx", configMINIMAL_STACK_SIZE, ( void * ) xQueueSetSendingTask, queuesetMEDIUM_PRIORITY, &xQueueSetReceivingTask );
 
-	/* It is important that the sending task does not attempt to write to a
-	queue before the queue has been created.  It is therefore placed into the
-	suspended state before the scheduler has started.  It is resumed by the
-	receiving task after the receiving task has created the queues and added the
-	queues to the queue set. */
-	vTaskSuspend( xQueueSetSendingTask );
+	if( xQueueSetSendingTask != NULL )
+	{
+		xTaskCreate( prvQueueSetReceivingTask, "SetRx", configMINIMAL_STACK_SIZE, ( void * ) xQueueSetSendingTask, queuesetMEDIUM_PRIORITY, &xQueueSetReceivingTask );
+
+		/* It is important that the sending task does not attempt to write to a
+		queue before the queue has been created.  It is therefore placed into
+		the suspended state before the scheduler has started.  It is resumed by
+		the receiving task after the receiving task has created the queues and
+		added the queues to the queue set. */
+		vTaskSuspend( xQueueSetSendingTask );
+	}
 }
 /*-----------------------------------------------------------*/
 
@@ -295,24 +299,25 @@ BaseType_t xReturn = pdPASS, x;
 
 static void prvQueueSetSendingTask( void *pvParameters )
 {
-uint32_t ulTaskTxValue = 0, ulQueueToWriteTo;
+uint32_t ulTaskTxValue = 0;
+size_t uxQueueToWriteTo;
 QueueHandle_t xQueueInUse;
 
 	/* Remove compiler warning about the unused parameter. */
 	( void ) pvParameters;
 
 	/* Seed mini pseudo random number generator. */
-	prvSRand( ( uint32_t ) &ulTaskTxValue );
+	prvSRand( ( size_t ) &ulTaskTxValue );
 
 	for( ;; )
 	{
 		/* Generate the index for the queue to which a value is to be sent. */
-		ulQueueToWriteTo = prvRand() % queuesetNUM_QUEUES_IN_SET;
-		xQueueInUse = xQueues[ ulQueueToWriteTo ];
+		uxQueueToWriteTo = prvRand() % queuesetNUM_QUEUES_IN_SET;
+		xQueueInUse = xQueues[ uxQueueToWriteTo ];
 
 		/* Note which index is being written to to ensure all the queues are
 		used. */
-		( ulQueueUsedCounter[ ulQueueToWriteTo ] )++;
+		( ulQueueUsedCounter[ uxQueueToWriteTo ] )++;
 
 		/* Send to the queue to unblock the task that is waiting for data to
 		arrive on a queue within the queue set to which this queue belongs. */
@@ -419,7 +424,7 @@ TickType_t xBlockTime;
 		}
 
 		/* Wait for a message to arrive on one of the queues in the set. */
-		xActivatedQueue = xQueueSelectFromSet( xQueueSet, portMAX_DELAY );		
+		xActivatedQueue = xQueueSelectFromSet( xQueueSet, portMAX_DELAY );
 
 		if( xActivatedQueue == NULL )
 		{
@@ -719,15 +724,15 @@ uint32_t ulValueToSend = 0;
 }
 /*-----------------------------------------------------------*/
 
-static uint32_t prvRand( void )
+static size_t prvRand( void )
 {
-	ulNextRand = ( ulNextRand * 1103515245UL ) + 12345UL;
-    return ( ulNextRand / 65536UL ) % 32768UL;
+	uxNextRand = ( uxNextRand * ( size_t ) 1103515245 ) + ( size_t ) 12345;
+	return ( uxNextRand / ( size_t ) 65536 ) % ( size_t ) 32768;
 }
 /*-----------------------------------------------------------*/
 
-static void prvSRand( uint32_t ulSeed )
+static void prvSRand( size_t uxSeed )
 {
-    ulNextRand = ulSeed;
+	uxNextRand = uxSeed;
 }
 
