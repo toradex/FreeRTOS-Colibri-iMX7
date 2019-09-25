@@ -46,6 +46,10 @@
 ** ###################################################################
 */
 
+/* Define global symbols */
+__FLASH_START = ORIGIN(m_interrupts);
+__FLASH_END   = ORIGIN(m_text) + LENGTH(m_text);
+
 /* Define output sections */
 SECTIONS
 {
