@@ -288,10 +288,10 @@ int rpmsg_send_offchannel(struct rpmsg_channel *rpdev, unsigned long src, unsign
 static inline
 int rpmsg_trysend(struct rpmsg_channel *rpdev, void *data, int len)
 {
-
     if (!rpdev || !data)
+    {
         return RPMSG_ERR_PARAM;
-
+    }
 	return rpmsg_send_offchannel_raw(rpdev, rpdev->src, rpdev->dst, (char *)data, len, RPMSG_FALSE);
 }
 
