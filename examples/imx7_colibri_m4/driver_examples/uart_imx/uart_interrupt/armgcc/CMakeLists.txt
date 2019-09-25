@@ -1,7 +1,7 @@
 INCLUDE(CMakeForceCompiler)
 
 # === Project-specific settings ===
-SET(ProjectName uart_imx_interrupt_example)
+SET(ProjectName uart_interrupt)
 SET(LinkerFile MCIMX7D_M4_tcm.ld)
 SET(BspRootDirPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../..)
 

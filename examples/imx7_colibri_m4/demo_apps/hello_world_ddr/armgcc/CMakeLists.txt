@@ -1,7 +1,7 @@
 INCLUDE(CMakeForceCompiler)
 
 # === Project-specific settings ===
-SET(ProjectName hello_world)
+SET(ProjectName hello_world_ddr)
 SET(LinkerFile MCIMX7D_M4_ddr.ld)
 SET(BspRootDirPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../..)
 

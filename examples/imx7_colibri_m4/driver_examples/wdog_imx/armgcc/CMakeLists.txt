@@ -1,7 +1,7 @@
 INCLUDE(CMakeForceCompiler)
 
 # === Project-specific settings ===
-SET(ProjectName wdog_imx_example)
+SET(ProjectName wdog_imx)
 SET(LinkerFile MCIMX7D_M4_tcm.ld)
 SET(BspRootDirPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../..)
 

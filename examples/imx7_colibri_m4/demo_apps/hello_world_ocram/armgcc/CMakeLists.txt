@@ -1,7 +1,7 @@
 INCLUDE(CMakeForceCompiler)
 
 # === Project-specific settings ===
-SET(ProjectName hello_world)
+SET(ProjectName hello_world_ocram)
 SET(LinkerFile MCIMX7D_M4_ocram.ld)
 SET(BspRootDirPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../..)
 

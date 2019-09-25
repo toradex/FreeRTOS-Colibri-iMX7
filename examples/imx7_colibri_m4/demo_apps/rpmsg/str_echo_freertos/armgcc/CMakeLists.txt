@@ -1,7 +1,7 @@
 INCLUDE(CMakeForceCompiler)
 
 # === Project-specific settings ===
-SET(ProjectName rpmsg_str_echo_freertos)
+SET(ProjectName str_echo_freertos)
 SET(LinkerFile MCIMX7D_M4_tcm.ld)
 SET(BspRootDirPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../..)
 
