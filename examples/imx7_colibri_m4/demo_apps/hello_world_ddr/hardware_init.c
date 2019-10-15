@@ -43,15 +43,22 @@ void RDC_memory_init(void)
     start = (uint32_t)Image$$VECTOR_ROM$$Base & 0xFFFFF000;
     end = (uint32_t)(Image$$ER_m_text$$Limit + (Image$$RW_m_data$$Limit - Image$$RW_m_data$$Base));
     end = (end + 0xFFF) & 0xFFFFF000;
+    RDC_SetMrAccess(RDC, rdcMrMmdc, start, end, (3 << (BOARD_DOMAIN_ID * 2)), true, false);
 #else
-    extern uint32_t __FLASH_START[];
-    extern uint32_t __FLASH_END[];
+    extern uint32_t __MMDC_CODE_START;
+    extern uint32_t __MMDC_CODE_END;
+    extern uint32_t __MMDC_DATA_START;
+    extern uint32_t __MMDC_DATA_END;
 
-    start = (uint32_t)__FLASH_START & 0xFFFFF000;
-    end   = ((uint32_t)__FLASH_END + 0xFFF) & 0xFFFFF000;
+    start = round_down(__MMDC_CODE_START, RDC_REGION_RES_MMDC);
+    end   = round_up(__MMDC_CODE_END, RDC_REGION_RES_MMDC);
+    RDC_SetMrAccess(RDC, rdcMrMmdc, start, end, (3 << (BOARD_DOMAIN_ID * 2)), true, false);
+
+    start = round_down(__MMDC_DATA_START, RDC_REGION_RES_MMDC);
+    end   = round_up(__MMDC_DATA_END, RDC_REGION_RES_MMDC);
+    RDC_SetMrAccess(RDC, rdcMrMmdc + 1, start, end, (3 << (BOARD_DOMAIN_ID * 2)), true, false);
 #endif
 
-    RDC_SetMrAccess(RDC, rdcMrMmdc, start, end, (3 << (BOARD_DOMAIN_ID * 2)), true, false);
 }
 
 void hardware_init(void)
