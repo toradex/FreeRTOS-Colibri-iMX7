@@ -2,7 +2,7 @@ INCLUDE(CMakeForceCompiler)
 
 # === Project-specific settings ===
 SET(ProjectName gpio_imx)
-SET(LinkerFile MCIMX7D_M4_tcm.ld)
+SET(LinkerFile MCIMX7D_M4_ocram.ld)
 SET(BspRootDirPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../..)
 
 PROJECT(${ProjectName})
@@ -43,7 +43,7 @@ SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Os -D__NDEBUG")
 # === LINKER FLAGS ===
 # default
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T ${LinkerFile} -static -L ${BspRootDirPath}/platform/devices/MCIMX7D/linker/gcc/")
-SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mcpu=cortex-m4 -mfloat-abi=hard  -mfpu=fpv4-sp-d16  --specs=nano.specs  -Wall  -fno-common -ffunction-sections  -fdata-sections  -ffreestanding  -fno-builtin  -mthumb -mapcs  -Xlinker --gc-sections  -Xlinker -static  -Xlinker -z -z max-page-size=4096 -Xlinker muldefs")
+SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mcpu=cortex-m4 -mfloat-abi=hard  -mfpu=fpv4-sp-d16  --specs=nano.specs  -Wall  -fno-common -ffunction-sections  -fdata-sections  -ffreestanding  -fno-builtin  -mthumb -mapcs  -Xlinker --gc-sections  -Xlinker -static  -Xlinker -z -z max-page-size=32 -Xlinker muldefs")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker --defsym=__stack_size__=0x400  -Xlinker --defsym=__heap_size__=0x200")
 # debug
 SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -g")
