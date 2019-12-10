@@ -214,7 +214,7 @@ uint32_t get_i2c_clock_freq(I2C_Type* base)
 /*FUNCTION**********************************************************************
  *
  * Function Name : get_uart_clock_freq
- * Description   : Get clock frequency applys to the UART module
+ * Description   : Get clock frequency feeding into the UART module
  *
  *END**************************************************************************/
 uint32_t get_uart_clock_freq(UART_Type* base)
@@ -222,17 +222,23 @@ uint32_t get_uart_clock_freq(UART_Type* base)
     uint32_t root;
     uint32_t hz;
     uint32_t pre, post;
-
+    uint32_t ccmRoot;
+    
     switch((uint32_t)base)
     {
-        case UART2_BASE:
-            root = CCM_GetRootMux(CCM, ccmRootUart2);
-            CCM_GetRootDivider(CCM, ccmRootUart2, &pre, &post);
-            break;
-        default:
-            return 0;
+        case UART1_BASE: ccmRoot = ccmRootUart1; break;
+        case UART2_BASE: ccmRoot = ccmRootUart2; break;
+        case UART3_BASE: ccmRoot = ccmRootUart3; break;
+        case UART4_BASE: ccmRoot = ccmRootUart4; break;
+        case UART5_BASE: ccmRoot = ccmRootUart5; break;
+        case UART6_BASE: ccmRoot = ccmRootUart6; break;
+        case UART7_BASE: ccmRoot = ccmRootUart7; break;
+        default:         return 0;
     }
 
+    root = CCM_GetRootMux(CCM, ccmRoot);
+    CCM_GetRootDivider(CCM, ccmRoot, &pre, &post);
+    
     switch(root)
     {
         case ccmRootmuxUartOsc24m:
