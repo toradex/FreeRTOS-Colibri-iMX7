@@ -72,7 +72,7 @@ typedef enum _gpio_pin_action
 /*! @brief GPIO Init structure definition. */
 typedef struct _gpio_init_config
 {
-    uint32_t              pin;           /*!< Specifies the pin number. */
+    uint32_t              pin;           /*!< The pin number in this context is the bit position 0..31 within one gpio register. */
     gpio_pin_direction_t  direction;     /*!< Specifies the pin direction. */
     gpio_interrupt_mode_t interruptMode; /*!< Specifies the pin interrupt mode, a value of @ref gpio_interrupt_mode_t. */
 } gpio_init_config_t;
