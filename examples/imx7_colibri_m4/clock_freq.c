@@ -226,13 +226,13 @@ uint32_t get_uart_clock_freq(UART_Type* base)
     
     switch((uint32_t)base)
     {
-        case UART1_BASE: ccmRoot = ccmRootUart1; break
-        case UART2_BASE: ccmRoot = ccmRootUart2; break
-        case UART3_BASE: ccmRoot = ccmRootUart3; break
-        case UART4_BASE: ccmRoot = ccmRootUart4; break
-        case UART5_BASE: ccmRoot = ccmRootUart5; break
-        case UART6_BASE: ccmRoot = ccmRootUart6; break
-        case UART7_BASE: ccmRoot = ccmRootUart7; break
+        case UART1_BASE: ccmRoot = ccmRootUart1; break;
+        case UART2_BASE: ccmRoot = ccmRootUart2; break;
+        case UART3_BASE: ccmRoot = ccmRootUart3; break;
+        case UART4_BASE: ccmRoot = ccmRootUart4; break;
+        case UART5_BASE: ccmRoot = ccmRootUart5; break;
+        case UART6_BASE: ccmRoot = ccmRootUart6; break;
+        case UART7_BASE: ccmRoot = ccmRootUart7; break;
         default:         return 0;
     }
 
