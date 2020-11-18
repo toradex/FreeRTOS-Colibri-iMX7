@@ -46,7 +46,7 @@
  *END**************************************************************************/
 void GPIO_Init(GPIO_Type* base, const gpio_init_config_t* initConfig)
 {
-    uint32_t pin;
+    uint32_t pin = 0;
     volatile uint32_t *icr;
 
     /* Clear Interrupt mask and edge-select for one particular GPIO */
